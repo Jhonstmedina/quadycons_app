@@ -15,7 +15,7 @@ class CodeScanServiceFake implements CodeScanService {
     await Future.delayed(Duration(seconds: 1)); // Simula tiempo de espera
     return Worker(
       id: code,
-      name: 'Juan Pérez',
+      name: 'John Wick',
       profileUrl: 'https://www.diamondartclub.com/cdn/shop/files/aragorn-diamond-art-painting-46043931672769.jpg?v=1762461207&width=3000',
       position: 'Developer'
     );

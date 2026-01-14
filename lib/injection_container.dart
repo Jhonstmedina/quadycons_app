@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:quadycons/data/local_data_source/auth_local_data_source.dart';
+import 'package:quadycons/data/platform/permissions_controller.dart';
 import 'package:quadycons/data/platform/storage_connector.dart';
 import 'package:quadycons/data/repositories/auth_repository_impl.dart';
 import 'package:quadycons/data/repositories/code_scan_repository_Impl.dart';
@@ -15,6 +16,7 @@ import 'package:quadycons/data/services/fake/register_confirmation_service_fake.
 import 'package:quadycons/data/services/geo_location.dart';
 import 'package:quadycons/domain/blocs/auth/auth_bloc.dart';
 import 'package:quadycons/domain/blocs/code_scan/code_scan_bloc.dart';
+import 'package:quadycons/domain/blocs/permissions/permissions_bloc.dart';
 import 'package:quadycons/domain/blocs/register_confirmation/register_confirmation_bloc.dart';
 import 'package:quadycons/domain/logic/locations_comparer.dart';
 import 'package:quadycons/domain/repositories/auth_repository.dart';
@@ -38,6 +40,12 @@ void init() {
   // Authentication
   // ******************************************
   _initAuthenticationModule();
+
+  // ******************************************
+  // Permissions
+  // ******************************************
+
+  _initPermissionsModule();
 
   // ******************************************
   // Code Scan
@@ -72,6 +80,15 @@ void _initAuthenticationModule() {
   );
   sl.registerLazySingleton<AuthBloc>(
     () => AuthBloc(repository: sl<AuthRepository>())
+  );
+}
+
+void _initPermissionsModule() {
+  sl.registerLazySingleton<PermissionsController>(() => PermissionsController());
+  sl.registerFactory<PermissionsBloc>(
+    () => PermissionsBloc(
+      permissionsController: sl<PermissionsController>()
+    )
   );
 }
 

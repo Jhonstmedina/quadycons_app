@@ -218,12 +218,14 @@ class RegisterConfirmationScreen extends StatelessWidget {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: state.confirmed ?
+                        backgroundColor: state.confirmed || state.isLoading?
                           Color(0xFFF5F3FF) :
                           Colors.blue[700],
-                        foregroundColor: state.confirmed ?
+                        foregroundColor: state.confirmed?
                           Colors.black :
-                          Colors.white,
+                          state.isLoading?
+                            Colors.grey:
+                            Colors.white,
                         padding: EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30)
@@ -236,7 +238,7 @@ class RegisterConfirmationScreen extends StatelessWidget {
                           Icon(state.confirmed ? Icons.crop_free : Icons.check),
                           const SizedBox(width: 8),
                           Text(
-                            state.confirmed ?
+                            state.confirmed?
                               'Escanear siguiente' :
                               'Confirmar Registro'
                             )

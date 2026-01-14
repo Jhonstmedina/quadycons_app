@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quadycons/domain/blocs/auth/auth_bloc.dart';
 import 'package:quadycons/injection_container.dart';
-import 'package:quadycons/ui/screens/id_code_scan_screen.dart';
+import 'package:quadycons/ui/screens/permissions_screen.dart';
 import 'package:quadycons/ui/widgets/auth_input.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => IdCodeScanScreen()
+                      builder: (context) => PermissionsScreen()
                     )
                   );
                 } else if (state is OnLogin && state.errorMessage != null) {
