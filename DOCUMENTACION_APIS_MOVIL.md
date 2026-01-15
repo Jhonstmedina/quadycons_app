@@ -15,7 +15,7 @@ Authorization: Token {token_aqui}
 
 ---
 
-## 1️⃣ AUTENTICACIÓN Y USUARIOS
+## 1️⃣ AUTENTICACIÓN Y **USUARIOS**
 
 ### 1.1 LOGIN
 **Endpoint:** `POST /api/auth/login/`

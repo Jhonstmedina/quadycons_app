@@ -28,7 +28,13 @@ final sl = GetIt.instance;
 
 void init() {
 
-  sl.registerLazySingleton<Dio>(() => Dio());
+  sl.registerLazySingleton<Dio>(() => Dio(
+    BaseOptions(
+      baseUrl: 'https://34.68.203.103/api',
+      connectTimeout: const Duration(milliseconds: 5000),
+      receiveTimeout: const Duration(milliseconds: 3000),
+    )
+  ));
   sl.registerLazySingleton<Geolocation>(() => GeoLocationImpl());
   sl.registerLazySingleton<StorageConnector>(
     () => StorageConnectorImpl(

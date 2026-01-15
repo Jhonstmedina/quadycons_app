@@ -8,4 +8,9 @@ class AuthServiceFake implements AuthService {
     await Future.delayed(const Duration(seconds: 2));
     return 'new_access_token';
   }
+  
+  @override
+  Future<void> logout(String accessToken) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+  }
 }
