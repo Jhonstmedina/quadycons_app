@@ -1,4 +1,5 @@
 import 'package:quadycons/data/entities/authentication.dart';
+import 'package:quadycons/data/entities/user.dart';
 import 'package:quadycons/data/local_data_source/auth_local_data_source.dart';
 import 'package:quadycons/data/services/auth_service.dart';
 import 'package:quadycons/domain/repositories/auth_repository.dart';
@@ -21,5 +22,18 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> logout() async {
     await localDataSource.removeAuthToken();
+  }
+
+  @override
+  Future<User?> getUser() async {
+    String accessToken;
+    try {
+      accessToken = await localDataSource.getAccessToken();
+    } catch (_) {
+      return null;
+    }
+    final user = await authService.getUser(accessToken);
+    await localDataSource.saveUser(user);
+    return user;
   }
 }

@@ -17,7 +17,8 @@ class CodeScanServiceFake implements CodeScanService {
       id: code,
       name: 'John Wick',
       profileUrl: 'https://www.diamondartclub.com/cdn/shop/files/aragorn-diamond-art-painting-46043931672769.jpg?v=1762461207&width=3000',
-      position: 'Developer'
+      position: 'Developer',
+      projectId: 1
     );
   }
 

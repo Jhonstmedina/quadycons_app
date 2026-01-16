@@ -1,3 +1,4 @@
+import 'package:quadycons/data/entities/attendance.dart';
 import 'package:quadycons/data/entities/registration.dart';
 import 'package:quadycons/data/local_data_source/access_token_getter.dart';
 import 'package:quadycons/data/services/register_confirmation_service.dart';
@@ -13,8 +14,29 @@ class RegisterConfirmationRepositoryImpl implements RegisterConfirmationReposito
   });
 
   @override
-  Future<Registration> confirmRegistration(Registration registration) async {
-    final token = await accessTokenGetter.getAccessToken();
-    return await registerConfirmationService.confirmRegistration(registration, token);
+  Future<Attendance> confirmRegistration(Attendance registration) async {
+    final accessToken = await accessTokenGetter.getAccessToken();
+    return await registerConfirmationService.confirmRegistration(
+      registration,
+      accessToken
+    );
+  }
+
+  @override
+  Future<Attendance> confirmCheckIn(Registration registration) async {
+    final accessToken = await accessTokenGetter.getAccessToken();
+    return await registerConfirmationService.confirmCheckIn(
+      registration,
+      accessToken
+    );
+  }
+
+  @override
+  Future<Attendance> confirmCheckOut(Attendance attendance) async {
+    final accessToken = await accessTokenGetter.getAccessToken();
+    return await registerConfirmationService.confirmCheckOut(
+      attendance,
+      accessToken
+    );
   }
 }

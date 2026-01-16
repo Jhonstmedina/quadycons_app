@@ -4,10 +4,11 @@ part of 'register_confirmation_bloc.dart';
 sealed class RegisterConfirmationEvent {}
 
 final class InitRegistrationConfirmation extends RegisterConfirmationEvent {
-  final Registration registration;
+  final Attendance registration;
   InitRegistrationConfirmation({required this.registration});
 }
 
 final class ConfirmRegistration extends RegisterConfirmationEvent {
-  ConfirmRegistration();
+  final Project project;
+  ConfirmRegistration({required this.project});
 }

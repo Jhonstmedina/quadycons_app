@@ -6,7 +6,7 @@ sealed class RegisterConfirmationState {}
 final class RegisterConfirmationInitial extends RegisterConfirmationState {}
 
 final class OnRegistration extends RegisterConfirmationState {
-  final Registration registration;
+  final Attendance registration;
   final bool confirmed;
   final bool isLoading;
   final String? errorMessage;
@@ -19,7 +19,7 @@ final class OnRegistration extends RegisterConfirmationState {
   });
 
   OnRegistration copyWith({
-    Registration? registration,
+    Attendance? registration,
     bool? confirmed,
     bool? isLoading,
     String? errorMessage

@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:quadycons/data/entities/authentication.dart';
+import 'package:quadycons/data/entities/user.dart';
 import 'package:quadycons/domain/repositories/auth_repository.dart';
 import 'package:quadycons/domain/exceptions.dart';
 
@@ -17,14 +18,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
   
   AuthBloc({
     required this.repository
-  }) : super(OnLogin()){
+  }) : super(LoginInit()){
     on<InitLoginEvent>(_initLogin);
     on<LoginEvent>(_login);
     on<LogoutEvent>(_logout);
   }
 
-  void _initLogin(_, Emitter<AuthState> emit){
-    emit(OnLogin());
+  Future<void> _initLogin(_, Emitter<AuthState> emit) async {
+    final user = await repository.getUser();
+    if(user == null) {
+      emit(OnLogin());
+    } else {
+      emit(OnAuthenticated(user: user));
+    }
   }  
 
   Future<void> _login(LoginEvent event, Emitter<AuthState> emit)async{
@@ -45,7 +51,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
         ));
       }else{
         await repository.login(auth);
-        emit(OnAuthenticated());
+        final user = await repository.getUser();
+        emit(OnAuthenticated(user: user));
       }
     } on GeneralException catch(exception){
       emit(OnLogin(

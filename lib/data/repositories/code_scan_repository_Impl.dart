@@ -16,7 +16,7 @@ class CodeScanRepositoryImpl implements CodeScanRepository {
   @override
   Future<IdCodeInfo> getInfoByIdBase(IdCodeInfo baseInfo) async {
     final accessToken = await accessTokenGetter.getAccessToken();
-    final worker = await service.getInfoByIdentification(baseInfo.docNumber, accessToken);
+    final worker = await service.getInfoByIdentification(baseInfo.docNumber, accessToken!);
     return IdCodeInfo(
       docNumber: baseInfo.docNumber,
       worker: worker
@@ -26,6 +26,6 @@ class CodeScanRepositoryImpl implements CodeScanRepository {
   @override
   Future<LatLng> getFence() async {
     final accessToken = await accessTokenGetter.getAccessToken();
-    return await service.getFence(accessToken);
+    return await service.getFence(accessToken!);
   }
 }

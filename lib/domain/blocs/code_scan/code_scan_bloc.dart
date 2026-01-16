@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:quadycons/data/entities/lat_lng.dart';
 import 'package:quadycons/data/entities/register_type.dart';
 import 'package:quadycons/data/entities/id_code_info.dart';
 import 'package:quadycons/data/services/geo_location.dart';
@@ -64,7 +65,8 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
       );
       emit(initState.copyWith(
         isInFence: isInFence,
-        errorMessage: isInFence ? null : "Fuera del área de registro"
+        errorMessage: isInFence ? null : "Fuera del área de registro",
+        currentLocation: location
       ));
     }
   }

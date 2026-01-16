@@ -29,7 +29,8 @@ class CodeScanServiceImpl extends Service implements CodeScanService {
       id: result['id'],
       name: '${result['nombre']} ${result['apellido']}',
       profileUrl: result['foto_cedula'],
-      position: result['cargo']
+      position: result['cargo'],
+      projectId: result['proyecto_actual']['id']
     );
   }
   

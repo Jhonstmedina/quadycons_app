@@ -8,23 +8,27 @@ final class Registrating extends CodeScanState {
   final RegisterType? registerType;
   final bool? isInFence;
   final String? errorMessage;
+  final LatLng? currentLocation;
 
   Registrating({
     this.idDocInfo,
     this.registerType,
     this.isInFence,
-    this.errorMessage
+    this.errorMessage,
+    this.currentLocation
   });
 
   Registrating copyWith({
     IdCodeInfo? idDocInfo,
     RegisterType? registerType,
     bool? isInFence,
-    String? errorMessage
+    String? errorMessage,
+    LatLng? currentLocation
   }) => Registrating(
     idDocInfo: idDocInfo ?? this.idDocInfo,
     registerType: registerType ?? this.registerType,
     isInFence: isInFence ?? this.isInFence,
+    currentLocation: currentLocation ?? this.currentLocation,
     errorMessage: errorMessage
   );
 }

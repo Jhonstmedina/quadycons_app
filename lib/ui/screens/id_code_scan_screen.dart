@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:quadycons/data/entities/check.dart';
 import 'package:quadycons/data/entities/id_code_info.dart';
 import 'package:quadycons/data/entities/register_type.dart';
 import 'package:quadycons/data/entities/registration.dart';
 import 'package:quadycons/domain/blocs/code_scan/code_scan_bloc.dart';
 import 'package:quadycons/injection_container.dart';
-import 'package:quadycons/ui/screens/register_confirmation_screen.dart';
-import 'package:quadycons/ui/screens/scanner_screen.dart';
 import 'package:quadycons/ui/widgets/scan_button.dart';
 import 'package:quadycons/ui/widgets/radio_scan_button.dart';
+import 'package:quadycons/ui/widgets/projects_select.dart';
 
 class IdCodeScanScreen extends StatelessWidget {
   const IdCodeScanScreen({super.key});
@@ -31,19 +32,15 @@ class IdCodeScanScreen extends StatelessWidget {
                     )
                   );
                 } if (state.registerType != null && state.idDocInfo != null && (state.isInFence??false)) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RegisterConfirmationScreen(),
-                      settings: RouteSettings(
-                        arguments: Registration(
-                          checkInTime: state.registerType == RegisterType.entry?
-                            TimeOfDay.now(): null,
-                          checkOutTime: state.registerType == RegisterType.exit?
-                            TimeOfDay.now(): null,
-                          idCodeInfo: state.idDocInfo!
-                        )
-                      )
+                  context.push(
+                    '/register-confirmation',
+                    extra: Registration(
+                      check: Check(
+                        time: TimeOfDay.now(),
+                        location: state.currentLocation!
+                      ),
+                      idCodeInfo: state.idDocInfo!,
+                      type: state.registerType!
                     )
                   );
                 }
@@ -81,7 +78,7 @@ class IdCodeScanScreen extends StatelessWidget {
                         )
                       ]
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Container(
                       padding: EdgeInsets.all(24),
                       decoration: BoxDecoration(
@@ -139,7 +136,7 @@ class IdCodeScanScreen extends StatelessWidget {
                         ]
                       )
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -161,7 +158,11 @@ class IdCodeScanScreen extends StatelessWidget {
                           }
                         )
                       ]
-                    )
+                    ),
+                    Expanded(
+                      child: Container()
+                    ),
+                    ProjectsSelect()
                   ]
                 );
               }
@@ -173,12 +174,7 @@ class IdCodeScanScreen extends StatelessWidget {
   }
 
   Future<void> _scan(BuildContext context) async {
-    final idCodeInfo = await Navigator.push<IdCodeInfo?>(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ScannerScreen()
-      )
-    );
+    final idCodeInfo = await context.push<IdCodeInfo?>('/scanner');
     BlocProvider.of<CodeScanBloc>(context).add(
       InsertScanInfo(idCodeInfo)
     );

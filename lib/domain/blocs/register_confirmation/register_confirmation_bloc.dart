@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:quadycons/data/entities/registration.dart';
+import 'package:quadycons/data/entities/attendance.dart';
+import 'package:quadycons/data/entities/project.dart';
 import 'package:quadycons/domain/repositories/register_confirmation_repository.dart';
 
 part 'register_confirmation_event.dart';
@@ -26,7 +27,7 @@ class RegisterConfirmationBloc extends Bloc<RegisterConfirmationEvent, RegisterC
     ));
   }
 
-  Future<void> _onConfirmRegistration(_, Emitter<RegisterConfirmationState> emit
+  Future<void> _onConfirmRegistration(ConfirmRegistration event, Emitter<RegisterConfirmationState> emit
   ) async {
     final initState = state as OnRegistration;
     emit(initState.copyWith(isLoading: true));

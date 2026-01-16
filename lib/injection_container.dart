@@ -6,9 +6,12 @@ import 'package:quadycons/data/platform/permissions_controller.dart';
 import 'package:quadycons/data/platform/storage_connector.dart';
 import 'package:quadycons/data/repositories/auth_repository_impl.dart';
 import 'package:quadycons/data/repositories/code_scan_repository_Impl.dart';
+import 'package:quadycons/data/repositories/projects_repository_impl.dart';
 import 'package:quadycons/data/repositories/register_confirmation_repository_impl.dart';
 import 'package:quadycons/data/services/auth_service.dart';
 import 'package:quadycons/data/services/code_scan_service.dart';
+import 'package:quadycons/data/services/fake/projects_service_fake.dart';
+import 'package:quadycons/data/services/projects_service.dart';
 import 'package:quadycons/data/services/register_confirmation_service.dart';
 import 'package:quadycons/data/services/fake/auth_service_fake.dart';
 import 'package:quadycons/data/services/fake/code_scan_service_fake.dart';
@@ -17,10 +20,12 @@ import 'package:quadycons/data/services/geo_location.dart';
 import 'package:quadycons/domain/blocs/auth/auth_bloc.dart';
 import 'package:quadycons/domain/blocs/code_scan/code_scan_bloc.dart';
 import 'package:quadycons/domain/blocs/permissions/permissions_bloc.dart';
+import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
 import 'package:quadycons/domain/blocs/register_confirmation/register_confirmation_bloc.dart';
 import 'package:quadycons/domain/logic/locations_comparer.dart';
 import 'package:quadycons/domain/repositories/auth_repository.dart';
 import 'package:quadycons/domain/repositories/code_scan_repository.dart';
+import 'package:quadycons/domain/repositories/projects_repository.dart';
 import 'package:quadycons/domain/repositories/register_confirmation_repository.dart';
 import 'package:quadycons/ui/utils/code_scan_adapter.dart';
 
@@ -46,6 +51,13 @@ void init() {
   // Authentication
   // ******************************************
   _initAuthenticationModule();
+
+  // ******************************************
+  // Projects
+  // ******************************************
+
+  _initProjectsModule();
+
 
   // ******************************************
   // Permissions
@@ -84,8 +96,30 @@ void _initAuthenticationModule() {
       localDataSource: sl<AuthLocalDataSource>()
     )
   );
-  sl.registerLazySingleton<AuthBloc>(
-    () => AuthBloc(repository: sl<AuthRepository>())
+  sl.registerSingleton<AuthBloc>(
+    AuthBloc(repository: sl<AuthRepository>())
+  );
+}
+
+void _initProjectsModule() {
+  sl.registerLazySingleton<ProjectsService>(
+    () => _implementRealOrFake(
+      realImpl: ProjectsServiceImpl(
+        dio: sl<Dio>()
+      ),
+      fakeImpl: ProjectsServiceFake()
+    )
+  );
+  sl.registerLazySingleton<ProjectsRepository>(
+    () => ProjectsRepositoryImpl(
+      projectsService: sl<ProjectsService>(),
+      localDataSource: sl<AuthLocalDataSource>()
+    )
+  );
+  sl.registerSingleton<ProjectsBloc>(
+    ProjectsBloc(
+      repository: sl<ProjectsRepository>()
+    )
   );
 }
 

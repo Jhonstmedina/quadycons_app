@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quadycons/domain/blocs/permissions/permissions_bloc.dart';
 import 'package:quadycons/injection_container.dart';
 import 'package:quadycons/ui/screens/id_code_scan_screen.dart';
@@ -21,12 +22,7 @@ class PermissionsScreen extends StatelessWidget {
           child: BlocConsumer<PermissionsBloc, PermissionsState>(
             listener: (_, state) {
               if(state is PermissionsPending && state.cameraIsGranted && state.locationIsGranted) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => IdCodeScanScreen()
-                  )
-                );
+                context.go('/id-code-scan');
               }
             },
             builder: (context, state) {
