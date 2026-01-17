@@ -3,9 +3,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:quadycons/data/db/app_database.dart';
 import 'package:quadycons/data/db/daos/attendance_dao.dart';
+import 'package:quadycons/data/db/daos/project_dao.dart';
 import 'package:quadycons/data/local_data_source/auth_local_data_source.dart';
 import 'package:quadycons/data/local_data_source/summary_local_data_source.dart';
-import 'package:quadycons/data/local_data_sources/attendance_local_data_source.dart';
 import 'package:quadycons/data/platform/permissions_controller.dart';
 import 'package:quadycons/data/platform/storage_connector.dart';
 import 'package:quadycons/data/repositories/auth_repository_impl.dart';
@@ -125,10 +125,14 @@ void _initProjectsModule() {
       fakeImpl: ProjectsServiceFake()
     )
   );
+  sl.registerLazySingleton<ProjectsDao>(
+    () => ProjectsDao(sl<AppDatabase>())
+  );
   sl.registerLazySingleton<ProjectsRepository>(
     () => ProjectsRepositoryImpl(
       projectsService: sl<ProjectsService>(),
-      localDataSource: sl<AuthLocalDataSource>()
+      localDataSource: sl<AuthLocalDataSource>(),
+      dao: sl<ProjectsDao>()
     )
   );
   sl.registerSingleton<ProjectsBloc>(
@@ -182,9 +186,6 @@ void _initRegisterConfirmationModule() {
       ),
       fakeImpl: RegisterConfirmationServiceFake()
     )
-  );
-  sl.registerLazySingleton<AttendanceLocalDataSource>(
-    () => AttendanceLocalDataSourceImpl()
   );
   sl.registerLazySingleton<AttendanceDao>(
     () => AttendanceDao(sl<AppDatabase>())

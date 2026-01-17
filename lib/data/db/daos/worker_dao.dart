@@ -13,15 +13,6 @@ class WorkersDao extends DatabaseAccessor<AppDatabase>
     return into(workers).insert(data);
   }
 
-  Future<void> updateWorker(
-    String docNumber,
-    WorkersCompanion data,
-  ) {
-    return (update(workers)
-          ..where((w) => w.docNumber.equals(docNumber)))
-        .write(data);
-  }
-
   Future<Worker?> getByDocNumber(String docNumber) {
     return (select(workers)
           ..where((w) => w.docNumber.equals(docNumber)))
