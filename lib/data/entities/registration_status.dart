@@ -1,0 +1,4 @@
+enum RegistrationStatus {
+  completed,
+  pending,
+}

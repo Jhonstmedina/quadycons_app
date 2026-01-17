@@ -5,28 +5,47 @@ sealed class RegisterConfirmationState {}
 
 final class RegisterConfirmationInitial extends RegisterConfirmationState {}
 
+enum RegisterConfirmErrorType {
+  general,
+  inconsistentAttendance
+}
+
+class RegisterConfirmError {
+  final String message;
+  final RegisterConfirmErrorType type;
+
+  RegisterConfirmError({
+    required this.message,
+    this.type = RegisterConfirmErrorType.general
+  });
+}
+
 final class OnRegistration extends RegisterConfirmationState {
-  final Attendance registration;
+  final Attendance attendance;
   final bool confirmed;
   final bool isLoading;
-  final String? errorMessage;
+  final RegisterConfirmError? error;
+  final RegisterType registerType;
 
   OnRegistration({
-    required this.registration,
+    required this.attendance,
     this.confirmed = false,
     this.isLoading = false,
-    this.errorMessage,
+    this.error,
+    required this.registerType
   });
 
   OnRegistration copyWith({
     Attendance? registration,
     bool? confirmed,
     bool? isLoading,
-    String? errorMessage
+    RegisterType? registerType,
+    RegisterConfirmError? error
   }) => OnRegistration(
-    registration: registration ?? this.registration,
+    attendance: registration ?? this.attendance,
     confirmed: confirmed ?? this.confirmed,
     isLoading: isLoading ?? this.isLoading,
-    errorMessage: errorMessage
+    registerType: registerType ?? this.registerType,
+    error: error
   );
 }

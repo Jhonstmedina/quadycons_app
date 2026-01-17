@@ -1,15 +1,18 @@
 import 'package:quadycons/data/entities/attendance.dart';
 import 'package:quadycons/data/entities/registration.dart';
 import 'package:quadycons/data/local_data_source/access_token_getter.dart';
+import 'package:quadycons/data/local_data_sources/attendance_local_data_source.dart';
 import 'package:quadycons/data/services/register_confirmation_service.dart';
-import 'package:quadycons/domain/repositories/register_confirmation_repository.dart';
+import 'package:quadycons/domain/repositories/attendance_repository.dart';
 
-class RegisterConfirmationRepositoryImpl implements RegisterConfirmationRepository {
+class AttendanceRepositoryImpl implements AttendanceRepository {
   final RegisterConfirmationService registerConfirmationService;
+  final AttendanceLocalDataSource localDataSource;
   final AccessTokenGetter accessTokenGetter;
 
-  RegisterConfirmationRepositoryImpl({
+  AttendanceRepositoryImpl({
     required this.registerConfirmationService,
+    required this.localDataSource,
     required this.accessTokenGetter,
   });
 
@@ -38,5 +41,10 @@ class RegisterConfirmationRepositoryImpl implements RegisterConfirmationReposito
       attendance,
       accessToken
     );
+  }
+  
+  @override
+  Future<Attendance?> getAttendanceByUserDoc(String docNumber) async {
+    return await localDataSource.getAttendanceByUserDoc(docNumber);
   }
 }

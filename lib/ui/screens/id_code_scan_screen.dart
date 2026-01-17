@@ -10,6 +10,7 @@ import 'package:quadycons/injection_container.dart';
 import 'package:quadycons/ui/widgets/scan_button.dart';
 import 'package:quadycons/ui/widgets/radio_scan_button.dart';
 import 'package:quadycons/ui/widgets/projects_select.dart';
+import 'package:quadycons/ui/widgets/custom_app_bar.dart';
 
 class IdCodeScanScreen extends StatelessWidget {
   const IdCodeScanScreen({super.key});
@@ -17,6 +18,7 @@ class IdCodeScanScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAppBar(title: 'Escaneo de cédula / QR'),
       body: BlocProvider(
         create: (context) => sl<CodeScanBloc>(),
         child: SafeArea(
@@ -50,35 +52,25 @@ class IdCodeScanScreen extends StatelessWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Escaneo de cédula / QR',
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Chip(
+                        label: Text(
+                          'offline solo',
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                            fontSize: 20
+                            fontSize: 12
                           )
                         ),
-                        Chip(
-                          label: Text(
-                            'offline solo',
-                            style: TextStyle(
-                              fontSize: 12
-                            )
-                          ),
-                          backgroundColor: Colors.green,
-                          labelStyle: TextStyle(color: Colors.white),
-                          labelPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-                          visualDensity: VisualDensity.compact,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30)
-                          )
+                        backgroundColor: Colors.green,
+                        labelStyle: TextStyle(color: Colors.white),
+                        labelPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                        visualDensity: VisualDensity.compact,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)
                         )
-                      ]
+                      ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
                     Container(
                       padding: EdgeInsets.all(24),
                       decoration: BoxDecoration(
@@ -143,12 +135,12 @@ class IdCodeScanScreen extends StatelessWidget {
                         ScanRegistrationButton(
                           icon: Icons.login,
                           text: 'Entrada',
-                          registerType: RegisterType.entry
+                          registerType: RegisterType.input
                         ),
                         ScanRegistrationButton(
                           icon: Icons.logout,
                           text: 'Salida',
-                          registerType: RegisterType.exit
+                          registerType: RegisterType.output
                         ),
                         ScanButton(
                           icon: Icons.refresh,

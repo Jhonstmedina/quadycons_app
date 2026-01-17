@@ -1,4 +1,4 @@
 enum RegisterType {
-  entry,
-  exit,
+  input,
+  output,
 }

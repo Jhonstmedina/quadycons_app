@@ -28,10 +28,10 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
 
 
   Future<void> _insertScanInfo(InsertScanInfo event, Emitter<CodeScanState> emit) async {
-    var initState = state as Registrating;
     final idCodeInfo = event.idCodeInfo;
     if(idCodeInfo != null) {
       final idInfo = await repository.getInfoByIdBase(idCodeInfo);
+      var initState = state as Registrating;
       initState = initState.copyWith(
         idDocInfo: idInfo
       );

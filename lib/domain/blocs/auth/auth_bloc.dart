@@ -68,7 +68,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
     emit(initState.copyWith(loading: true));
     try{
       await repository.logout();
-      emit(OnUnAuthenticated());
+      emit(OnLogin());
     }on GeneralException catch(exception){
       emit(OnAuthenticated(
         errorMessage: exception.message

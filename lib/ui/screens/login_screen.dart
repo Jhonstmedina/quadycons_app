@@ -107,23 +107,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text('Ingresar')
                         ]
                       )
-                    ),
-                    SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Proyecto asignado',
-                          style: TextStyle(color: Colors.grey)
-                        ),
-                        Chip(
-                          label: Text('Torre Norte'),
-                          backgroundColor: Color(0xFFF5F3FF),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30)
-                          )
-                        )
-                      ]
                     )
                   ]
                 );

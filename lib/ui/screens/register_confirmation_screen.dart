@@ -5,6 +5,7 @@ import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
 import 'package:quadycons/domain/blocs/register_confirmation/register_confirmation_bloc.dart';
 import 'package:quadycons/ui/widgets/projects_select.dart';
 import 'package:quadycons/ui/widgets/register_time.dart';
+import 'package:quadycons/ui/widgets/custom_app_bar.dart';
 
 class RegisterConfirmationScreen extends StatelessWidget {
 
@@ -15,12 +16,44 @@ class RegisterConfirmationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAppBar(title: 'Confirmación'),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.05),
           child: BlocConsumer<RegisterConfirmationBloc, RegisterConfirmationState>(
             listener: (blocContext, state) {
-              
+              if (state is OnRegistration && state.error != null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: Colors.black,
+                          size: 24,
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            state.error!.message,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                            )
+                          )
+                        )
+                      ]
+                    ),
+                    backgroundColor: Colors.amber[700],
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    margin: EdgeInsets.all(16),
+                    duration: Duration(seconds: 10)
+                  )
+                );
+              }
             },
             builder: (context, state) {
               if(state is RegisterConfirmationInitial) {
@@ -28,22 +61,10 @@ class RegisterConfirmationScreen extends StatelessWidget {
                   child: CircularProgressIndicator()
                 );
               }
-              final registration = (state as OnRegistration).registration;
+              final registration = (state as OnRegistration).attendance;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 12),
-                  // Título
-                  Text(
-                    state.confirmed ? 'Confirmación' : 'Resultado de escaneo',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontSize: 24
-                    )
-                  ),
-                  const SizedBox(height: 6),
-                  
                   // Row con check y mensaje de éxito
                   if(state.confirmed)
                     ...[
@@ -197,45 +218,77 @@ class RegisterConfirmationScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   
-                  // Botón confirmar
-                  ElevatedButton(
-                    onPressed: () {
-                      if(state.confirmed) {
+                  // Botón regresar
+                  if(state.error?.type == RegisterConfirmErrorType.inconsistentAttendance)
+                    ElevatedButton(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).clearSnackBars();
                         context.go('/id-code-scan');
-                      } else {
-                        context.read<RegisterConfirmationBloc>().add(ConfirmRegistration(
-                          project: (context.read<ProjectsBloc>().state as ProjectsLoaded).chosenProject!
-                        ));
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: state.confirmed || state.isLoading?
-                        Color(0xFFF5F3FF) :
-                        Colors.blue[700],
-                      foregroundColor: state.confirmed?
-                        Colors.black :
-                        state.isLoading?
-                          Colors.grey:
-                          Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFF5F3FF),
+                        foregroundColor: Colors.black,
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)
+                        ),
+                        minimumSize: Size(double.infinity, 0)
                       ),
-                      minimumSize: Size(double.infinity, 0)
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(state.confirmed ? Icons.crop_free : Icons.check),
-                        const SizedBox(width: 8),
-                        Text(
-                          state.confirmed?
-                            'Escanear siguiente' :
-                            'Confirmar Registro'
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.arrow_back_ios,
+                            size: 15,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Regresar'
                           )
-                      ]
-                    )
-                  ),
+                        ]
+                      )
+                    ),
+                  
+                   // Botón confirmar
+                  if(state.error?.type != RegisterConfirmErrorType.inconsistentAttendance)
+                    ElevatedButton(
+                      onPressed: () {
+                        if(state.confirmed) {
+                          context.go('/id-code-scan');
+                        } else {
+                          context.read<RegisterConfirmationBloc>().add(ConfirmRegistration(
+                            project: (context.read<ProjectsBloc>().state as ProjectsLoaded).chosenProject!
+                          ));
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: state.confirmed || state.isLoading?
+                          Color(0xFFF5F3FF) :
+                          Colors.blue[700],
+                        foregroundColor: state.confirmed?
+                          Colors.black :
+                          state.isLoading?
+                            Colors.grey:
+                            Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)
+                        ),
+                        minimumSize: Size(double.infinity, 0)
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(state.confirmed ? Icons.crop_free : Icons.check),
+                          const SizedBox(width: 8),
+                          Text(
+                            state.confirmed?
+                              'Escanear siguiente' :
+                              'Confirmar Registro'
+                            )
+                        ]
+                      )
+                    ),
                   Expanded(
                     child: Container()
                   ),
@@ -245,7 +298,7 @@ class RegisterConfirmationScreen extends StatelessWidget {
             }
           )
         )
-      ),
+      )
     );
   }
 

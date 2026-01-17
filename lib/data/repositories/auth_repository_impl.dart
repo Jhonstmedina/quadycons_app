@@ -29,6 +29,9 @@ class AuthRepositoryImpl implements AuthRepository {
     String accessToken;
     try {
       accessToken = await localDataSource.getAccessToken();
+      if(accessToken.isEmpty) {
+        return null;
+      }
     } catch (_) {
       return null;
     }

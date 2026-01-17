@@ -2,14 +2,16 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:quadycons/data/entities/attendance.dart';
 import 'package:quadycons/data/entities/project.dart';
-import 'package:quadycons/domain/repositories/register_confirmation_repository.dart';
+import 'package:quadycons/data/entities/register_type.dart';
+import 'package:quadycons/data/entities/registration.dart';
+import 'package:quadycons/domain/repositories/attendance_repository.dart';
 
 part 'register_confirmation_event.dart';
 part 'register_confirmation_state.dart';
 
 class RegisterConfirmationBloc extends Bloc<RegisterConfirmationEvent, RegisterConfirmationState> {
   
-  final RegisterConfirmationRepository repository;
+  final AttendanceRepository repository;
     
   RegisterConfirmationBloc({
     required this.repository
@@ -18,13 +20,55 @@ class RegisterConfirmationBloc extends Bloc<RegisterConfirmationEvent, RegisterC
     on<ConfirmRegistration>(_onConfirmRegistration);
   }
 
-  void _onInitRegistrationConfirmation(
+  Future<void> _onInitRegistrationConfirmation(
     InitRegistrationConfirmation event,
     Emitter<RegisterConfirmationState> emit
-  ) {
-    emit(OnRegistration(
-      registration: event.registration
-    ));
+  ) async {
+    final attendance = await repository.getAttendanceByUserDoc(event.registration.idCodeInfo.docNumber);
+    final registerType = event.registration.type;
+    if(registerType == RegisterType.input) {
+      if(attendance != null) {
+        emit(OnRegistration(
+          attendance: attendance,
+          registerType: registerType,
+          error: RegisterConfirmError(
+            message: 'Registro duplicado (Ya existe entrada)',
+            type: RegisterConfirmErrorType.inconsistentAttendance
+          )
+        ));
+      } else {
+        emit(OnRegistration(
+          attendance: Attendance(
+            checkin: event.registration.check,
+            checkout: null,
+            idCodeInfo: event.registration.idCodeInfo
+          ),
+          registerType: registerType
+        ));
+      }
+    } else if(attendance == null) {
+      emit(OnRegistration(
+        attendance: Attendance(
+          checkin: null,
+          checkout: event.registration.check,
+          idCodeInfo: event.registration.idCodeInfo
+        ),
+        registerType: registerType,
+        error: RegisterConfirmError(
+            message: 'No existe registro de entrada previo',
+            type: RegisterConfirmErrorType.inconsistentAttendance
+          )
+      ));
+    } else {
+      emit(OnRegistration(
+        attendance: Attendance(
+          checkin: attendance.checkin,
+          checkout: event.registration.check,
+          idCodeInfo: attendance.idCodeInfo
+        ),
+        registerType: registerType
+      ));
+    }
   }
 
   Future<void> _onConfirmRegistration(ConfirmRegistration event, Emitter<RegisterConfirmationState> emit
@@ -32,16 +76,29 @@ class RegisterConfirmationBloc extends Bloc<RegisterConfirmationEvent, RegisterC
     final initState = state as OnRegistration;
     emit(initState.copyWith(isLoading: true));
     try{
-      final registration = await repository.confirmRegistration(initState.registration);
+      Attendance updatedAttendance;
+      final registerType = initState.registerType;
+      if(registerType == RegisterType.input) {
+        updatedAttendance = await repository.confirmCheckIn(Registration(
+          check: initState.attendance.checkin!,
+          idCodeInfo: initState.attendance.idCodeInfo,
+          type: registerType
+        ));
+      } else {
+        updatedAttendance = await repository.confirmCheckOut(initState.attendance);
+      }
       emit(initState.copyWith(
         isLoading: false,
-        registration: registration,
+        registration: updatedAttendance,
         confirmed: true
       ));
     } catch (e) {
       emit(initState.copyWith(
         isLoading: false,
-        errorMessage: e.toString()
+        error: RegisterConfirmError(
+          message: e.toString(),
+          type: RegisterConfirmErrorType.general
+        )
       ));
     }
     
