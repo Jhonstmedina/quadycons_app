@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:quadycons/data/entities/project.dart';
+import 'package:quadycons/domain/entities/project.dart';
 import 'package:quadycons/domain/repositories/projects_repository.dart';
 
 part 'projects_event.dart';

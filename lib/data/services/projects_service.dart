@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:quadycons/data/entities/lat_lng.dart';
-import 'package:quadycons/data/entities/project.dart';
+import 'package:quadycons/domain/entities/lat_lng.dart';
+import 'package:quadycons/domain/entities/project.dart';
 import 'package:quadycons/data/services/service.dart';
 
 abstract class ProjectsService {

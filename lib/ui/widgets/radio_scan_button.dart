@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quadycons/data/entities/register_type.dart';
+import 'package:quadycons/domain/entities/register_type.dart';
 import 'package:quadycons/domain/blocs/code_scan/code_scan_bloc.dart';
 
 class ScanRegistrationButton extends StatelessWidget {

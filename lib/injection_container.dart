@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:quadycons/data/db/app_database.dart';
+import 'package:quadycons/data/db/daos/attendance_dao.dart';
 import 'package:quadycons/data/local_data_source/auth_local_data_source.dart';
 import 'package:quadycons/data/local_data_source/summary_local_data_source.dart';
 import 'package:quadycons/data/local_data_sources/attendance_local_data_source.dart';
@@ -50,6 +52,9 @@ void init() {
     () => StorageConnectorImpl(
       fss: FlutterSecureStorage()
     )
+  );
+  sl.registerLazySingleton<AppDatabase>(
+    () => AppDatabase()
   );
 
   // ******************************************
@@ -181,11 +186,14 @@ void _initRegisterConfirmationModule() {
   sl.registerLazySingleton<AttendanceLocalDataSource>(
     () => AttendanceLocalDataSourceImpl()
   );
+  sl.registerLazySingleton<AttendanceDao>(
+    () => AttendanceDao(sl<AppDatabase>())
+  );
   sl.registerLazySingleton<AttendanceRepository>(
     () => AttendanceRepositoryImpl(
       registerConfirmationService: sl<RegisterConfirmationService>(),
       accessTokenGetter: sl<AuthLocalDataSource>(),
-      localDataSource: sl<AttendanceLocalDataSource>()
+      dao: sl<AttendanceDao>()
     )
   );
   sl.registerFactory<RegisterConfirmationBloc>(

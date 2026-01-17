@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:quadycons/data/entities/check.dart';
-import 'package:quadycons/data/entities/id_code_info.dart';
-import 'package:quadycons/data/entities/register_type.dart';
-import 'package:quadycons/data/entities/registration.dart';
+import 'package:quadycons/domain/entities/check.dart';
+import 'package:quadycons/domain/entities/id_code_info.dart';
+import 'package:quadycons/domain/entities/register_type.dart';
+import 'package:quadycons/domain/entities/registration.dart';
 import 'package:quadycons/domain/blocs/code_scan/code_scan_bloc.dart';
 import 'package:quadycons/injection_container.dart';
 import 'package:quadycons/ui/widgets/scan_button.dart';
@@ -38,7 +38,7 @@ class IdCodeScanScreen extends StatelessWidget {
                     '/register-confirmation',
                     extra: Registration(
                       check: Check(
-                        time: TimeOfDay.now(),
+                        time: DateTime.now(),
                         location: state.currentLocation!
                       ),
                       idCodeInfo: state.idDocInfo!,

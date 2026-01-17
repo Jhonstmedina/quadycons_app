@@ -1,4 +1,4 @@
-import 'package:quadycons/data/entities/project.dart';
+import 'package:quadycons/domain/entities/project.dart';
 import 'package:quadycons/data/local_data_source/auth_local_data_source.dart';
 import 'package:quadycons/data/services/projects_service.dart';
 import 'package:quadycons/domain/repositories/projects_repository.dart';

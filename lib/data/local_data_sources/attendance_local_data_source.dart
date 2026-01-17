@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quadycons/data/entities/attendance.dart';
-import 'package:quadycons/data/entities/check.dart';
-import 'package:quadycons/data/entities/id_code_info.dart';
-import 'package:quadycons/data/entities/lat_lng.dart';
+import 'package:quadycons/domain/entities/attendance.dart';
+import 'package:quadycons/domain/entities/check.dart';
+import 'package:quadycons/domain/entities/id_code_info.dart';
+import 'package:quadycons/domain/entities/lat_lng.dart';
 
 abstract class AttendanceLocalDataSource {
   Future<void> saveAttendance(Attendance attendance);

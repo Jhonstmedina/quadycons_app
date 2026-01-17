@@ -1,4 +1,4 @@
-import 'package:quadycons/data/entities/id_code_info.dart';
+import 'package:quadycons/domain/entities/id_code_info.dart';
 
 class CodeScanAdapter {
   IdCodeInfo? getInfoByCode(String? code) {

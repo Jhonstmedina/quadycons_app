@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:quadycons/data/entities/registration.dart';
+import 'package:quadycons/domain/entities/registration.dart';
 import 'package:quadycons/domain/blocs/auth/auth_bloc.dart';
 import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
 import 'package:quadycons/domain/blocs/register_confirmation/register_confirmation_bloc.dart';

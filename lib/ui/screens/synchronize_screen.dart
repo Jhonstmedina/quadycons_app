@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:quadycons/data/entities/check.dart';
-import 'package:quadycons/data/entities/lat_lng.dart';
-import 'package:quadycons/data/entities/project.dart';
-import 'package:quadycons/data/entities/register_type.dart';
-import 'package:quadycons/data/entities/registration_status.dart';
+import 'package:quadycons/domain/entities/check.dart';
+import 'package:quadycons/domain/entities/lat_lng.dart';
+import 'package:quadycons/domain/entities/project.dart';
+import 'package:quadycons/domain/entities/register_type.dart';
+import 'package:quadycons/domain/entities/registration_status.dart';
 import 'package:quadycons/ui/widgets/custom_app_bar.dart';
 import 'package:quadycons/ui/widgets/pending_registration_tile.dart';
 
@@ -36,7 +36,7 @@ class SynchronizeScreen extends StatelessWidget {
                 name: 'Armando Mendoza',
                 registrationType: RegisterType.input,
                 check: Check(
-                  time: TimeOfDay(hour: 10, minute: 20),
+                  time: DateTime.now(),
                   location: LatLng(lat: 0, lon: 0),
                 ),
                 project: Project(
@@ -53,7 +53,7 @@ class SynchronizeScreen extends StatelessWidget {
                 name: 'María González',
                 registrationType: RegisterType.output,
                 check: Check(
-                  time: TimeOfDay(hour: 18, minute: 45),
+                  time: DateTime.now().add(const Duration(hours: 3)),
                   location: LatLng(lat: 0, lon: 0),
                 ),
                 project: Project(

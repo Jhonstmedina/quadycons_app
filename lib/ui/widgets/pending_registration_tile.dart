@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quadycons/data/entities/check.dart';
-import 'package:quadycons/data/entities/project.dart';
-import 'package:quadycons/data/entities/register_type.dart';
-import 'package:quadycons/data/entities/registration_status.dart';
+import 'package:quadycons/domain/entities/check.dart';
+import 'package:quadycons/domain/entities/project.dart';
+import 'package:quadycons/domain/entities/register_type.dart';
+import 'package:quadycons/domain/entities/registration_status.dart';
 
 class PendingRegistrationTile extends StatelessWidget {
   final String name;

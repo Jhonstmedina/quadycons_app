@@ -1,5 +1,5 @@
 import 'package:geolocator/geolocator.dart';
-import 'package:quadycons/data/entities/lat_lng.dart';
+import 'package:quadycons/domain/entities/lat_lng.dart';
 
 abstract class Geolocation {
   Future<LatLng?> getCurrentPosition();

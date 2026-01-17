@@ -1,8 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:quadycons/data/entities/attendance.dart';
-import 'package:quadycons/data/entities/check.dart';
-import 'package:quadycons/data/entities/registration.dart';
+import 'package:quadycons/domain/entities/attendance.dart';
+import 'package:quadycons/domain/entities/check.dart';
+import 'package:quadycons/domain/entities/registration.dart';
 import 'package:quadycons/data/services/service.dart';
 
 abstract class RegisterConfirmationService {
@@ -40,10 +39,14 @@ class RegisterConfirmationServiceImpl extends Service implements RegisterConfirm
       )
     );
     final data = result.data;
+    final dateParts = data['fecha'].split('-');
     final timeParts = data['hora_entrada'].split(':');
-    final checkInTime = TimeOfDay(
-      hour: int.parse(timeParts[0]),
-      minute: int.parse(timeParts[1])
+    final checkInTime = DateTime(
+      int.parse(dateParts[0]),
+      int.parse(dateParts[1]),
+      int.parse(dateParts[2]),
+      int.parse(timeParts[0]),
+      int.parse(timeParts[1])
     );
     return Attendance(
       remoteId: data['id'],
@@ -75,10 +78,14 @@ class RegisterConfirmationServiceImpl extends Service implements RegisterConfirm
       )
     );
     final data = result.data;
+    final dateParts = data['fecha'].split('-');
     final timeParts = data['hora_salida'].split(':');
-    final checkOutTime = TimeOfDay(
-      hour: int.parse(timeParts[0]),
-      minute: int.parse(timeParts[1])
+    final checkOutTime = DateTime(
+      int.parse(dateParts[0]),
+      int.parse(dateParts[1]),
+      int.parse(dateParts[2]),
+      int.parse(timeParts[0]),
+      int.parse(timeParts[1])
     );
     return Attendance(
       remoteId: data['id'],

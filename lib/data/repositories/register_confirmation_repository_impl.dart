@@ -1,50 +1,55 @@
-import 'package:quadycons/data/entities/attendance.dart';
-import 'package:quadycons/data/entities/registration.dart';
+import 'package:quadycons/data/db/daos/attendance_dao.dart';
+import 'package:quadycons/data/db/mappers/attendance_mapper.dart';
+import 'package:quadycons/domain/entities/attendance.dart';
+import 'package:quadycons/domain/entities/registration.dart';
 import 'package:quadycons/data/local_data_source/access_token_getter.dart';
-import 'package:quadycons/data/local_data_sources/attendance_local_data_source.dart';
 import 'package:quadycons/data/services/register_confirmation_service.dart';
 import 'package:quadycons/domain/repositories/attendance_repository.dart';
 
 class AttendanceRepositoryImpl implements AttendanceRepository {
   final RegisterConfirmationService registerConfirmationService;
-  final AttendanceLocalDataSource localDataSource;
   final AccessTokenGetter accessTokenGetter;
+  final AttendanceDao dao;
 
   AttendanceRepositoryImpl({
     required this.registerConfirmationService,
-    required this.localDataSource,
     required this.accessTokenGetter,
+    required this.dao
   });
-
-  @override
-  Future<Attendance> confirmRegistration(Attendance registration) async {
-    final accessToken = await accessTokenGetter.getAccessToken();
-    return await registerConfirmationService.confirmRegistration(
-      registration,
-      accessToken
-    );
-  }
 
   @override
   Future<Attendance> confirmCheckIn(Registration registration) async {
     final accessToken = await accessTokenGetter.getAccessToken();
-    return await registerConfirmationService.confirmCheckIn(
+    Attendance attendance = await registerConfirmationService.confirmCheckIn(
       registration,
       accessToken
     );
+    final data = AttendanceMapper.toDb(attendance);
+    final id = await dao.insertAttendance(data);
+    await dao.changeSynced(localId: id, synced: true);
+    attendance = attendance.copyWith(id: id);
+    return attendance;
   }
 
   @override
   Future<Attendance> confirmCheckOut(Attendance attendance) async {
     final accessToken = await accessTokenGetter.getAccessToken();
-    return await registerConfirmationService.confirmCheckOut(
+    attendance = await registerConfirmationService.confirmCheckOut(
       attendance,
       accessToken
     );
+    final data = AttendanceMapper.toDb(attendance);
+    await dao.updateAttendance(attendance.id!, data);
+    await dao.changeSynced(localId: attendance.id!, synced: true);
+    return attendance;
   }
   
   @override
   Future<Attendance?> getAttendanceByUserDoc(String docNumber) async {
-    return await localDataSource.getAttendanceByUserDoc(docNumber);
+    final data = await dao.getByUserDoc(docNumber);
+    if (data == null) {
+      return null;
+    }
+    return AttendanceMapper.fromDb(data);
   }
 }

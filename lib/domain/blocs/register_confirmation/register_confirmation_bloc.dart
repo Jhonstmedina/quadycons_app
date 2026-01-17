@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:quadycons/data/entities/attendance.dart';
-import 'package:quadycons/data/entities/project.dart';
-import 'package:quadycons/data/entities/register_type.dart';
-import 'package:quadycons/data/entities/registration.dart';
+import 'package:quadycons/domain/entities/attendance.dart';
+import 'package:quadycons/domain/entities/project.dart';
+import 'package:quadycons/domain/entities/register_type.dart';
+import 'package:quadycons/domain/entities/registration.dart';
 import 'package:quadycons/domain/repositories/attendance_repository.dart';
 
 part 'register_confirmation_event.dart';

@@ -1,4 +1,4 @@
-import 'package:quadycons/data/entities/summary.dart';
+import 'package:quadycons/domain/entities/summary.dart';
 
 abstract class SummaryLocalDataSource {
   Future<Summary> getSummary(int projectId);

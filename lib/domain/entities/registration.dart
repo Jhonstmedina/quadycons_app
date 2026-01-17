@@ -1,6 +1,6 @@
-import 'package:quadycons/data/entities/check.dart';
-import 'package:quadycons/data/entities/id_code_info.dart';
-import 'package:quadycons/data/entities/register_type.dart';
+import 'package:quadycons/domain/entities/check.dart';
+import 'package:quadycons/domain/entities/id_code_info.dart';
+import 'package:quadycons/domain/entities/register_type.dart';
 
 class Registration {
   final Check check;

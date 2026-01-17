@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:quadycons/data/entities/attendance.dart';
-import 'package:quadycons/data/entities/check.dart';
-import 'package:quadycons/data/entities/registration.dart';
+import 'package:quadycons/domain/entities/attendance.dart';
+import 'package:quadycons/domain/entities/check.dart';
+import 'package:quadycons/domain/entities/registration.dart';
 import 'package:quadycons/data/services/register_confirmation_service.dart';
 
 class RegisterConfirmationServiceFake implements RegisterConfirmationService {
@@ -28,7 +28,7 @@ class RegisterConfirmationServiceFake implements RegisterConfirmationService {
       idCodeInfo: attendance.idCodeInfo,
       checkin: attendance.checkin,
       checkout: Check(
-        time: TimeOfDay.now(),
+        time: DateTime.now(),
         location: attendance.checkin!.location
       )
     );

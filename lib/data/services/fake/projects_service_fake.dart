@@ -1,5 +1,5 @@
-import 'package:quadycons/data/entities/lat_lng.dart';
-import 'package:quadycons/data/entities/project.dart';
+import 'package:quadycons/domain/entities/lat_lng.dart';
+import 'package:quadycons/domain/entities/project.dart';
 import 'package:quadycons/data/services/projects_service.dart';
 
 class ProjectsServiceFake implements ProjectsService {

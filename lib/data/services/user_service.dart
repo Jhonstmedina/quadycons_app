@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:quadycons/data/entities/user.dart';
+import 'package:quadycons/domain/entities/user.dart';
 import 'package:quadycons/data/services/service.dart';
 
 abstract class UserService {

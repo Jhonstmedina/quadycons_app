@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:quadycons/data/entities/user.dart';
+import 'package:quadycons/domain/entities/user.dart';
 import 'package:quadycons/data/local_data_source/access_token_getter.dart';
 import 'package:quadycons/data/platform/storage_connector.dart';
 

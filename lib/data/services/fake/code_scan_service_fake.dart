@@ -1,5 +1,5 @@
-import 'package:quadycons/data/entities/id_code_info.dart';
-import 'package:quadycons/data/entities/lat_lng.dart';
+import 'package:quadycons/domain/entities/id_code_info.dart';
+import 'package:quadycons/domain/entities/lat_lng.dart';
 import 'package:quadycons/data/services/code_scan_service.dart';
 import 'package:quadycons/data/services/geo_location.dart';
 

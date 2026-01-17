@@ -1,4 +1,4 @@
-import 'package:quadycons/data/entities/project.dart';
+import 'package:quadycons/domain/entities/project.dart';
 
 abstract class ProjectsRepository {
   Future<List<Project>> getProjects();

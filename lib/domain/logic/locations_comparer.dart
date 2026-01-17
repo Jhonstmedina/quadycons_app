@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:quadycons/data/entities/lat_lng.dart';
+import 'package:quadycons/domain/entities/lat_lng.dart';
 
 class LocationsComparer {
   static double radiusMeters = 50.0;

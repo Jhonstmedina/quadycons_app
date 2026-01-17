@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:quadycons/data/entities/id_code_info.dart';
-import 'package:quadycons/data/entities/lat_lng.dart';
+import 'package:quadycons/domain/entities/id_code_info.dart';
+import 'package:quadycons/domain/entities/lat_lng.dart';
 import 'package:quadycons/data/services/service.dart';
 
 abstract class CodeScanService {

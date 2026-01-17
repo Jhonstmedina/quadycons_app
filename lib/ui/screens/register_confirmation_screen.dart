@@ -88,7 +88,7 @@ class RegisterConfirmationScreen extends StatelessWidget {
                                 )
                               ),
                               Text(
-                                'Proyecto: Torre Norte ${_timeOfDayToString(registration.checkin?.time)}${registration.checkout != null ? ' - ${_timeOfDayToString(registration.checkout?.time)}' : ''}',
+                                'Proyecto: Torre Norte ${_dateTimeToString(registration.checkin?.time)}${registration.checkout != null ? ' - ${_dateTimeToString(registration.checkout?.time)}' : ''}',
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontSize: 14
@@ -204,14 +204,14 @@ class RegisterConfirmationScreen extends StatelessWidget {
                       Expanded(
                         child: RegisterTime(
                           title: 'Hora de entrada',
-                          text: _timeOfDayToString(registration.checkin?.time)
+                          text: _dateTimeToString(registration.checkin?.time)
                         )
                       ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: RegisterTime(
                           title: 'Hora de salida',
-                          text: _timeOfDayToString(registration.checkout?.time)
+                          text: _dateTimeToString(registration.checkout?.time)
                         )
                       )
                     ]
@@ -302,7 +302,7 @@ class RegisterConfirmationScreen extends StatelessWidget {
     );
   }
 
-  String _timeOfDayToString(TimeOfDay? time) =>
+  String _dateTimeToString(DateTime? time) =>
     time == null? '---' :
     '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
 }

@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:quadycons/data/entities/lat_lng.dart';
-import 'package:quadycons/data/entities/register_type.dart';
-import 'package:quadycons/data/entities/id_code_info.dart';
+import 'package:quadycons/domain/entities/lat_lng.dart';
+import 'package:quadycons/domain/entities/register_type.dart';
+import 'package:quadycons/domain/entities/id_code_info.dart';
 import 'package:quadycons/data/services/geo_location.dart';
 import 'package:quadycons/domain/logic/locations_comparer.dart';
 import 'package:quadycons/domain/repositories/code_scan_repository.dart';

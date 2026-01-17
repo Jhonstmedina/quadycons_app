@@ -1,4 +1,4 @@
-import 'package:quadycons/data/entities/lat_lng.dart';
+import 'package:quadycons/domain/entities/lat_lng.dart';
 
 class Project {
   final int id;

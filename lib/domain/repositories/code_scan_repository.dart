@@ -1,5 +1,5 @@
-import 'package:quadycons/data/entities/id_code_info.dart';
-import 'package:quadycons/data/entities/lat_lng.dart';
+import 'package:quadycons/domain/entities/id_code_info.dart';
+import 'package:quadycons/domain/entities/lat_lng.dart';
 
 abstract class CodeScanRepository {
   Future<IdCodeInfo> getInfoByIdBase(IdCodeInfo baseInfo);

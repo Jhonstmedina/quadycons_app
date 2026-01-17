@@ -1,5 +1,5 @@
-import 'package:quadycons/data/entities/authentication.dart';
-import 'package:quadycons/data/entities/user.dart';
+import 'package:quadycons/domain/entities/authentication.dart';
+import 'package:quadycons/domain/entities/user.dart';
 import 'package:quadycons/data/services/auth_service.dart';
 
 class AuthServiceFake implements AuthService {

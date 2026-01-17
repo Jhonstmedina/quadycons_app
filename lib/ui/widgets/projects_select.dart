@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quadycons/data/entities/project.dart';
+import 'package:quadycons/domain/entities/project.dart';
 import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
 
 class ProjectsSelect extends StatelessWidget {

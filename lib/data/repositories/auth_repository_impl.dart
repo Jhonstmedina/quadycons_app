@@ -1,5 +1,5 @@
-import 'package:quadycons/data/entities/authentication.dart';
-import 'package:quadycons/data/entities/user.dart';
+import 'package:quadycons/domain/entities/authentication.dart';
+import 'package:quadycons/domain/entities/user.dart';
 import 'package:quadycons/data/local_data_source/auth_local_data_source.dart';
 import 'package:quadycons/data/services/auth_service.dart';
 import 'package:quadycons/domain/repositories/auth_repository.dart';

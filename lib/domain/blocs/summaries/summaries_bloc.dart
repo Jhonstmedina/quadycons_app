@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:quadycons/data/entities/project.dart';
-import 'package:quadycons/data/entities/summary.dart';
+import 'package:quadycons/domain/entities/project.dart';
+import 'package:quadycons/domain/entities/summary.dart';
 import 'package:quadycons/domain/repositories/summary_repository.dart';
 
 part 'summaries_event.dart';

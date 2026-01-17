@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:quadycons/data/entities/authentication.dart';
-import 'package:quadycons/data/entities/user.dart';
+import 'package:quadycons/domain/entities/authentication.dart';
+import 'package:quadycons/domain/entities/user.dart';
 import 'package:quadycons/domain/repositories/auth_repository.dart';
 import 'package:quadycons/domain/exceptions.dart';
 
