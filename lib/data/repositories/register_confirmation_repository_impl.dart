@@ -1,3 +1,4 @@
+import 'package:quadycons/core/connectivity/connectivity_service.dart';
 import 'package:quadycons/data/db/daos/attendance_dao.dart';
 import 'package:quadycons/data/db/mappers/attendance_mapper.dart';
 import 'package:quadycons/domain/entities/attendance.dart';
@@ -10,38 +11,63 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
   final RegisterConfirmationService registerConfirmationService;
   final AccessTokenGetter accessTokenGetter;
   final AttendanceDao dao;
+  final ConnectivityService connectivityService;
 
   AttendanceRepositoryImpl({
     required this.registerConfirmationService,
     required this.accessTokenGetter,
-    required this.dao
+    required this.dao,
+    required this.connectivityService
   });
 
   @override
   Future<Attendance> confirmCheckIn(Registration registration) async {
-    final accessToken = await accessTokenGetter.getAccessToken();
-    Attendance attendance = await registerConfirmationService.confirmCheckIn(
-      registration,
-      accessToken
-    );
-    final data = AttendanceMapper.toDb(attendance);
-    final id = await dao.insertAttendance(data);
-    await dao.changeSynced(localId: id, synced: true);
-    attendance = attendance.copyWith(id: id);
+    late Attendance attendance;
+    late int attendanceId;
+    if( await connectivityService.thereIsConnectivity() ) {
+      final accessToken = await accessTokenGetter.getAccessToken();
+      attendance = await registerConfirmationService.confirmCheckIn(
+        registration,
+        accessToken
+      );
+      attendanceId = await _insertAttendanceLocally(attendance);
+      await dao.changeSynced(localId: attendanceId, synced: true);
+    } else {
+      attendance = Attendance(
+        checkin: registration.check,
+        checkout: null,
+        idCodeInfo: registration.idCodeInfo
+      );
+      attendanceId = await _insertAttendanceLocally(attendance);
+    }
+    attendance = attendance.copyWith(id: attendanceId);
     return attendance;
+  }
+
+  Future<int> _insertAttendanceLocally(Attendance attendance) async {
+    final data = AttendanceMapper.toDb(attendance);
+    return await dao.insertAttendance(data);
   }
 
   @override
   Future<Attendance> confirmCheckOut(Attendance attendance) async {
-    final accessToken = await accessTokenGetter.getAccessToken();
-    attendance = await registerConfirmationService.confirmCheckOut(
-      attendance,
-      accessToken
-    );
+    if( await connectivityService.thereIsConnectivity() ) {
+      final accessToken = await accessTokenGetter.getAccessToken();
+      attendance = await registerConfirmationService.confirmCheckOut(
+        attendance,
+        accessToken
+      );
+      await _updateAttendanceLocally(attendance);
+      await dao.changeSynced(localId: attendance.id!, synced: true);
+    } else {
+      await _updateAttendanceLocally(attendance);
+    }
+    return attendance;
+  }
+
+  Future<void> _updateAttendanceLocally(Attendance attendance) async {
     final data = AttendanceMapper.toDb(attendance);
     await dao.updateAttendance(attendance.id!, data);
-    await dao.changeSynced(localId: attendance.id!, synced: true);
-    return attendance;
   }
   
   @override

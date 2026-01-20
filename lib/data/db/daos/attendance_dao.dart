@@ -100,8 +100,6 @@ class AttendanceDao extends DatabaseAccessor<AppDatabase>
         Variable.withInt(projectId),
       ],
     ).getSingle();
-    //Para testear cuántos checkins y checkouts hay
-
     return SummaryDTO(
       inputs: result.read<int>('inputs'),
       outputs: result.read<int>('outputs'),

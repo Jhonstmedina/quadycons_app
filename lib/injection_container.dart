@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:quadycons/core/connectivity/connectivity_service.dart';
 import 'package:quadycons/data/db/app_database.dart';
 import 'package:quadycons/data/db/daos/attendance_dao.dart';
 import 'package:quadycons/data/db/daos/project_dao.dart';
@@ -57,6 +58,9 @@ void init() {
   sl.registerLazySingleton<AppDatabase>(
     () => AppDatabase()
   );
+  sl.registerLazySingleton<ConnectivityService>(
+    () => ConnectivityServiceImpl()
+  );
 
   // ******************************************
   // Authentication
@@ -110,7 +114,8 @@ void _initAuthenticationModule() {
     () => AuthRepositoryImpl(
       authService: sl<AuthService>(),
       localDataSource: sl<AuthLocalDataSource>(),
-      dbCleaner: sl<AppDatabase>()
+      dbCleaner: sl<AppDatabase>(),
+      connectivityService: sl<ConnectivityService>()
     )
   );
   sl.registerSingleton<AuthBloc>(
@@ -136,7 +141,8 @@ void _initProjectsModule() {
     () => ProjectsRepositoryImpl(
       projectsService: sl<ProjectsService>(),
       localDataSource: sl<AuthLocalDataSource>(),
-      dao: sl<ProjectsDao>()
+      dao: sl<ProjectsDao>(),
+      connectivityService: sl<ConnectivityService>()
     )
   );
   sl.registerSingleton<ProjectsBloc>(
@@ -173,7 +179,8 @@ void _initCodeScanModule() {
     () => CodeScanRepositoryImpl(
       service: sl<CodeScanService>(),
       accessTokenGetter: sl<AuthLocalDataSource>(),
-      dao: sl<WorkersDao>()
+      dao: sl<WorkersDao>(),
+      connectivityService: sl<ConnectivityService>()
     )
   );
   sl.registerFactory<CodeScanBloc>(
@@ -202,7 +209,8 @@ void _initRegisterConfirmationModule() {
     () => AttendanceRepositoryImpl(
       registerConfirmationService: sl<RegisterConfirmationService>(),
       accessTokenGetter: sl<AuthLocalDataSource>(),
-      dao: sl<AttendanceDao>()
+      dao: sl<AttendanceDao>(),
+      connectivityService: sl<ConnectivityService>()
     )
   );
   sl.registerFactory<RegisterConfirmationBloc>(

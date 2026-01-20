@@ -31,8 +31,13 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
 
 
   Future<void> _insertScanInfo(InsertScanInfo event, Emitter<CodeScanState> emit) async {
-    final idCodeInfo = event.idCodeInfo;
+    IdCodeInfo? idCodeInfo = event.idCodeInfo;
     if(idCodeInfo != null) {
+      idCodeInfo = idCodeInfo.copyWith(
+        worker: idCodeInfo.worker!.copyWith(
+          projectId: event.project.id
+        )
+      );
       final idInfo = await repository.getInfoByIdBase(idCodeInfo);
       var initState = state as Registrating;
       initState = initState.copyWith(
