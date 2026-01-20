@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quadycons/domain/blocs/summaries/summaries_bloc.dart';
 import 'package:quadycons/domain/entities/registration.dart';
 import 'package:quadycons/domain/blocs/auth/auth_bloc.dart';
 import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
@@ -89,7 +90,17 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/summary',
       name: 'summary',
-      builder: (context, state) => SummaryScreen()
+      builder: (context, state) => BlocProvider(
+        create: (_) {
+          final bloc = sl<SummariesBloc>();
+          final projectsState = context.read<ProjectsBloc>().state;
+          if (projectsState is ProjectsLoaded && projectsState.chosenProject != null) {
+            bloc.add(LoadSummary(project: projectsState.chosenProject!));
+          }
+          return bloc;
+        },
+        child: SummaryScreen()
+      )
     ),
     GoRoute(
       path: '/synchronize',

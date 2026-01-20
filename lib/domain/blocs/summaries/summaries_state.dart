@@ -6,7 +6,7 @@ sealed class SummariesState {}
 final class SummariesInitial extends SummariesState {}
 
 final class SummaryLoaded extends SummariesState {
-  final Summary summary;
+  final SummaryDTO summary;
   final Project project;
   final bool isLoading;
   
@@ -17,7 +17,7 @@ final class SummaryLoaded extends SummariesState {
   });
 
   SummaryLoaded copyWith({
-    Summary? summary,
+    SummaryDTO? summary,
     Project? project,
     bool? isLoading
   }) => SummaryLoaded(

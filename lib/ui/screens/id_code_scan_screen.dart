@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
 import 'package:quadycons/domain/entities/check.dart';
 import 'package:quadycons/domain/entities/id_code_info.dart';
 import 'package:quadycons/domain/entities/register_type.dart';
@@ -166,9 +167,11 @@ class IdCodeScanScreen extends StatelessWidget {
   }
 
   Future<void> _scan(BuildContext context) async {
+    final chosenProject = (context.read<ProjectsBloc>().state as ProjectsLoaded).chosenProject;
+    final codeScanBloc = context.read<CodeScanBloc>();
     final idCodeInfo = await context.push<IdCodeInfo?>('/scanner');
-    BlocProvider.of<CodeScanBloc>(context).add(
-      InsertScanInfo(idCodeInfo)
+    codeScanBloc.add(
+      InsertScanInfo(idCodeInfo, chosenProject!)
     );
   }
 }

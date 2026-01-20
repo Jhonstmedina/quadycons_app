@@ -1,6 +1,9 @@
+// ignore_for_file: strict_top_level_inference
+
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:quadycons/domain/entities/lat_lng.dart';
+import 'package:quadycons/domain/entities/project.dart';
 import 'package:quadycons/domain/entities/register_type.dart';
 import 'package:quadycons/domain/entities/id_code_info.dart';
 import 'package:quadycons/data/services/geo_location.dart';
@@ -37,7 +40,12 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
       );
       emit(initState);
       if(initState.registerType != null) {
-        await _endScan(null, emit, initState);
+        await _endScan(
+          null,
+          emit,
+          initState: initState,
+          project: event.project
+        );
       }
     }
     
@@ -50,18 +58,29 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
     );
     emit(initState);
     if(initState.idDocInfo != null) {
-      await _endScan(null, emit, initState);
+      await _endScan(
+        null,
+        emit,
+        initState: initState,
+        project: event.project
+      );
     }
   }
 
-  Future<void> _endScan(_, Emitter<CodeScanState> emit, [Registrating? initState]) async {
+  Future<void> _endScan(event, Emitter<CodeScanState> emit, {Registrating? initState, Project? project}) async {
     initState ??= state as Registrating;
     final location = await geolocation.getCurrentPosition();
-    final fence = await repository.getFence();
     if(location != null) {
+      if(event is RetryScanEnd) {
+        project = event.project;
+      }
       final isInFence = locationsComparer.isInsideFence(
         location,
-        fence
+        LatLng(
+          lat: project!.geoLocation.lat,
+          lon: project.geoLocation.lon
+        ),
+        project.geoFence
       );
       emit(initState.copyWith(
         isInFence: isInFence,

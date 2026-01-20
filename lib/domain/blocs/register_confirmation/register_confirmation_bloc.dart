@@ -61,10 +61,8 @@ class RegisterConfirmationBloc extends Bloc<RegisterConfirmationEvent, RegisterC
       ));
     } else {
       emit(OnRegistration(
-        attendance: Attendance(
-          checkin: attendance.checkin,
-          checkout: event.registration.check,
-          idCodeInfo: attendance.idCodeInfo
+        attendance: attendance.copyWith(
+          checkout: event.registration.check
         ),
         registerType: registerType
       ));

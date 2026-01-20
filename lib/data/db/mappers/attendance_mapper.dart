@@ -21,6 +21,44 @@ class AttendanceMapper {
     );
   }
 
+  static Attendance fromDbWithWorker(
+    db.Attendance a,
+    db.Worker w,
+  ) {
+    return Attendance(
+      id: a.id,
+      remoteId: a.remoteId,
+      idCodeInfo: IdCodeInfo(
+        docNumber: w.docNumber,
+        worker: Worker(
+          id: w.id?.toString(),
+          name: w.name,
+          profileUrl: w.profileUrl,
+          position: w.position,
+          projectId: w.projectId,
+        ),
+      ),
+      checkin: a.checkInDate == null
+          ? null
+          : Check(
+              time: a.checkInDate!,
+              location: LatLng(
+                lat: a.checkInLat!,
+                lon: a.checkInLon!,
+              ),
+            ),
+      checkout: a.checkOutDate == null
+          ? null
+          : Check(
+              time: a.checkOutDate!,
+              location: LatLng(
+                lat: a.checkOutLat!,
+                lon: a.checkOutLon!,
+              ),
+            ),
+    );
+  }
+
   static Attendance fromDb(db.Attendance row) {
     return Attendance(
       remoteId: row.remoteId,

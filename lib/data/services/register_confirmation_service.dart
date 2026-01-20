@@ -5,19 +5,12 @@ import 'package:quadycons/domain/entities/registration.dart';
 import 'package:quadycons/data/services/service.dart';
 
 abstract class RegisterConfirmationService {
-  Future<Attendance> confirmRegistration(Attendance registration, String accessToken);
   Future<Attendance> confirmCheckIn(Registration registration, String accessToken);
   Future<Attendance> confirmCheckOut(Attendance attendance, String accessToken);
 }
 
 class RegisterConfirmationServiceImpl extends Service implements RegisterConfirmationService {
   RegisterConfirmationServiceImpl({required super.dio});
-
-  @override
-  Future<Attendance> confirmRegistration(Attendance registration, String accessToken) async {
-    // TODO: implement confirmRegistration
-    throw UnimplementedError();
-  }
   
   @override
   Future<Attendance> confirmCheckIn(Registration registration, String accessToken) async {

@@ -46,10 +46,10 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
   
   @override
   Future<Attendance?> getAttendanceByUserDoc(String docNumber) async {
-    final data = await dao.getByUserDoc(docNumber);
+    final data = await dao.getByUserDocWithWorker(docNumber);
     if (data == null) {
       return null;
     }
-    return AttendanceMapper.fromDb(data);
+    return AttendanceMapper.fromDbWithWorker(data.attendance, data.worker);
   }
 }

@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:quadycons/data/db/app_database.dart';
 import 'package:quadycons/data/db/daos/attendance_dao.dart';
 import 'package:quadycons/data/db/daos/project_dao.dart';
+import 'package:quadycons/data/db/daos/worker_dao.dart';
 import 'package:quadycons/data/local_data_source/auth_local_data_source.dart';
 import 'package:quadycons/data/local_data_source/summary_local_data_source.dart';
 import 'package:quadycons/data/platform/permissions_controller.dart';
@@ -108,7 +109,8 @@ void _initAuthenticationModule() {
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
       authService: sl<AuthService>(),
-      localDataSource: sl<AuthLocalDataSource>()
+      localDataSource: sl<AuthLocalDataSource>(),
+      dbCleaner: sl<AppDatabase>()
     )
   );
   sl.registerSingleton<AuthBloc>(
@@ -122,7 +124,9 @@ void _initProjectsModule() {
       realImpl: ProjectsServiceImpl(
         dio: sl<Dio>()
       ),
-      fakeImpl: ProjectsServiceFake()
+      fakeImpl: ProjectsServiceFake(
+        geoLocation: sl<Geolocation>()
+      )
     )
   );
   sl.registerLazySingleton<ProjectsDao>(
@@ -162,10 +166,14 @@ void _initCodeScanModule() {
       )
     )
   );
+  sl.registerLazySingleton<WorkersDao>(
+    () => WorkersDao(sl<AppDatabase>())
+  );
   sl.registerLazySingleton<CodeScanRepository>(
     () => CodeScanRepositoryImpl(
       service: sl<CodeScanService>(),
-      accessTokenGetter: sl<AuthLocalDataSource>()
+      accessTokenGetter: sl<AuthLocalDataSource>(),
+      dao: sl<WorkersDao>()
     )
   );
   sl.registerFactory<CodeScanBloc>(
@@ -210,7 +218,7 @@ void _initSummaryModule() {
   );
   sl.registerLazySingleton<SummaryRepository>(
     () => SummaryRepositoryImpl(
-      localDataSource: sl<SummaryLocalDataSource>()
+      attendanceDao: sl<AttendanceDao>()
     )
   );
   sl.registerFactory<SummariesBloc>(
@@ -226,4 +234,4 @@ bool useRealData = false;
   required T realImpl, 
   required T fakeImpl
 }) => useRealData? realImpl
-                 : fakeImpl; 
+                 : fakeImpl;

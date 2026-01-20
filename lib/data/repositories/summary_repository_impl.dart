@@ -1,14 +1,14 @@
-import 'package:quadycons/domain/entities/summary.dart';
-import 'package:quadycons/data/local_data_source/summary_local_data_source.dart';
+import 'package:quadycons/data/db/daos/attendance_dao.dart';
+import 'package:quadycons/data/db/dtos/summary_dto.dart';
 import 'package:quadycons/domain/repositories/summary_repository.dart';
 
 class SummaryRepositoryImpl implements SummaryRepository {
-  final SummaryLocalDataSource localDataSource;
+  final AttendanceDao attendanceDao;
 
-  SummaryRepositoryImpl({required this.localDataSource});
+  SummaryRepositoryImpl({required this.attendanceDao});
 
   @override
-  Future<Summary> getSummary(int projectId) async {
-    return await localDataSource.getSummary(projectId);
+  Future<SummaryDTO> getSummary(int projectId) async {
+    return await attendanceDao.getSummaryByProject(projectId);
   }
 }

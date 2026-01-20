@@ -1,14 +1,19 @@
 import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 import 'tables/projects_table.dart';
 import 'tables/workers_table.dart';
 import 'tables/attendances_table.dart';
+import 'package:sqflite/sqflite.dart';
 
 part 'app_database.g.dart';
+
+
+abstract class DataBaseCleaner {
+  Future<void> clearDatabase();
+}
 
 @DriftDatabase(
   tables: [
@@ -17,17 +22,42 @@ part 'app_database.g.dart';
     Attendances,
   ],
 )
-class AppDatabase extends _$AppDatabase {
+class AppDatabase extends _$AppDatabase implements DataBaseCleaner {
   AppDatabase() : super(_openConnection());
 
   @override
   int get schemaVersion => 1;
+
+  @override
+  Future<void> clearDatabase() async {
+    await transaction(() async {
+      await delete(attendances).go();
+      await delete(workers).go();
+      await delete(projects).go();
+    });
+  }
 }
 
 LazyDatabase _openConnection() {
+  /*
   return LazyDatabase(() async {
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dir.path, 'app.db'));
+    final dir = await getDatabasesPath();
+    final file = File(p.join(dir, 'app.db'));
     return NativeDatabase(file);
   });
+  */
+   return LazyDatabase(() async {
+    final dbFolder = await getDatabasesPath();
+    final file = File(p.join(dbFolder, 'app_database.db'));
+
+    print('🧠 DB PATH: ${file.path}');
+
+    final db = NativeDatabase(file);
+
+    print('🧠 DB EXECUTOR: ${db.runtimeType}');
+
+    return db;
+  });
 }
+
+

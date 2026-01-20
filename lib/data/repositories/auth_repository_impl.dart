@@ -1,3 +1,4 @@
+import 'package:quadycons/data/db/app_database.dart';
 import 'package:quadycons/domain/entities/authentication.dart';
 import 'package:quadycons/domain/entities/user.dart';
 import 'package:quadycons/data/local_data_source/auth_local_data_source.dart';
@@ -7,10 +8,12 @@ import 'package:quadycons/domain/repositories/auth_repository.dart';
 class AuthRepositoryImpl implements AuthRepository {
   final AuthService authService;
   final AuthLocalDataSource localDataSource;
+  final DataBaseCleaner dbCleaner;
 
   AuthRepositoryImpl({
     required this.authService,
-    required this.localDataSource
+    required this.localDataSource,
+    required this.dbCleaner
   });
 
   @override
@@ -22,6 +25,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> logout() async {
     await localDataSource.removeAuthToken();
+    await dbCleaner.clearDatabase();
   }
 
   @override

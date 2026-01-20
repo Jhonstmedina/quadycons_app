@@ -18,6 +18,7 @@ class ProjectMapper {
 
   static db.ProjectsCompanion toDb(Project project) {
     return db.ProjectsCompanion(
+      id: Value(project.id),
       name: Value(project.name),
       latitude: Value(project.geoLocation.lat),
       longitude: Value(project.geoLocation.lon),

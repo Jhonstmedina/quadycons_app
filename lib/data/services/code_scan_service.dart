@@ -1,11 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:quadycons/domain/entities/id_code_info.dart';
-import 'package:quadycons/domain/entities/lat_lng.dart';
 import 'package:quadycons/data/services/service.dart';
 
 abstract class CodeScanService {
   Future<Worker> getInfoByIdentification(String idDocument, String accessToken);
-  Future<LatLng> getFence(String accessToken);
 }
 
 class CodeScanServiceImpl extends Service implements CodeScanService {
@@ -32,11 +30,5 @@ class CodeScanServiceImpl extends Service implements CodeScanService {
       position: result['cargo'],
       projectId: result['proyecto_actual']['id']
     );
-  }
-  
-  @override
-  Future<LatLng> getFence(String accessToken) async {
-    // TODO: implement getFence
-    throw UnimplementedError();
   }
 }
