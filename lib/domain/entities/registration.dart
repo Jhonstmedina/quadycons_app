@@ -6,6 +6,7 @@ class Registration {
   final Check check;
   final IdCodeInfo idCodeInfo;
   final RegisterType type;
+  final int? rem
   Registration({
     required this.check,
     required this.idCodeInfo,

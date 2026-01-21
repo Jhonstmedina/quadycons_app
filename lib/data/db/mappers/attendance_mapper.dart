@@ -6,6 +6,7 @@ import 'package:quadycons/domain/entities/attendance.dart';
 import 'package:quadycons/domain/entities/check.dart';
 import 'package:quadycons/domain/entities/id_code_info.dart';
 import 'package:quadycons/domain/entities/lat_lng.dart';
+import 'package:quadycons/domain/entities/pending_registration.dart';
 
 class AttendanceMapper {
   static db.AttendancesCompanion toDb(Attendance a) {
@@ -84,5 +85,15 @@ class AttendanceMapper {
               ),
             ),
     );
+  }
+
+  static List<PendingRegistration> pendingRegistrationsFromDb(List<db.Attendance> rows) {
+    final pending = <PendingRegistration>[];
+    for (final row in rows) {
+      if(row.remoteId != null) {
+        
+      }
+    }
+    return pending;
   }
 }
