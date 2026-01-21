@@ -1,6 +1,6 @@
-import 'package:quadycons/domain/entities/registration.dart';
+import 'package:quadycons/domain/entities/pending_registration.dart';
 
 abstract class SynchronizeRepository {
-  Future<List<Registration>> getPendingRegistrations();
+  Future<List<PendingRegistration>> getPendingRegistrations();
   Future<void> synchronize();
 }

@@ -15,7 +15,7 @@ import 'package:quadycons/ui/screens/register_confirmation_screen.dart';
 import 'package:quadycons/ui/screens/scanner_screen.dart';
 import 'package:quadycons/ui/screens/splash_screen.dart';
 import 'package:quadycons/ui/screens/summary_screen.dart';
-import 'package:quadycons/ui/screens/synchronize_screen.dart';
+import 'package:quadycons/ui/screens/synchronization_screen.dart';
 
 class GoRouterRefreshStream extends ChangeNotifier {
   late final StreamSubscription<dynamic> _subscription;
@@ -105,7 +105,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/synchronize',
       name: 'synchronize',
-      builder: (context, state) => SynchronizeScreen()
+      builder: (context, state) => SynchronizationScreen()
     )
   ]
 );

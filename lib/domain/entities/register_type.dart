@@ -1,4 +1,4 @@
 enum RegisterType {
-  input,
-  output,
+  checkIn,
+  checkOut,
 }

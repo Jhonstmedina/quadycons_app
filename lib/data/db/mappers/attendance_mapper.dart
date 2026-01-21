@@ -7,6 +7,9 @@ import 'package:quadycons/domain/entities/check.dart';
 import 'package:quadycons/domain/entities/id_code_info.dart';
 import 'package:quadycons/domain/entities/lat_lng.dart';
 import 'package:quadycons/domain/entities/pending_registration.dart';
+import 'package:quadycons/domain/entities/register_type.dart';
+import 'package:quadycons/domain/entities/registration.dart';
+import 'package:quadycons/domain/entities/registration_status.dart';
 
 class AttendanceMapper {
   static db.AttendancesCompanion toDb(Attendance a) {
@@ -90,8 +93,40 @@ class AttendanceMapper {
   static List<PendingRegistration> pendingRegistrationsFromDb(List<db.Attendance> rows) {
     final pending = <PendingRegistration>[];
     for (final row in rows) {
-      if(row.remoteId != null) {
-        
+      if(row.remoteId == null) {
+        pending.add(PendingRegistration(
+          attendanceLocalId: row.id,
+          registration: Registration(
+            check: Check(
+              time: row.checkInDate!,
+              location: LatLng(
+                lat: row.checkInLat!,
+                lon: row.checkInLon!
+              )
+            ),
+            idCodeInfo: IdCodeInfo(docNumber: row.idCodeDocNumber),
+            type: RegisterType.checkIn
+          ),
+          status: RegistrationStatus.pending
+        ));
+      }
+      if(row.checkOutDate != null && !row.synced) {
+        pending.add(PendingRegistration(
+          attendanceLocalId: row.id,
+          attendanceRemoteId: row.remoteId,
+          registration: Registration(
+            check: Check(
+              time: row.checkOutDate!,
+              location: LatLng(
+                lat: row.checkOutLat!,
+                lon: row.checkOutLon!
+              )
+            ),
+            idCodeInfo: IdCodeInfo(docNumber: row.idCodeDocNumber),
+            type: RegisterType.checkOut
+          ),
+          status: RegistrationStatus.pending
+        ));
       }
     }
     return pending;

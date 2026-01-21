@@ -1,9 +1,11 @@
+import 'package:quadycons/data/db/app_database.dart';
+
 class Worker {
   final String? id;
   final String name;
   final String? profileUrl;
   final String? position;
-  final int projectId;
+  final Project projectId;
 
   Worker({
     required this.id,
@@ -18,7 +20,7 @@ class Worker {
     String? name,
     String? profileUrl,
     String? position,
-    int? projectId
+    Project? projectId
   }) => Worker(
     id: id ?? this.id,
     name: name ?? this.name,

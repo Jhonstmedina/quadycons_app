@@ -136,12 +136,12 @@ class IdCodeScanScreen extends StatelessWidget {
                         ScanRegistrationButton(
                           icon: Icons.login,
                           text: 'Entrada',
-                          registerType: RegisterType.input
+                          registerType: RegisterType.checkIn
                         ),
                         ScanRegistrationButton(
                           icon: Icons.logout,
                           text: 'Salida',
-                          registerType: RegisterType.output
+                          registerType: RegisterType.checkOut
                         ),
                         ScanButton(
                           icon: Icons.refresh,
