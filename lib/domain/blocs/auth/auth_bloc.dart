@@ -8,7 +8,6 @@ part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState>{
-  static const defaultErrorMessage = 'Ha ocurrido un error inesperado';
   static const emptyUserNameErrorMessage = 'El campo de usuario no puede estar vacío';
   static const emptyPasswordErrorMessage = 'El campo de contraseña no puede estar vacío';
   static const emptyCodeErrorMessage = 'El campo de código está vacío';
@@ -57,6 +56,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
     } on GeneralException catch(exception){
       emit(OnLogin(
         errorMessage: exception.message,
+        emailMessage: null,
+        passwordMessage: null
+      ));
+    } catch( exception ) {
+      emit(OnLogin(
+        errorMessage: exception.toString(),
         emailMessage: null,
         passwordMessage: null
       ));

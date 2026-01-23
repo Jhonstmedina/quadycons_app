@@ -41,7 +41,7 @@ class SynchronizationBloc extends Bloc<SynchronizationEvent, SynchronizationStat
     emit(initState.copyWith(
       isLoading: true
     ));
-    final registrations = await synchronize(initState.lastRegistrations, []);
+    final registrations = await synchronize(initState.lastRegistrations, event.projects);
     emit(initState.copyWith(
       isLoading: false,
       lastRegistrations: registrations,

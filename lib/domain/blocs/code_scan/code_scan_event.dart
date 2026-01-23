@@ -27,3 +27,5 @@ final class RetryScanEnd extends CodeScanEvent {
   RetryScanEnd({required this.project});
 }
 
+final class ResetBloc extends CodeScanEvent {}
+

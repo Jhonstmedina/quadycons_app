@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:quadycons/domain/entities/authentication.dart';
 import 'package:quadycons/domain/entities/user.dart';
 import 'package:quadycons/data/services/service.dart';
+import 'package:quadycons/domain/exceptions.dart';
 
 abstract class AuthService {
   Future<String> login(Authentication auth);
@@ -16,30 +17,42 @@ class AuthServiceImpl extends Service implements AuthService {
 
   @override
   Future<String> login(Authentication auth) async {
-    final response = await dio.post(
-      'auth/login',
-      options: Options(
-        headers: {
-          'Content-Type': 'application/json'
+    try {
+      final response = await dio.post(
+        'auth/login/',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        ),
+        data: {
+          'email': auth.userName,
+          'password': auth.password
         }
-      ),
-      data: {
-        'email': auth.userName,
-        'password': auth.password
+      );
+      return response.data['token'];
+    } on DioException catch(e) {
+      print('❌ DIO ERROR');
+      print('Status: ${e.response?.statusCode}');
+      print('Data: ${e.response?.data}');
+      print('Message: ${e.message}');
+      if(e.response != null && e.response?.statusCode == 400) {
+        throw GeneralException(
+          message: 'Credenciales inválidas'
+        );
       }
-    );
-    return response.data['token'];
+      rethrow;
+    } catch (e) {
+      print('❌ UNKNOWN ERROR: $e');
+      rethrow;
+    }
   }
   
   @override
   Future<void> logout(String accessToken) async {
-    await dio.post(
-      'auth/logout',
-      options: Options(
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $accessToken'
-        }
+    await super.executeDioService(() async => await dio.post(
+        'auth/logout/',
+        options: super.getBaseOptions(accessToken)
       )
     );
   }
@@ -49,12 +62,7 @@ class AuthServiceImpl extends Service implements AuthService {
     final response = await super.executeDioService(
       () async => await dio.get(
         'auth/me/',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $accessToken'
-          }
-        )
+        options: super.getBaseOptions(accessToken)
       )
     );
     final result = response.data;

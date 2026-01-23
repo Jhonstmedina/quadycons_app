@@ -14,12 +14,7 @@ class CodeScanServiceImpl extends Service implements CodeScanService {
     final response = await super.executeDioService(
       () async => await dio.get(
         'trabajadores/por-cedula/$idDocument',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $accessToken'
-          }
-        )
+        options: super.getBaseOptions(accessToken)
       )
     );
     final result = response.data;

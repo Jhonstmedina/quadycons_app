@@ -68,6 +68,7 @@ class AttendanceMapper {
 
   static Attendance fromDb(db.Attendance row) {
     return Attendance(
+      id: row.id,
       remoteId: row.remoteId,
       idCodeInfo: IdCodeInfo(
         docNumber: row.idCodeDocNumber,
@@ -97,7 +98,7 @@ class AttendanceMapper {
     final pending = <PendingRegistration>[];
     for (final row in rows) {
       pending.add(PendingRegistration(
-        attendanceLocalId: row.attendance.id,
+        localAttendanceId: row.attendance.id,
         registration: Registration(
           check: Check(
             time: row.attendance.checkInDate!,
@@ -126,8 +127,8 @@ class AttendanceMapper {
       ));
       if(row.attendance.checkOutDate != null) {
         pending.add(PendingRegistration(
-          attendanceLocalId: row.attendance.id,
-          attendanceRemoteId: row.attendance.remoteId,
+          localAttendanceId: row.attendance.id,
+          remoteAttendanceId: row.attendance.remoteId,
           registration: Registration(
             check: Check(
               time: row.attendance.checkOutDate!,

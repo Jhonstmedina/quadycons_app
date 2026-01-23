@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:quadycons/core/connectivity/connectivity_service.dart';
@@ -44,19 +46,13 @@ import 'package:quadycons/domain/repositories/summary_repository.dart';
 import 'package:quadycons/domain/repositories/synchronization_repository.dart';
 import 'package:quadycons/domain/use_cases/clean_last_registrations.dart';
 import 'package:quadycons/domain/use_cases/synchronize.dart';
-import 'package:quadycons/ui/utils/code_scan_adapter.dart';
+import 'package:quadycons/core/adapters/code_scan_adapter.dart';
 
 final sl = GetIt.instance;
 
 void init() {
 
-  sl.registerLazySingleton<Dio>(() => Dio(
-    BaseOptions(
-      baseUrl: 'https://34.68.203.103/api',
-      connectTimeout: const Duration(milliseconds: 5000),
-      receiveTimeout: const Duration(milliseconds: 3000),
-    )
-  ));
+  sl.registerLazySingleton<Dio>(() => _createDio());
   sl.registerLazySingleton<Geolocation>(() => GeoLocationImpl());
   sl.registerLazySingleton<StorageConnector>(
     () => StorageConnectorImpl(
@@ -107,6 +103,26 @@ void init() {
   // Synchronization
   // ******************************************
   _initSynchronizationModule();
+}
+
+
+Dio _createDio() {
+  final dio = Dio(
+    BaseOptions(
+      baseUrl: 'https://34.68.203.103/api/',
+      connectTimeout: const Duration(milliseconds: 5000),
+      receiveTimeout: const Duration(milliseconds: 3000),
+    ),
+  );
+
+  (dio.httpClientAdapter as IOHttpClientAdapter)
+      .onHttpClientCreate = (HttpClient client) {
+    client.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    return client;
+  };
+
+  return dio;
 }
 
 void _initAuthenticationModule() {
@@ -288,7 +304,7 @@ void _initSynchronizationModule() {
 bool useRealData = false;
 
  T _implementRealOrFake<T>({
-  required T realImpl, 
+  required T realImpl,
   required T fakeImpl
 }) => useRealData? realImpl
                  : fakeImpl;

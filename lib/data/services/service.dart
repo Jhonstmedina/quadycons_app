@@ -27,7 +27,11 @@ abstract class Service {
     }
   }
 
-  Map<String, String> getJsonContentHeaders() => {
-    'Content-Type': 'application/json'
-  };
+  Options getBaseOptions(String accessToken) => Options(
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Token $accessToken',
+    }
+  );
 }

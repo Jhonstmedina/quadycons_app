@@ -22,7 +22,7 @@ class SynchronizationScreen extends StatelessWidget {
           (context.read<ProjectsBloc>().state as ProjectsLoaded).projects
         )),
       child: Scaffold(
-        backgroundColor: Color(0xFFF5F3FF),
+        backgroundColor: Color(0xFFFCF7FF),
         appBar: CustomAppBar(title: 'Últimos registros (local)'),
         body: SafeArea(
           child: Padding(

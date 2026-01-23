@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quadycons/domain/blocs/auth/auth_bloc.dart';
 import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
 import 'package:quadycons/route.dart';
+import 'package:quadycons/ui/utils/app_theme.dart';
 import './injection_container.dart' as ic;
 
 void main() {
@@ -34,9 +35,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)
-      ),
+      theme: AppTheme.lightTheme,
       routerConfig: router,
     );
   }

@@ -7,7 +7,14 @@ class SynchronizationServiceFake implements SynchronizationService {
   Future<List<RegistrationResultDTO>> synchronize(List<PendingRegistration> registrations, _) {
     return Future.delayed(
       Duration(seconds: 1),
-      () => <RegistrationResultDTO>[]
+      () => registrations.map(
+        (r) => RegistrationResultDTO(
+          tempId: r.localAttendanceId,
+          asistenciaId: 1000 + r.localAttendanceId,
+          estado: 'exitoso',
+          mensaje: 'Entrada registrada correctamente'
+        )
+      ).toList()
     );
   }
 

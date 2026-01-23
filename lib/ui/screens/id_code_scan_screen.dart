@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
+import 'package:quadycons/domain/connectivity/connectivity_service.dart';
 import 'package:quadycons/domain/entities/check.dart';
 import 'package:quadycons/domain/entities/id_code_info.dart';
 import 'package:quadycons/domain/entities/register_type.dart';
@@ -40,6 +41,7 @@ class IdCodeScanScreen extends StatelessWidget {
                 if (state.registerType != null &&
                     state.idDocInfo != null &&
                     (state.isInFence ?? false)) {
+                  context.read<CodeScanBloc>().add(ResetBloc());
                   context.push(
                     '/register-confirmation',
                     extra: Registration(
@@ -58,24 +60,34 @@ class IdCodeScanScreen extends StatelessWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Chip(
-                        label: Text(
-                          'offline solo',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        backgroundColor: Colors.green,
-                        labelStyle: TextStyle(color: Colors.white),
-                        labelPadding: EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 0,
-                        ),
-                        visualDensity: VisualDensity.compact,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
+                    StreamBuilder<bool>(
+                      stream: sl<ConnectivityService>().connectivityStream,
+                      initialData: false,
+                      builder: (context, snapshot) {
+                        final isConnected = snapshot.data ?? false;
+                        if (!isConnected) {
+                          return Align(
+                            alignment: Alignment.centerRight,
+                            child: Chip(
+                              label: Text(
+                                'offline solo',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              backgroundColor: Colors.green,
+                              labelStyle: TextStyle(color: Colors.white),
+                              labelPadding: EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 0,
+                              ),
+                              visualDensity: VisualDensity.compact,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                          );
+                        }
+                        return Container();
+                      }
                     ),
                     const SizedBox(height: 8),
                     Container(
@@ -174,10 +186,15 @@ class IdCodeScanScreen extends StatelessWidget {
   }
 
   Future<void> _scan(BuildContext context) async {
-    final chosenProject =
-        (context.read<ProjectsBloc>().state as ProjectsLoaded).chosenProject;
+    final projects = (context.read<ProjectsBloc>().state as ProjectsLoaded).projects;
+    var chosenProject = (context.read<ProjectsBloc>().state as ProjectsLoaded).chosenProject;
     final codeScanBloc = context.read<CodeScanBloc>();
     final idCodeInfo = await context.push<IdCodeInfo?>('/scanner');
+    if(idCodeInfo?.worker?.project != null) {
+      chosenProject = projects.firstWhere(
+        (project) => project.id == idCodeInfo!.worker!.project!.id
+      );
+    }
     codeScanBloc.add(InsertScanInfo(idCodeInfo, chosenProject!));
   }
 }

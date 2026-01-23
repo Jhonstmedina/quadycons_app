@@ -8,11 +8,11 @@ class ProjectMapper {
     return Project(
       id: row.id,
       name: row.name,
-      geoLocation: LatLng(
-        lat: row.latitude,
-        lon: row.longitude,
-      ),
-      geoFence: row.geoFence,
+      geoLocation: row.latitude != null && row.longitude != null ? LatLng(
+        lat: row.latitude!,
+        lon: row.longitude!,
+      ) : null,
+      geoFence: row.geoFence
     );
   }
 
@@ -20,9 +20,9 @@ class ProjectMapper {
     return db.ProjectsCompanion(
       id: Value(project.id),
       name: Value(project.name),
-      latitude: Value(project.geoLocation.lat),
-      longitude: Value(project.geoLocation.lon),
-      geoFence: Value(project.geoFence),
+      latitude: Value(project.geoLocation?.lat),
+      longitude: Value(project.geoLocation?.lon),
+      geoFence: Value(project.geoFence)
     );
   }
 }

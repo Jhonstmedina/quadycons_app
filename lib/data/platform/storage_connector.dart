@@ -70,6 +70,7 @@ class StorageConnectorImpl implements StorageConnector{
     }on PlatformException {
       throw const GeneralException(message: normalStorageExceptionMessage);
     }catch(e){
+      print('❌ STORAGE ERROR: $e');
       throw const GeneralException(message: 'Ha ocurrido un error inesperado');
     }
   }

@@ -42,7 +42,7 @@ void main() {
             ),
             type: .checkIn,
           ),
-          attendanceLocalId: 1,
+          localAttendanceId: 1,
           status: .pending
         ),
         // Primer par: checkOut con attendanceLocalId = 1
@@ -58,7 +58,7 @@ void main() {
             ),
             type: .checkOut,
           ),
-          attendanceLocalId: 1,
+          localAttendanceId: 1,
           status: .pending
         )
       ];
@@ -98,8 +98,9 @@ void main() {
             (list){
               for(int i = 0; i < list.length; i++) {
                 if(
-                  list[i].attendanceLocalId != todayRegistrations[i].attendanceLocalId ||
+                  list[i].localAttendanceId != todayRegistrations[i].localAttendanceId ||
                   list[i].registration.type != todayRegistrations[i].registration.type ||
+                  list[i].remoteAttendanceId != mockSynchronizeResponse[i].remoteAttendanceId ||
                   list[i].status != RegistrationStatus.completed
                 ) {
                   return false;
@@ -129,7 +130,7 @@ void main() {
             ),
             type: .checkIn,
           ),
-          attendanceLocalId: 1,
+          localAttendanceId: 1,
           status: .completed
         ),
         // Primer par: checkOut con attendanceLocalId = 1
@@ -145,8 +146,8 @@ void main() {
             ),
             type: .checkOut,
           ),
-          attendanceLocalId: 1,
-          attendanceRemoteId: 1,
+          localAttendanceId: 1,
+          remoteAttendanceId: 1,
           status: .pending
         )
       ];
@@ -179,8 +180,9 @@ void main() {
           predicate<List<PendingRegistration>>(
             (list){
               if(
-                list[0].attendanceLocalId != todayRegistrations[1].attendanceLocalId ||
+                list[0].localAttendanceId != todayRegistrations[1].localAttendanceId ||
                 list[0].registration.type != todayRegistrations[1].registration.type ||
+                list[0].remoteAttendanceId != mockSynchronizeResponse[0].remoteAttendanceId ||
                 list[0].status != RegistrationStatus.completed
               ) {
                 return false;
@@ -208,7 +210,7 @@ void main() {
             ),
             type: .checkIn,
           ),
-          attendanceLocalId: 1,
+          localAttendanceId: 1,
           status: .pending,
         ),
         // Primer par: checkOut con attendanceLocalId = 1
@@ -224,7 +226,7 @@ void main() {
             ),
             type: .checkOut,
           ),
-          attendanceLocalId: 1,
+          localAttendanceId: 1,
           status: .pending,
         ),
         PendingRegistration(
@@ -239,7 +241,7 @@ void main() {
             ),
             type: .checkIn,
           ),
-          attendanceLocalId: 2,
+          localAttendanceId: 2,
           status: .pending,
         ),
         // Segundo par: checkIn con attendanceLocalId = 3
@@ -255,7 +257,7 @@ void main() {
             ),
             type: .checkIn,
           ),
-          attendanceLocalId: 3,
+          localAttendanceId: 3,
           status: .pending,
         ),
         // Segundo par: checkOut con attendanceLocalId = 3
@@ -271,7 +273,7 @@ void main() {
             ),
             type: .checkOut,
           ),
-          attendanceLocalId: 3,
+          localAttendanceId: 3,
           status: .pending,
         )
       ];
@@ -328,33 +330,37 @@ void main() {
             if(list.length != 4) {
               return false;
             }
-            if(list.any((r) => r.attendanceLocalId == 2)) {
+            if(list.any((r) => r.localAttendanceId == 2)) {
               return false;
             }
             if(
-              list[0].attendanceLocalId != todayRegistrations[0].attendanceLocalId ||
+              list[0].localAttendanceId != todayRegistrations[0].localAttendanceId ||
               list[0].registration.type != todayRegistrations[0].registration.type ||
+              list[0].remoteAttendanceId != mockSynchronizeResponse[0].remoteAttendanceId ||
               list[0].status != .completed
             ) {
               return false;
             }
             if(
-              list[1].attendanceLocalId != todayRegistrations[1].attendanceLocalId ||
+              list[1].localAttendanceId != todayRegistrations[1].localAttendanceId ||
               list[1].registration.type != todayRegistrations[1].registration.type ||
+              list[1].remoteAttendanceId != mockSynchronizeResponse[1].remoteAttendanceId ||
               list[1].status != .completed
             ) {
               return false;
             }
             if(
-              list[2].attendanceLocalId != todayRegistrations[3].attendanceLocalId ||
+              list[2].localAttendanceId != todayRegistrations[3].localAttendanceId ||
               list[2].registration.type != todayRegistrations[3].registration.type ||
+              list[2].remoteAttendanceId != mockSynchronizeResponse[3].remoteAttendanceId ||
               list[2].status != .completed
             ) {
               return false;
             }
             if(
-              list[3].attendanceLocalId != todayRegistrations[4].attendanceLocalId ||
+              list[3].localAttendanceId != todayRegistrations[4].localAttendanceId ||
               list[3].registration.type != todayRegistrations[4].registration.type ||
+              list[3].remoteAttendanceId != mockSynchronizeResponse[4].remoteAttendanceId ||
               list[3].status != .completed
             ) {
               return false;
@@ -382,7 +388,7 @@ void main() {
             ),
             type: .checkIn,
           ),
-          attendanceLocalId: 1,
+          localAttendanceId: 1,
           status: .pending,
         ),
         // Primer par: checkOut con attendanceLocalId = 1
@@ -398,7 +404,7 @@ void main() {
             ),
             type: .checkOut,
           ),
-          attendanceLocalId: 1,
+          localAttendanceId: 1,
           status: .pending,
         ),
         PendingRegistration(
@@ -413,7 +419,7 @@ void main() {
             ),
             type: .checkIn,
           ),
-          attendanceLocalId: 2,
+          localAttendanceId: 2,
           status: .pending,
         ),
         // Segundo par: checkIn con attendanceLocalId = 3
@@ -429,7 +435,7 @@ void main() {
             ),
             type: .checkIn,
           ),
-          attendanceLocalId: 3,
+          localAttendanceId: 3,
           status: .pending
         ),
         // Segundo par: checkOut con attendanceLocalId = 3
@@ -445,7 +451,7 @@ void main() {
             ),
             type: .checkOut,
           ),
-          attendanceLocalId: 3,
+          localAttendanceId: 3,
           status: .pending,
         )
       ];
@@ -503,29 +509,33 @@ void main() {
               return false;
             }
             if(
-              list[0].attendanceLocalId != todayRegistrations[0].attendanceLocalId ||
+              list[0].localAttendanceId != todayRegistrations[0].localAttendanceId ||
               list[0].registration.type != todayRegistrations[0].registration.type ||
+              list[0].remoteAttendanceId != mockSynchronizeResponse[0].remoteAttendanceId ||
               list[0].status != RegistrationStatus.completed
             ) {
               return false;
             }
             if(
-              list[1].attendanceLocalId != todayRegistrations[1].attendanceLocalId ||
+              list[1].localAttendanceId != todayRegistrations[1].localAttendanceId ||
               list[1].registration.type != todayRegistrations[1].registration.type ||
+              list[1].remoteAttendanceId != mockSynchronizeResponse[1].remoteAttendanceId ||
               list[1].status != RegistrationStatus.completed
             ) {
               return false;
             }
             if(
-              list[2].attendanceLocalId != todayRegistrations[2].attendanceLocalId ||
+              list[2].localAttendanceId != todayRegistrations[2].localAttendanceId ||
               list[2].registration.type != todayRegistrations[2].registration.type ||
+              list[2].remoteAttendanceId != mockSynchronizeResponse[2].remoteAttendanceId ||
               list[2].status != RegistrationStatus.completed
             ) {
               return false;
             }
             if(
-              list[3].attendanceLocalId != todayRegistrations[3].attendanceLocalId ||
+              list[3].localAttendanceId != todayRegistrations[3].localAttendanceId ||
               list[3].registration.type != todayRegistrations[3].registration.type ||
+              list[3].remoteAttendanceId != mockSynchronizeResponse[3].remoteAttendanceId ||
               list[3].status != RegistrationStatus.completed
             ) {
               return false;
@@ -553,7 +563,7 @@ void main() {
             ),
             type: .checkIn,
           ),
-          attendanceLocalId: 1,
+          localAttendanceId: 1,
           status: .pending,
         ),
         // Primer par: checkOut con attendanceLocalId = 1
@@ -569,7 +579,7 @@ void main() {
             ),
             type: .checkOut,
           ),
-          attendanceLocalId: 1,
+          localAttendanceId: 1,
           status: .pending,
         ),
         PendingRegistration(
@@ -584,7 +594,7 @@ void main() {
             ),
             type: .checkIn,
           ),
-          attendanceLocalId: 2,
+          localAttendanceId: 2,
           status: .pending,
         ),
         PendingRegistration(
@@ -599,7 +609,7 @@ void main() {
             ),
             type: .checkIn,
           ),
-          attendanceLocalId: 3,
+          localAttendanceId: 3,
           status: .pending,
         ),
         PendingRegistration(
@@ -614,7 +624,7 @@ void main() {
             ),
             type: .checkIn,
           ),
-          attendanceLocalId: 4,
+          localAttendanceId: 4,
           status: .pending
         ),
         // Segundo par: checkOut con attendanceLocalId = 4
@@ -630,7 +640,7 @@ void main() {
             ),
             type: .checkOut,
           ),
-          attendanceLocalId: 4,
+          localAttendanceId: 4,
           status: .pending,
         )
       ];
@@ -694,29 +704,33 @@ void main() {
               return false;
             }
             if(
-              list[0].attendanceLocalId != todayRegistrations[0].attendanceLocalId ||
+              list[0].localAttendanceId != todayRegistrations[0].localAttendanceId ||
               list[0].registration.type != todayRegistrations[0].registration.type ||
+              list[0].remoteAttendanceId != mockSynchronizeResponse[0].remoteAttendanceId ||
               list[0].status != RegistrationStatus.completed
             ) {
               return false;
             }
             if(
-              list[1].attendanceLocalId != todayRegistrations[1].attendanceLocalId ||
+              list[1].localAttendanceId != todayRegistrations[1].localAttendanceId ||
               list[1].registration.type != todayRegistrations[1].registration.type ||
+              list[1].remoteAttendanceId != mockSynchronizeResponse[1].remoteAttendanceId ||
               list[1].status != RegistrationStatus.completed
             ) {
               return false;
             }
             if(
-              list[2].attendanceLocalId != todayRegistrations[3].attendanceLocalId ||
+              list[2].localAttendanceId != todayRegistrations[3].localAttendanceId ||
               list[2].registration.type != todayRegistrations[3].registration.type ||
+              list[2].remoteAttendanceId != mockSynchronizeResponse[3].remoteAttendanceId ||
               list[2].status != RegistrationStatus.completed
             ) {
               return false;
             }
             if(
-              list[3].attendanceLocalId != todayRegistrations[4].attendanceLocalId ||
+              list[3].localAttendanceId != todayRegistrations[4].localAttendanceId ||
               list[3].registration.type != todayRegistrations[4].registration.type ||
+              list[3].remoteAttendanceId != mockSynchronizeResponse[4].remoteAttendanceId ||
               list[3].status != RegistrationStatus.completed
             ) {
               return false;

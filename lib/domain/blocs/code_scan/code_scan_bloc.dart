@@ -27,6 +27,7 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
     on<InsertScanInfo>(_insertScanInfo);
     on<SetRegisterType>(_setRegisterType);
     on<RetryScanEnd>(_endScan);
+    on<ResetBloc>(_resetBloc);
   }
 
 
@@ -79,19 +80,29 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
       if(event is RetryScanEnd) {
         project = event.project;
       }
-      final isInFence = locationsComparer.isInsideFence(
-        location,
-        LatLng(
-          lat: project!.geoLocation.lat,
-          lon: project.geoLocation.lon
-        ),
-        project.geoFence
-      );
+      final projectGeoLocation = project!.geoLocation;
+      late bool isInFence;
+      if(projectGeoLocation == null) {
+        isInFence = true;
+      } else {
+        isInFence = locationsComparer.isInsideFence(
+          location,
+          LatLng(
+            lat: projectGeoLocation.lat,
+            lon: projectGeoLocation.lon
+          ),
+          project.geoFence!
+        );
+      }
       emit(initState.copyWith(
         isInFence: isInFence,
         errorMessage: isInFence ? null : "Fuera del área de registro",
         currentLocation: location
       ));
     }
+  }
+
+  void _resetBloc(ResetBloc event, Emitter<CodeScanState> emit) {
+    emit(Registrating());
   }
 }

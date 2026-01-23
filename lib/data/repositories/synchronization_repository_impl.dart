@@ -47,29 +47,29 @@ class SynchronizationRepositoryImpl implements SynchronizationRepository {
     for(final registration in registrations) {
       if(registration.registration.type == .checkIn) {
         var rawAttendance = await attendanceDao.getById(
-          registration.attendanceLocalId
+          registration.localAttendanceId
         );
         final attendance = AttendanceMapper.fromDb(
           rawAttendance
         ).copyWith(
-          remoteId: registration.attendanceRemoteId!
+          remoteId: registration.remoteAttendanceId!
         );
         final attendanceCompanion = AttendanceMapper.toDb(
           attendance
         );
         await attendanceDao.updateAttendance(
-          registration.attendanceLocalId,
+          registration.localAttendanceId,
           attendanceCompanion
         );
         if(attendance.checkout == null) {
           await attendanceDao.changeSynced(
-            localId: registration.attendanceLocalId,
+            localId: registration.localAttendanceId,
             synced: true
           );
         }
       } else {
         await attendanceDao.changeSynced(
-          localId: registration.attendanceLocalId,
+          localId: registration.localAttendanceId,
           synced: true
         );
       }

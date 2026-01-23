@@ -3,26 +3,26 @@ import 'package:quadycons/domain/entities/registration_status.dart';
 
 class PendingRegistration {
   final Registration registration;
-  final int attendanceLocalId;
-  final int? attendanceRemoteId;
+  final int localAttendanceId;
+  final int? remoteAttendanceId;
   final RegistrationStatus status;
   
   PendingRegistration({
     required this.registration,
-    required this.attendanceLocalId,
-    this.attendanceRemoteId,
+    required this.localAttendanceId,
+    this.remoteAttendanceId,
     required this.status
   });
 
   PendingRegistration copyWith({
     Registration? registration,
-    int? attendanceLocalId,
-    int? attendanceRemoteId,
+    int? localAttendanceId,
+    int? remoteAttendanceId,
     RegistrationStatus? status
   }) => PendingRegistration(
     registration: registration ?? this.registration,
-    attendanceLocalId: attendanceLocalId ?? this.attendanceLocalId,
-    attendanceRemoteId: attendanceRemoteId ?? this.attendanceRemoteId,
+    localAttendanceId: localAttendanceId ?? this.localAttendanceId,
+    remoteAttendanceId: remoteAttendanceId ?? this.remoteAttendanceId,
     status: status ?? this.status
   );
 }

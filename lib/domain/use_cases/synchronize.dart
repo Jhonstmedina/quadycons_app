@@ -23,7 +23,8 @@ class SynchronizeImpl implements Synchronize {
       final sync = synchronized[i];
       if(sync.status == .success) {
         final registration = pendingRegistrations[i].copyWith(
-          status: .completed
+          status: .completed,
+          remoteAttendanceId: sync.remoteAttendanceId
         );
         succesfullySynchronized.add(registration);
       }

@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:quadycons/data/services/dto/registration_result_dto.dart';
 import 'package:quadycons/data/services/service.dart';
@@ -17,14 +16,11 @@ class SynchronizationServiceImpl extends Service implements SynchronizationServi
     final result = await super.executeDioService(() async => 
       dio.post(
         'asistencias/sincronizar/',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken'
-            }
-        ),
+        options: super.getBaseOptions(accessToken),
         data: {
           'asistencias': registrations.map(
             (r) => r.registration.type == RegisterType.checkIn ? {
+              'asistencia_temp_id': r.localAttendanceId,
               'trabajador_cedula': r.registration.idCodeInfo.docNumber,
               'proyecto_id': r.registration.idCodeInfo.worker!.project!.id,
               'fecha': r.registration.check.time.toIso8601String(),
@@ -33,7 +29,7 @@ class SynchronizationServiceImpl extends Service implements SynchronizationServi
               'longitud_entrada': r.registration.check.location.lon,
               'tipo': r.registration.type
             } : {
-              'asistencia_temp_id': r.attendanceLocalId,
+              'asistencia_temp_id': r.localAttendanceId,
               'hora_salida': TimeOfDay.fromDateTime(r.registration.check.time).toString(),
               'latitud_salida': r.registration.check.location.lat,
               'longitud_salida': r.registration.check.location.lon,

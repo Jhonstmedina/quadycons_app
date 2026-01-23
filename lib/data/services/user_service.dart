@@ -14,12 +14,7 @@ class UserServiceImpl extends Service implements UserService {
     final response = await super.executeDioService(
       () async => await dio.get(
         'auth/me/',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $accessToken'
-          }
-        )
+        options: super.getBaseOptions(accessToken)
       )
     );
     final result = response.data;

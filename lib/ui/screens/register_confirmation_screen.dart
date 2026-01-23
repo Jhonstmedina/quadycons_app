@@ -124,25 +124,28 @@ class RegisterConfirmationScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 16),
                       // Columna con nombre y descripción
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            registration.idCodeInfo.worker?.name ?? 'Nombre no disponible',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              registration.idCodeInfo.worker?.name ?? 'Nombre no disponible',
+                              style: Theme.of(context).textTheme.titleMedium,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                            Text(
+                              '${registration.idCodeInfo.worker?.position ?? 'Posición no disponible'} - Cédula ${registration.idCodeInfo.docNumber}',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 14
+                              )
                             )
-                          ),
-                          Text(
-                            '${registration.idCodeInfo.worker?.position ?? 'Posición no disponible'} - Cédula ${registration.idCodeInfo.docNumber}',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14
-                            )
-                          )
-                        ]
+                          ]
+                        ),
                       )
                     ]
                   ),
@@ -173,7 +176,10 @@ class RegisterConfirmationScreen extends StatelessWidget {
                                 SizedBox(width: 8),
                                 Text(
                                   'Registro: ${registration.checkin != null? "Entrada": "Salida"}',
-                                  style: TextStyle(fontSize: 14)
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Theme.of(context).iconTheme.color
+                                  )
                                 )
                               ]
                             )

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:quadycons/injection_container.dart';
-import 'package:quadycons/ui/utils/code_scan_adapter.dart';
+import 'package:quadycons/core/adapters/code_scan_adapter.dart';
 
 class ScannerScreen extends StatefulWidget {
   @override

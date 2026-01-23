@@ -96,13 +96,18 @@ class AttendanceDao extends DatabaseAccessor<AppDatabase>
       ) AS outputs,
       COALESCE(
         SUM(
-          CASE
-            WHEN
-              (a.check_in_date IS NOT NULL AND a.remote_id IS NULL)
-              OR
-              (a.check_out_date IS NOT NULL AND a.synced = 0)
-            THEN 1
-            ELSE 0
+          CASE 
+            WHEN a.check_in_date IS NOT NULL 
+                AND a.remote_id IS NULL 
+            THEN 1 
+            ELSE 0 
+          END
+          +
+          CASE 
+            WHEN a.check_out_date IS NOT NULL 
+                AND a.synced = 0 
+            THEN 1 
+            ELSE 0 
           END
         ),
         0

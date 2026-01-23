@@ -17,12 +17,7 @@ class RegisterConfirmationServiceImpl extends Service implements RegisterConfirm
     final result = await super.executeDioService(
       () async => await dio.post(
         'asistencias/check-in/',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $accessToken'
-          }
-        ),
+        options: super.getBaseOptions(accessToken),
         data: {
           'trabajador_cedula': registration.idCodeInfo.docNumber,
           'proyecto_id': registration.idCodeInfo.worker!.project,
@@ -57,12 +52,7 @@ class RegisterConfirmationServiceImpl extends Service implements RegisterConfirm
     final result = await super.executeDioService(
       () async => await dio.post(
         'asistencias/check-out/',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $accessToken'
-          }
-        ),
+        options: super.getBaseOptions(accessToken),
         data: {
           'asistencia_id': attendance.remoteId,
           'latitud': attendance.checkout!.location.lat,

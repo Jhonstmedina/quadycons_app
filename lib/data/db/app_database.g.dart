@@ -33,9 +33,9 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
   late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
     'latitude',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.double,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _longitudeMeta = const VerificationMeta(
     'longitude',
@@ -44,9 +44,9 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
   late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
     'longitude',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.double,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _geoFenceMeta = const VerificationMeta(
     'geoFence',
@@ -55,9 +55,9 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
   late final GeneratedColumn<double> geoFence = GeneratedColumn<double>(
     'geo_fence',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.double,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _syncedMeta = const VerificationMeta('synced');
   @override
@@ -111,24 +111,18 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
         _latitudeMeta,
         latitude.isAcceptableOrUnknown(data['latitude']!, _latitudeMeta),
       );
-    } else if (isInserting) {
-      context.missing(_latitudeMeta);
     }
     if (data.containsKey('longitude')) {
       context.handle(
         _longitudeMeta,
         longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta),
       );
-    } else if (isInserting) {
-      context.missing(_longitudeMeta);
     }
     if (data.containsKey('geo_fence')) {
       context.handle(
         _geoFenceMeta,
         geoFence.isAcceptableOrUnknown(data['geo_fence']!, _geoFenceMeta),
       );
-    } else if (isInserting) {
-      context.missing(_geoFenceMeta);
     }
     if (data.containsKey('synced')) {
       context.handle(
@@ -156,15 +150,15 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
       latitude: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}latitude'],
-      )!,
+      ),
       longitude: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}longitude'],
-      )!,
+      ),
       geoFence: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}geo_fence'],
-      )!,
+      ),
       synced: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}synced'],
@@ -181,16 +175,16 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
 class Project extends DataClass implements Insertable<Project> {
   final int id;
   final String name;
-  final double latitude;
-  final double longitude;
-  final double geoFence;
+  final double? latitude;
+  final double? longitude;
+  final double? geoFence;
   final bool synced;
   const Project({
     required this.id,
     required this.name,
-    required this.latitude,
-    required this.longitude,
-    required this.geoFence,
+    this.latitude,
+    this.longitude,
+    this.geoFence,
     required this.synced,
   });
   @override
@@ -198,9 +192,15 @@ class Project extends DataClass implements Insertable<Project> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
-    map['latitude'] = Variable<double>(latitude);
-    map['longitude'] = Variable<double>(longitude);
-    map['geo_fence'] = Variable<double>(geoFence);
+    if (!nullToAbsent || latitude != null) {
+      map['latitude'] = Variable<double>(latitude);
+    }
+    if (!nullToAbsent || longitude != null) {
+      map['longitude'] = Variable<double>(longitude);
+    }
+    if (!nullToAbsent || geoFence != null) {
+      map['geo_fence'] = Variable<double>(geoFence);
+    }
     map['synced'] = Variable<bool>(synced);
     return map;
   }
@@ -209,9 +209,15 @@ class Project extends DataClass implements Insertable<Project> {
     return ProjectsCompanion(
       id: Value(id),
       name: Value(name),
-      latitude: Value(latitude),
-      longitude: Value(longitude),
-      geoFence: Value(geoFence),
+      latitude: latitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(latitude),
+      longitude: longitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(longitude),
+      geoFence: geoFence == null && nullToAbsent
+          ? const Value.absent()
+          : Value(geoFence),
       synced: Value(synced),
     );
   }
@@ -224,9 +230,9 @@ class Project extends DataClass implements Insertable<Project> {
     return Project(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      latitude: serializer.fromJson<double>(json['latitude']),
-      longitude: serializer.fromJson<double>(json['longitude']),
-      geoFence: serializer.fromJson<double>(json['geoFence']),
+      latitude: serializer.fromJson<double?>(json['latitude']),
+      longitude: serializer.fromJson<double?>(json['longitude']),
+      geoFence: serializer.fromJson<double?>(json['geoFence']),
       synced: serializer.fromJson<bool>(json['synced']),
     );
   }
@@ -236,9 +242,9 @@ class Project extends DataClass implements Insertable<Project> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
-      'latitude': serializer.toJson<double>(latitude),
-      'longitude': serializer.toJson<double>(longitude),
-      'geoFence': serializer.toJson<double>(geoFence),
+      'latitude': serializer.toJson<double?>(latitude),
+      'longitude': serializer.toJson<double?>(longitude),
+      'geoFence': serializer.toJson<double?>(geoFence),
       'synced': serializer.toJson<bool>(synced),
     };
   }
@@ -246,16 +252,16 @@ class Project extends DataClass implements Insertable<Project> {
   Project copyWith({
     int? id,
     String? name,
-    double? latitude,
-    double? longitude,
-    double? geoFence,
+    Value<double?> latitude = const Value.absent(),
+    Value<double?> longitude = const Value.absent(),
+    Value<double?> geoFence = const Value.absent(),
     bool? synced,
   }) => Project(
     id: id ?? this.id,
     name: name ?? this.name,
-    latitude: latitude ?? this.latitude,
-    longitude: longitude ?? this.longitude,
-    geoFence: geoFence ?? this.geoFence,
+    latitude: latitude.present ? latitude.value : this.latitude,
+    longitude: longitude.present ? longitude.value : this.longitude,
+    geoFence: geoFence.present ? geoFence.value : this.geoFence,
     synced: synced ?? this.synced,
   );
   Project copyWithCompanion(ProjectsCompanion data) {
@@ -300,9 +306,9 @@ class Project extends DataClass implements Insertable<Project> {
 class ProjectsCompanion extends UpdateCompanion<Project> {
   final Value<int> id;
   final Value<String> name;
-  final Value<double> latitude;
-  final Value<double> longitude;
-  final Value<double> geoFence;
+  final Value<double?> latitude;
+  final Value<double?> longitude;
+  final Value<double?> geoFence;
   final Value<bool> synced;
   final Value<int> rowid;
   const ProjectsCompanion({
@@ -317,16 +323,13 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
   ProjectsCompanion.insert({
     required int id,
     required String name,
-    required double latitude,
-    required double longitude,
-    required double geoFence,
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+    this.geoFence = const Value.absent(),
     this.synced = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
-       name = Value(name),
-       latitude = Value(latitude),
-       longitude = Value(longitude),
-       geoFence = Value(geoFence);
+       name = Value(name);
   static Insertable<Project> custom({
     Expression<int>? id,
     Expression<String>? name,
@@ -350,9 +353,9 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
   ProjectsCompanion copyWith({
     Value<int>? id,
     Value<String>? name,
-    Value<double>? latitude,
-    Value<double>? longitude,
-    Value<double>? geoFence,
+    Value<double?>? latitude,
+    Value<double?>? longitude,
+    Value<double?>? geoFence,
     Value<bool>? synced,
     Value<int>? rowid,
   }) {
@@ -1485,9 +1488,9 @@ typedef $$ProjectsTableCreateCompanionBuilder =
     ProjectsCompanion Function({
       required int id,
       required String name,
-      required double latitude,
-      required double longitude,
-      required double geoFence,
+      Value<double?> latitude,
+      Value<double?> longitude,
+      Value<double?> geoFence,
       Value<bool> synced,
       Value<int> rowid,
     });
@@ -1495,9 +1498,9 @@ typedef $$ProjectsTableUpdateCompanionBuilder =
     ProjectsCompanion Function({
       Value<int> id,
       Value<String> name,
-      Value<double> latitude,
-      Value<double> longitude,
-      Value<double> geoFence,
+      Value<double?> latitude,
+      Value<double?> longitude,
+      Value<double?> geoFence,
       Value<bool> synced,
       Value<int> rowid,
     });
@@ -1714,9 +1717,9 @@ class $$ProjectsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
-                Value<double> latitude = const Value.absent(),
-                Value<double> longitude = const Value.absent(),
-                Value<double> geoFence = const Value.absent(),
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
+                Value<double?> geoFence = const Value.absent(),
                 Value<bool> synced = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ProjectsCompanion(
@@ -1732,9 +1735,9 @@ class $$ProjectsTableTableManager
               ({
                 required int id,
                 required String name,
-                required double latitude,
-                required double longitude,
-                required double geoFence,
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
+                Value<double?> geoFence = const Value.absent(),
                 Value<bool> synced = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ProjectsCompanion.insert(
