@@ -2,14 +2,14 @@
 
 import 'package:drift/drift.dart';
 import 'package:quadycons/data/db/app_database.dart' as db;
+import 'package:quadycons/data/db/dtos/attendance_with_worker.dart';
 import 'package:quadycons/domain/entities/attendance.dart';
 import 'package:quadycons/domain/entities/check.dart';
 import 'package:quadycons/domain/entities/id_code_info.dart';
 import 'package:quadycons/domain/entities/lat_lng.dart';
 import 'package:quadycons/domain/entities/pending_registration.dart';
-import 'package:quadycons/domain/entities/register_type.dart';
+import 'package:quadycons/domain/entities/project.dart';
 import 'package:quadycons/domain/entities/registration.dart';
-import 'package:quadycons/domain/entities/registration_status.dart';
 
 class AttendanceMapper {
   static db.AttendancesCompanion toDb(Attendance a) {
@@ -28,6 +28,7 @@ class AttendanceMapper {
   static Attendance fromDbWithWorker(
     db.Attendance a,
     db.Worker w,
+    List<Project> projects
   ) {
     return Attendance(
       id: a.id,
@@ -39,7 +40,9 @@ class AttendanceMapper {
           name: w.name,
           profileUrl: w.profileUrl,
           position: w.position,
-          projectId: w.projectId,
+          project: projects.firstWhere(
+            (p) => p.id == w.projectId
+          )
         ),
       ),
       checkin: a.checkInDate == null
@@ -90,42 +93,66 @@ class AttendanceMapper {
     );
   }
 
-  static List<PendingRegistration> pendingRegistrationsFromDb(List<db.Attendance> rows) {
+  static List<PendingRegistration> getRegistrationsFromDb(List<AttendanceWithWorker> rows, List<Project> projects) {
     final pending = <PendingRegistration>[];
     for (final row in rows) {
-      if(row.remoteId == null) {
+      pending.add(PendingRegistration(
+        attendanceLocalId: row.attendance.id,
+        registration: Registration(
+          check: Check(
+            time: row.attendance.checkInDate!,
+            location: LatLng(
+              lat: row.attendance.checkInLat!,
+              lon: row.attendance.checkInLon!
+            )
+          ),
+          idCodeInfo: IdCodeInfo(
+            docNumber: row.worker.docNumber,
+            worker: Worker(
+              id: row.worker.id?.toString(),
+              name: row.worker.name,
+              profileUrl: row.worker.profileUrl,
+              position: row.worker.position,
+              project: projects.firstWhere(
+                (p) => p.id == row.worker.projectId
+              )
+            )
+          ),
+          type: .checkIn
+        ),
+        status: row.attendance.synced ? 
+          .completed : 
+          .pending
+      ));
+      if(row.attendance.checkOutDate != null) {
         pending.add(PendingRegistration(
-          attendanceLocalId: row.id,
+          attendanceLocalId: row.attendance.id,
+          attendanceRemoteId: row.attendance.remoteId,
           registration: Registration(
             check: Check(
-              time: row.checkInDate!,
+              time: row.attendance.checkOutDate!,
               location: LatLng(
-                lat: row.checkInLat!,
-                lon: row.checkInLon!
+                lat: row.attendance.checkOutLat!,
+                lon: row.attendance.checkOutLon!
               )
             ),
-            idCodeInfo: IdCodeInfo(docNumber: row.idCodeDocNumber),
-            type: RegisterType.checkIn
-          ),
-          status: RegistrationStatus.pending
-        ));
-      }
-      if(row.checkOutDate != null && !row.synced) {
-        pending.add(PendingRegistration(
-          attendanceLocalId: row.id,
-          attendanceRemoteId: row.remoteId,
-          registration: Registration(
-            check: Check(
-              time: row.checkOutDate!,
-              location: LatLng(
-                lat: row.checkOutLat!,
-                lon: row.checkOutLon!
+            idCodeInfo: IdCodeInfo(
+              docNumber: row.worker.docNumber,
+              worker: Worker(
+                id: row.worker.id?.toString(),
+                name: row.worker.name,
+                profileUrl: row.worker.profileUrl,
+                position: row.worker.position,
+                project: projects.firstWhere(
+                  (p) => p.id == row.worker.projectId
+                )
               )
             ),
-            idCodeInfo: IdCodeInfo(docNumber: row.idCodeDocNumber),
-            type: RegisterType.checkOut
+            type: .checkOut
           ),
-          status: RegistrationStatus.pending
+          status: row.attendance.synced ? 
+            .completed : 
+            .pending
         ));
       }
     }

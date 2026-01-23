@@ -13,7 +13,7 @@ class WorkersDao extends DatabaseAccessor<AppDatabase>
     return into(workers).insert(data);
   }
 
-  Future<Worker?> getByDocNumber(String docNumber) {
+  Future<Worker?> getByDocNumber(String docNumber) async {
     return (select(workers)
           ..where((w) => w.docNumber.equals(docNumber)))
         .getSingleOrNull();

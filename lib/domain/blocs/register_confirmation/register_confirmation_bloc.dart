@@ -24,7 +24,7 @@ class RegisterConfirmationBloc extends Bloc<RegisterConfirmationEvent, RegisterC
     InitRegistrationConfirmation event,
     Emitter<RegisterConfirmationState> emit
   ) async {
-    final attendance = await repository.getAttendanceByUserDoc(event.registration.idCodeInfo.docNumber);
+    final attendance = await repository.getAttendanceByUserDoc(event.registration.idCodeInfo.docNumber, event.projects);
     final registerType = event.registration.type;
     if(registerType == RegisterType.checkIn) {
       if(attendance != null) {

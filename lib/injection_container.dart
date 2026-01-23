@@ -15,16 +15,18 @@ import 'package:quadycons/data/repositories/code_scan_repository_Impl.dart';
 import 'package:quadycons/data/repositories/projects_repository_impl.dart';
 import 'package:quadycons/data/repositories/register_confirmation_repository_impl.dart';
 import 'package:quadycons/data/repositories/summary_repository_impl.dart';
-import 'package:quadycons/data/repositories/synchronize_repository_impl.dart';
+import 'package:quadycons/data/repositories/synchronization_repository_impl.dart';
 import 'package:quadycons/data/services/auth_service.dart';
 import 'package:quadycons/data/services/code_scan_service.dart';
 import 'package:quadycons/data/services/fake/projects_service_fake.dart';
+import 'package:quadycons/data/services/fake/synchronization_service_fake.dart';
 import 'package:quadycons/data/services/projects_service.dart';
 import 'package:quadycons/data/services/register_confirmation_service.dart';
 import 'package:quadycons/data/services/fake/auth_service_fake.dart';
 import 'package:quadycons/data/services/fake/code_scan_service_fake.dart';
 import 'package:quadycons/data/services/fake/register_confirmation_service_fake.dart';
 import 'package:quadycons/data/services/geo_location.dart';
+import 'package:quadycons/data/services/synchronization_service.dart';
 import 'package:quadycons/domain/blocs/auth/auth_bloc.dart';
 import 'package:quadycons/domain/blocs/code_scan/code_scan_bloc.dart';
 import 'package:quadycons/domain/blocs/permissions/permissions_bloc.dart';
@@ -32,13 +34,16 @@ import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
 import 'package:quadycons/domain/blocs/register_confirmation/register_confirmation_bloc.dart';
 import 'package:quadycons/domain/blocs/summaries/summaries_bloc.dart';
 import 'package:quadycons/domain/blocs/synchronization/synchronization_bloc.dart';
+import 'package:quadycons/domain/connectivity/connectivity_service.dart';
 import 'package:quadycons/domain/logic/locations_comparer.dart';
 import 'package:quadycons/domain/repositories/auth_repository.dart';
 import 'package:quadycons/domain/repositories/code_scan_repository.dart';
 import 'package:quadycons/domain/repositories/projects_repository.dart';
 import 'package:quadycons/domain/repositories/attendance_repository.dart';
 import 'package:quadycons/domain/repositories/summary_repository.dart';
-import 'package:quadycons/domain/repositories/synchronize_repository.dart';
+import 'package:quadycons/domain/repositories/synchronization_repository.dart';
+import 'package:quadycons/domain/use_cases/clean_last_registrations.dart';
+import 'package:quadycons/domain/use_cases/synchronize.dart';
 import 'package:quadycons/ui/utils/code_scan_adapter.dart';
 
 final sl = GetIt.instance;
@@ -245,14 +250,37 @@ void _initSummaryModule() {
 }
 
 void _initSynchronizationModule() {
-  sl.registerLazySingleton<SynchronizeRepository>(
-    () => SynchronizeRepositoryImpl(
-      attendanceDao: sl<AttendanceDao>()  
+  sl.registerLazySingleton<SynchronizationService>(
+    () => _implementRealOrFake<SynchronizationService>(
+      realImpl: SynchronizationServiceImpl(
+        dio: sl<Dio>()
+      ),
+      fakeImpl: SynchronizationServiceFake()
     )
   );
-  sl.registerLazySingleton<SynchronizationBloc>(
+  sl.registerLazySingleton<SynchronizationRepository>(
+    () => SynchronizationRepositoryImpl(
+      attendanceDao: sl<AttendanceDao>(),
+      accessTokenGetter: sl<AuthLocalDataSource>(),
+      service: sl<SynchronizationService>(),
+      connectivity: sl<ConnectivityService>()
+    )
+  );
+  sl.registerLazySingleton<Synchronize>(
+    () => SynchronizeImpl(
+      repository: sl<SynchronizationRepository>()
+    )
+  );
+  sl.registerLazySingleton<CleanLastRegistrations>(
+    () => CleanLastRegistrationsImpl(
+      repository: sl<SynchronizationRepository>()
+    )
+  );
+  sl.registerFactory<SynchronizationBloc>(
     () => SynchronizationBloc(
-      repository: sl<SynchronizeRepository>()
+      repository: sl<SynchronizationRepository>(),
+      synchronize: sl<Synchronize>(),
+      cleanLastRegistrations: sl<CleanLastRegistrations>()
     )
   );
 }

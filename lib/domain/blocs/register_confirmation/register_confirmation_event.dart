@@ -5,7 +5,8 @@ sealed class RegisterConfirmationEvent {}
 
 final class InitRegistrationConfirmation extends RegisterConfirmationEvent {
   final Registration registration;
-  InitRegistrationConfirmation({required this.registration});
+  final List<Project> projects;
+  InitRegistrationConfirmation({required this.registration, required this.projects});
 }
 
 final class ConfirmRegistration extends RegisterConfirmationEvent {

@@ -24,27 +24,32 @@ class IdCodeScanScreen extends StatelessWidget {
         create: (context) => sl<CodeScanBloc>(),
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.05),
+            padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.05,
+            ),
             child: BlocConsumer<CodeScanBloc, CodeScanState>(
-              listener: (context, state){
-                if((state as Registrating).errorMessage != null){
+              listener: (context, state) {
+                if ((state as Registrating).errorMessage != null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(state.errorMessage!),
-                      backgroundColor: Colors.red
-                    )
+                      backgroundColor: Colors.red,
+                    ),
                   );
-                } if (state.registerType != null && state.idDocInfo != null && (state.isInFence??false)) {
+                }
+                if (state.registerType != null &&
+                    state.idDocInfo != null &&
+                    (state.isInFence ?? false)) {
                   context.push(
                     '/register-confirmation',
                     extra: Registration(
                       check: Check(
                         time: DateTime.now(),
-                        location: state.currentLocation!
+                        location: state.currentLocation!,
                       ),
                       idCodeInfo: state.idDocInfo!,
-                      type: state.registerType!
-                    )
+                      type: state.registerType!,
+                    ),
                   );
                 }
               },
@@ -58,17 +63,18 @@ class IdCodeScanScreen extends StatelessWidget {
                       child: Chip(
                         label: Text(
                           'offline solo',
-                          style: TextStyle(
-                            fontSize: 12
-                          )
+                          style: TextStyle(fontSize: 12),
                         ),
                         backgroundColor: Colors.green,
                         labelStyle: TextStyle(color: Colors.white),
-                        labelPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                        labelPadding: EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 0,
+                        ),
                         visualDensity: VisualDensity.compact,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)
-                        )
+                          borderRadius: BorderRadius.circular(30),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -76,58 +82,61 @@ class IdCodeScanScreen extends StatelessWidget {
                       padding: EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         color: Color(0xFFF5F3FF),
-                        borderRadius: BorderRadius.circular(16)
+                        borderRadius: BorderRadius.circular(16),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.qr_code_scanner,
-                            size: 80,
-                            weight: 700
-                          ),
+                          Icon(Icons.qr_code_scanner, size: 80, weight: 700),
                           SizedBox(height: 16),
                           Text(
                             'apunta al código de barras de la cédula o al QR',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14
-                            ),
-                            textAlign: TextAlign.center
+                            style: TextStyle(color: Colors.grey, fontSize: 14),
+                            textAlign: TextAlign.center,
                           ),
                           SizedBox(height: 16),
-                          if(state.idDocInfo != null)
+                          if (state.idDocInfo != null)
                             Text(
                               state.idDocInfo!.docNumber,
                               style: TextStyle(
                                 color: Colors.grey,
-                                fontSize: 14
-                              )
+                                fontSize: 14,
+                              ),
                             ),
-                          TextButton(
-                            onPressed: () async {
-                              _scan(context);
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.camera_alt_outlined,
-                                  color: Colors.black
+                          BlocBuilder<ProjectsBloc, ProjectsState>(
+                            builder: (context, state) {
+                              return TextButton(
+                                onPressed: state is! ProjectsLoaded ?
+                                  null :
+                                  () async {
+                                    _scan(context);
+                                  },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.camera_alt_outlined,
+                                      color: state is ProjectsLoaded ? 
+                                        Colors.black : 
+                                        Colors.grey,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Abrir cámara',
+                                      style: TextStyle(
+                                        color: state is ProjectsLoaded ? 
+                                          Colors.black : 
+                                          Colors.grey,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Abrir cámara',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16
-                                  )
-                                )
-                              ]
-                            )
-                          )
-                        ]
-                      )
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Row(
@@ -136,42 +145,39 @@ class IdCodeScanScreen extends StatelessWidget {
                         ScanRegistrationButton(
                           icon: Icons.login,
                           text: 'Entrada',
-                          registerType: RegisterType.checkIn
+                          registerType: RegisterType.checkIn,
                         ),
                         ScanRegistrationButton(
                           icon: Icons.logout,
                           text: 'Salida',
-                          registerType: RegisterType.checkOut
+                          registerType: RegisterType.checkOut,
                         ),
                         ScanButton(
                           icon: Icons.refresh,
                           text: 'Reintentar',
                           onPressed: () {
                             _scan(context);
-                          }
-                        )
-                      ]
+                          },
+                        ),
+                      ],
                     ),
-                    Expanded(
-                      child: Container()
-                    ),
-                    ProjectsSelect()
-                  ]
+                    Expanded(child: Container()),
+                    ProjectsSelect(),
+                  ],
                 );
-              }
-            )
-          )
-        )
-      )
+              },
+            ),
+          ),
+        ),
+      ),
     );
   }
 
   Future<void> _scan(BuildContext context) async {
-    final chosenProject = (context.read<ProjectsBloc>().state as ProjectsLoaded).chosenProject;
+    final chosenProject =
+        (context.read<ProjectsBloc>().state as ProjectsLoaded).chosenProject;
     final codeScanBloc = context.read<CodeScanBloc>();
     final idCodeInfo = await context.push<IdCodeInfo?>('/scanner');
-    codeScanBloc.add(
-      InsertScanInfo(idCodeInfo, chosenProject!)
-    );
+    codeScanBloc.add(InsertScanInfo(idCodeInfo, chosenProject!));
   }
 }

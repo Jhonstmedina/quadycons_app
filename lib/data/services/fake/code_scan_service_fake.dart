@@ -2,6 +2,7 @@ import 'package:quadycons/domain/entities/id_code_info.dart';
 import 'package:quadycons/domain/entities/lat_lng.dart';
 import 'package:quadycons/data/services/code_scan_service.dart';
 import 'package:quadycons/data/services/geo_location.dart';
+import 'package:quadycons/domain/entities/project.dart';
 
 class CodeScanServiceFake implements CodeScanService {
   
@@ -18,17 +19,12 @@ class CodeScanServiceFake implements CodeScanService {
       name: 'John Wick',
       profileUrl: 'https://www.diamondartclub.com/cdn/shop/files/aragorn-diamond-art-painting-46043931672769.jpg?v=1762461207&width=3000',
       position: 'Developer',
-      projectId: 1
+      project: Project(
+        id: 1,
+        name: 'Project X',
+        geoLocation: LatLng(lat: 40.7128, lon: -74.0060),
+        geoFence: 100
+      )
     );
-  }
-
-  @override
-  Future<LatLng> getFence(String accessToken) async {
-    final position = await geoLocation.getCurrentPosition();
-    if(position != null) {
-      return LatLng(lat: position.lat + 0.00001, lon: position.lon + 0.00001);
-    } else {
-      return LatLng(lat: 0.0, lon: 0.0);
-    }
   }
 }

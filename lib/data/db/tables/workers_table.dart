@@ -10,4 +10,9 @@ class Workers extends Table {
 
   IntColumn get projectId =>
       integer().references(Projects, #id)();
+  
+  @override
+  List<String> get customConstraints => [
+    'UNIQUE(doc_number, project_id)'
+  ];
 }

@@ -67,7 +67,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/id-code-scan',
       name: 'id-code-scan',
-      builder: (context, state) => IdCodeScanScreen( )
+      builder: (context, state) => IdCodeScanScreen()
     ),
     GoRoute(
       path: '/scanner',
@@ -81,7 +81,10 @@ final GoRouter router = GoRouter(
         create: (_) => sl<RegisterConfirmationBloc>()
           ..add(
             InitRegistrationConfirmation(
-              registration: state.extra as Registration
+              registration: state.extra as Registration,
+              projects: context.read<ProjectsBloc>().state is ProjectsLoaded
+                ? (context.read<ProjectsBloc>().state as ProjectsLoaded).projects
+                : []
             )
           ),
         child: RegisterConfirmationScreen()

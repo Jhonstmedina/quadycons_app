@@ -36,7 +36,7 @@ class CodeScanAdapter {
       position: null,
       profileUrl: null,
       //TODO: Implementar projectId correctamente
-      projectId: -1
+      project: null
     );
 
     return IdCodeInfo(

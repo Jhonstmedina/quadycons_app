@@ -1,5 +1,5 @@
-import 'package:quadycons/core/connectivity/connectivity_service.dart';
 import 'package:quadycons/data/db/app_database.dart';
+import 'package:quadycons/domain/connectivity/connectivity_service.dart';
 import 'package:quadycons/domain/entities/authentication.dart';
 import 'package:quadycons/domain/entities/user.dart';
 import 'package:quadycons/data/local_data_source/auth_local_data_source.dart';

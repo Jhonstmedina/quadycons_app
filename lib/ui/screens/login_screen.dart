@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quadycons/domain/blocs/auth/auth_bloc.dart';
+import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
 import 'package:quadycons/ui/widgets/auth_input.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -36,6 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: BlocConsumer<AuthBloc, AuthState>(
             listener: (context, state) {
               if(state is OnAuthenticated) {
+                context.read<ProjectsBloc>().add(LoadProjects());
                 context.go('/permissions');
               } else if (state is OnLogin && state.errorMessage != null) {
                 ScaffoldMessenger.of(context).showSnackBar(

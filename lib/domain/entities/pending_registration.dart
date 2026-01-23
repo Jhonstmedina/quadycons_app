@@ -13,4 +13,16 @@ class PendingRegistration {
     this.attendanceRemoteId,
     required this.status
   });
+
+  PendingRegistration copyWith({
+    Registration? registration,
+    int? attendanceLocalId,
+    int? attendanceRemoteId,
+    RegistrationStatus? status
+  }) => PendingRegistration(
+    registration: registration ?? this.registration,
+    attendanceLocalId: attendanceLocalId ?? this.attendanceLocalId,
+    attendanceRemoteId: attendanceRemoteId ?? this.attendanceRemoteId,
+    status: status ?? this.status
+  );
 }

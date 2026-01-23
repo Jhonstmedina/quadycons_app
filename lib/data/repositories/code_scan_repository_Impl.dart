@@ -1,9 +1,10 @@
-import 'package:quadycons/core/connectivity/connectivity_service.dart';
 import 'package:quadycons/data/db/daos/worker_dao.dart';
 import 'package:quadycons/data/db/mappers/worker_mapper.dart';
+import 'package:quadycons/domain/connectivity/connectivity_service.dart';
 import 'package:quadycons/domain/entities/id_code_info.dart';
 import 'package:quadycons/data/local_data_source/access_token_getter.dart';
 import 'package:quadycons/data/services/code_scan_service.dart';
+import 'package:quadycons/domain/entities/project.dart';
 import 'package:quadycons/domain/repositories/code_scan_repository.dart';
 
 class CodeScanRepositoryImpl implements CodeScanRepository {
@@ -20,17 +21,21 @@ class CodeScanRepositoryImpl implements CodeScanRepository {
   });
 
   @override
-  Future<IdCodeInfo> getInfoByIdBase(IdCodeInfo info) async {
-    if( await connectivityService.thereIsConnectivity() ) {
-      final accessToken = await accessTokenGetter.getAccessToken();
-      final worker = await service.getInfoByIdentification(info.docNumber, accessToken);
-      info = IdCodeInfo(
-        docNumber: info.docNumber,
-        worker: worker
-      );
+  Future<IdCodeInfo> getInfoByIdBase(IdCodeInfo info, Project project) async {
+    final localWorker = await dao.getByDocNumber(info.docNumber);
+    if(localWorker == null) {
+      if( await connectivityService.thereIsConnectivity()) {
+        final accessToken = await accessTokenGetter.getAccessToken();
+        final worker = await service.getInfoByIdentification(info.docNumber, accessToken);
+        info = IdCodeInfo(
+          docNumber: info.docNumber,
+          worker: worker
+        );
+      }
+      final data = WorkerMapper.toDb(info);
+      await dao.insertWorker(data);
+      return info;
     }
-    final data = WorkerMapper.toDb(info);
-    await dao.insertWorker(data);
-    return info;
+    return WorkerMapper.fromDb(localWorker, [project]);
   }
 }

@@ -1,0 +1,78 @@
+import 'package:quadycons/data/db/daos/attendance_dao.dart';
+import 'package:quadycons/data/db/mappers/attendance_mapper.dart';
+import 'package:quadycons/data/local_data_source/access_token_getter.dart';
+import 'package:quadycons/data/services/mappers/registration_result_mapper.dart';
+import 'package:quadycons/data/services/synchronization_service.dart';
+import 'package:quadycons/domain/connectivity/connectivity_service.dart';
+import 'package:quadycons/domain/entities/pending_registration.dart';
+import 'package:quadycons/domain/entities/project.dart';
+import 'package:quadycons/domain/entities/registration_result.dart';
+import 'package:quadycons/domain/exceptions.dart';
+import 'package:quadycons/domain/repositories/synchronization_repository.dart';
+
+class SynchronizationRepositoryImpl implements SynchronizationRepository {
+  
+  final AttendanceDao attendanceDao;
+  final AccessTokenGetter accessTokenGetter;
+  final SynchronizationService service;
+  final ConnectivityService connectivity;
+
+  SynchronizationRepositoryImpl({
+    required this.attendanceDao,
+    required this.accessTokenGetter,
+    required this.service,
+    required this.connectivity
+  });
+
+  @override
+  Future<List<PendingRegistration>> getPendingRegistrations(List<Project> projects) async {
+    final pendingAttendances = await attendanceDao.getTodayWithWorker();
+    return AttendanceMapper.getRegistrationsFromDb(pendingAttendances, projects);
+  }
+
+  @override
+  Future<List<RegistrationResult>> synchronize(List<PendingRegistration> registrations) async {
+    if(!(await connectivity.thereIsConnectivity())) {
+      throw GeneralException(message: 'No hay conexión a internet');
+    }
+    final accessToken = await accessTokenGetter.getAccessToken();
+    final results = await service.synchronize(registrations, accessToken);
+    return results.map(
+      (r) => RegistrationResultMapper.toDomain(r)
+    ).toList();
+  }
+  
+  @override
+  Future<void> markAsSynchronized(List<PendingRegistration> registrations) async {
+    for(final registration in registrations) {
+      if(registration.registration.type == .checkIn) {
+        var rawAttendance = await attendanceDao.getById(
+          registration.attendanceLocalId
+        );
+        final attendance = AttendanceMapper.fromDb(
+          rawAttendance
+        ).copyWith(
+          remoteId: registration.attendanceRemoteId!
+        );
+        final attendanceCompanion = AttendanceMapper.toDb(
+          attendance
+        );
+        await attendanceDao.updateAttendance(
+          registration.attendanceLocalId,
+          attendanceCompanion
+        );
+        if(attendance.checkout == null) {
+          await attendanceDao.changeSynced(
+            localId: registration.attendanceLocalId,
+            synced: true
+          );
+        }
+      } else {
+        await attendanceDao.changeSynced(
+          localId: registration.attendanceLocalId,
+          synced: true
+        );
+      }
+    }
+  }
+}

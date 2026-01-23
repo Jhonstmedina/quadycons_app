@@ -1,8 +1,8 @@
-import 'package:quadycons/core/connectivity/connectivity_service.dart';
 import 'package:quadycons/data/db/daos/project_dao.dart';
 import 'package:quadycons/data/db/mappers/project_mapper.dart';
+import 'package:quadycons/data/local_data_source/access_token_getter.dart';
+import 'package:quadycons/domain/connectivity/connectivity_service.dart';
 import 'package:quadycons/domain/entities/project.dart';
-import 'package:quadycons/data/local_data_source/auth_local_data_source.dart';
 import 'package:quadycons/data/services/projects_service.dart';
 import 'package:quadycons/domain/exceptions.dart';
 import 'package:quadycons/domain/repositories/projects_repository.dart';
@@ -10,7 +10,7 @@ import 'package:quadycons/domain/repositories/projects_repository.dart';
 class ProjectsRepositoryImpl implements ProjectsRepository {
   final ProjectsService projectsService;
   final ProjectsDao dao;
-  final AuthLocalDataSource localDataSource;
+  final AccessTokenGetter localDataSource;
   final ConnectivityService connectivityService;
 
   ProjectsRepositoryImpl({

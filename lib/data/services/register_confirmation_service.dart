@@ -25,7 +25,7 @@ class RegisterConfirmationServiceImpl extends Service implements RegisterConfirm
         ),
         data: {
           'trabajador_cedula': registration.idCodeInfo.docNumber,
-          'proyecto_id': registration.idCodeInfo.worker!.projectId,
+          'proyecto_id': registration.idCodeInfo.worker!.project,
           'latitud': registration.check.location.lat,
           'longitud': registration.check.location.lon
         }

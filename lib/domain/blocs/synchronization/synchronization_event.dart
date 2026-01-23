@@ -3,10 +3,17 @@ part of 'synchronization_bloc.dart';
 @immutable
 sealed class SynchronizationEvent {}
 
-final class GetPendingRegistrations extends SynchronizationEvent {
+final class GetLastRegistrationsEvent extends SynchronizationEvent {
+  final List<Project> projects;
 
+  GetLastRegistrationsEvent(this.projects);
 }
 
-final class Synchronize extends SynchronizationEvent {
-
+final class SynchronizeRegistrationsEvent extends SynchronizationEvent {
+  final List<Project> projects;
+  SynchronizeRegistrationsEvent({
+    required this.projects
+  });
 }
+
+final class CleanLastRegistrationsEvent extends SynchronizationEvent {}

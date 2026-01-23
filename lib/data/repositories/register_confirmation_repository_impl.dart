@@ -1,7 +1,8 @@
-import 'package:quadycons/core/connectivity/connectivity_service.dart';
 import 'package:quadycons/data/db/daos/attendance_dao.dart';
 import 'package:quadycons/data/db/mappers/attendance_mapper.dart';
+import 'package:quadycons/domain/connectivity/connectivity_service.dart';
 import 'package:quadycons/domain/entities/attendance.dart';
+import 'package:quadycons/domain/entities/project.dart';
 import 'package:quadycons/domain/entities/registration.dart';
 import 'package:quadycons/data/local_data_source/access_token_getter.dart';
 import 'package:quadycons/data/services/register_confirmation_service.dart';
@@ -71,11 +72,11 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
   }
   
   @override
-  Future<Attendance?> getAttendanceByUserDoc(String docNumber) async {
+  Future<Attendance?> getAttendanceByUserDoc(String docNumber, List<Project> projects) async {
     final data = await dao.getByUserDocWithWorker(docNumber);
     if (data == null) {
       return null;
     }
-    return AttendanceMapper.fromDbWithWorker(data.attendance, data.worker);
+    return AttendanceMapper.fromDbWithWorker(data.attendance, data.worker, projects);
   }
 }

@@ -5,20 +5,24 @@ sealed class SynchronizationState {}
 
 final class SynchronizationInitial extends SynchronizationState {}
 
-final class PendingRegistrationsLoaded extends SynchronizationState {
-  final List<PendingRegistration> pendingRegistrations;
+final class LastRegistrationsLoaded extends SynchronizationState {
+  final List<PendingRegistration> lastRegistrations;
+  final bool canSynchronize;
   final bool isLoading;
 
-  PendingRegistrationsLoaded({
-    required this.pendingRegistrations,
+  LastRegistrationsLoaded({
+    required this.lastRegistrations,
     this.isLoading = false,
+    required this.canSynchronize
   });
 
-  PendingRegistrationsLoaded copyWith({
-    List<PendingRegistration>? pendingRegistrations,
+  LastRegistrationsLoaded copyWith({
+    List<PendingRegistration>? lastRegistrations,
     bool? isLoading,
-  }) => PendingRegistrationsLoaded(
-    pendingRegistrations: pendingRegistrations ?? this.pendingRegistrations,
+    bool? canSynchronize
+  }) => LastRegistrationsLoaded(
+    lastRegistrations: lastRegistrations ?? this.lastRegistrations,
     isLoading: isLoading ?? this.isLoading,
+    canSynchronize: canSynchronize ?? this.canSynchronize
   );
 }

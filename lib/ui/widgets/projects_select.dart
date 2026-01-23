@@ -11,7 +11,23 @@ class ProjectsSelect extends StatelessWidget {
     return BlocBuilder<ProjectsBloc, ProjectsState>(
       builder: (context, state) {
         if(state is! ProjectsLoaded) {
-          return Container();
+          return Row(
+            mainAxisAlignment: .spaceBetween,
+            children: [
+              Text(
+                'Cargando Proyectos...',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 14
+                )
+              ),
+              SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            ],
+          );
         }
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

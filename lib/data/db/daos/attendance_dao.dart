@@ -11,6 +11,12 @@ class AttendanceDao extends DatabaseAccessor<AppDatabase>
     with _$AttendanceDaoMixin {
   AttendanceDao(super.db);
 
+  Future<Attendance> getById(int id) {
+    return (select(attendances)
+          ..where((a) => a.id.equals(id)))
+        .getSingle();
+  }
+
   Future<AttendanceWithWorker?> getByUserDocWithWorker(String userDoc) {
     final query = select(attendances).join([
       innerJoin(
@@ -44,10 +50,23 @@ class AttendanceDao extends DatabaseAccessor<AppDatabase>
         .write(data);
   }
 
-  Future<List<Attendance>> getPending() {
-    return (select(attendances)
-          ..where((a) => a.synced.equals(false)))
-        .get();
+  Future<List<AttendanceWithWorker>> getTodayWithWorker() async {
+    final query = select(attendances).join([
+      innerJoin(
+        workers,
+        workers.docNumber.equalsExp(attendances.idCodeDocNumber)
+      )
+    ])
+      
+      ..orderBy([
+        OrderingTerm.desc(attendances.checkInDate),
+      ]);
+    return query.map((row) {
+      return AttendanceWithWorker(
+        attendance: row.readTable(attendances),
+        worker: row.readTable(workers),
+      );
+    }).get();
   }
 
   Future<void> changeSynced({

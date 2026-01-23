@@ -1,16 +1,19 @@
 import 'package:quadycons/data/db/app_database.dart' as db;
 import 'package:drift/drift.dart';
 import 'package:quadycons/domain/entities/id_code_info.dart';
+import 'package:quadycons/domain/entities/project.dart';
 
 class WorkerMapper {
-  static IdCodeInfo fromDb(db.Worker row) {
+  static IdCodeInfo fromDb(db.Worker row, List<Project> projects) {
     return IdCodeInfo(
       worker: Worker(
         id: row.id,
         name: row.name,
         profileUrl: row.profileUrl,
         position: row.position,
-        projectId: row.projectId
+        project: projects.firstWhere(
+          (p) => p.id == row.projectId
+        )
       ),
       docNumber: row.docNumber
     );
@@ -22,7 +25,7 @@ class WorkerMapper {
       profileUrl: Value(idCodeInfo.worker!.profileUrl),
       position: Value(idCodeInfo.worker!.position),
       docNumber: Value(idCodeInfo.docNumber),
-      projectId: Value(idCodeInfo.worker!.projectId)
+      projectId: Value(idCodeInfo.worker!.project!.id)
     );
   }
 }

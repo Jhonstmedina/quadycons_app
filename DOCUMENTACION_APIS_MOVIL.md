@@ -492,6 +492,15 @@ Authorization: Token {token}
       "tipo": "entrada"
     },
     {
+      "trabajador_cedula": "002-112589-0012K",
+      "proyecto_id": 1,
+      "fecha": "2025-01-15",
+      "hora_entrada": "07:05:30",
+      "latitud_entrada": 12.1365,
+      "longitud_entrada": -86.2515,
+      "tipo": "entrada"
+    },
+    {
       "asistencia_temp_id": 1,
       "hora_salida": "17:10:25",
       "latitud_salida": 12.1366,
