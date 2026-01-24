@@ -2,7 +2,7 @@
 import 'package:quadycons/domain/entities/project.dart';
 
 class Worker {
-  final String? id;
+  final int? id;
   final String name;
   final String? profileUrl;
   final String? position;
@@ -17,17 +17,17 @@ class Worker {
   });
 
   Worker copyWith({
-    String? id,
+    int? id,
     String? name,
     String? profileUrl,
     String? position,
-    Project? projectId
+    Project? project
   }) => Worker(
     id: id ?? this.id,
     name: name ?? this.name,
     profileUrl: profileUrl ?? this.profileUrl,
     position: position ?? this.position,
-    project: projectId ?? this.project
+    project: project ?? this.project
   );
 }
 

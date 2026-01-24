@@ -419,11 +419,11 @@ class $WorkersTable extends Workers with TableInfo<$WorkersTable, Worker> {
   $WorkersTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
     'id',
     aliasedName,
     true,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
@@ -552,7 +552,7 @@ class $WorkersTable extends Workers with TableInfo<$WorkersTable, Worker> {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Worker(
       id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}id'],
       ),
       name: attachedDatabase.typeMapping.read(
@@ -585,7 +585,7 @@ class $WorkersTable extends Workers with TableInfo<$WorkersTable, Worker> {
 }
 
 class Worker extends DataClass implements Insertable<Worker> {
-  final String? id;
+  final int? id;
   final String name;
   final String? profileUrl;
   final String? position;
@@ -603,7 +603,7 @@ class Worker extends DataClass implements Insertable<Worker> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (!nullToAbsent || id != null) {
-      map['id'] = Variable<String>(id);
+      map['id'] = Variable<int>(id);
     }
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || profileUrl != null) {
@@ -638,7 +638,7 @@ class Worker extends DataClass implements Insertable<Worker> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Worker(
-      id: serializer.fromJson<String?>(json['id']),
+      id: serializer.fromJson<int?>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       profileUrl: serializer.fromJson<String?>(json['profileUrl']),
       position: serializer.fromJson<String?>(json['position']),
@@ -650,7 +650,7 @@ class Worker extends DataClass implements Insertable<Worker> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<String?>(id),
+      'id': serializer.toJson<int?>(id),
       'name': serializer.toJson<String>(name),
       'profileUrl': serializer.toJson<String?>(profileUrl),
       'position': serializer.toJson<String?>(position),
@@ -660,7 +660,7 @@ class Worker extends DataClass implements Insertable<Worker> {
   }
 
   Worker copyWith({
-    Value<String?> id = const Value.absent(),
+    Value<int?> id = const Value.absent(),
     String? name,
     Value<String?> profileUrl = const Value.absent(),
     Value<String?> position = const Value.absent(),
@@ -716,7 +716,7 @@ class Worker extends DataClass implements Insertable<Worker> {
 }
 
 class WorkersCompanion extends UpdateCompanion<Worker> {
-  final Value<String?> id;
+  final Value<int?> id;
   final Value<String> name;
   final Value<String?> profileUrl;
   final Value<String?> position;
@@ -744,7 +744,7 @@ class WorkersCompanion extends UpdateCompanion<Worker> {
        docNumber = Value(docNumber),
        projectId = Value(projectId);
   static Insertable<Worker> custom({
-    Expression<String>? id,
+    Expression<int>? id,
     Expression<String>? name,
     Expression<String>? profileUrl,
     Expression<String>? position,
@@ -764,7 +764,7 @@ class WorkersCompanion extends UpdateCompanion<Worker> {
   }
 
   WorkersCompanion copyWith({
-    Value<String?>? id,
+    Value<int?>? id,
     Value<String>? name,
     Value<String?>? profileUrl,
     Value<String?>? position,
@@ -787,7 +787,7 @@ class WorkersCompanion extends UpdateCompanion<Worker> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<String>(id.value);
+      map['id'] = Variable<int>(id.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -1799,7 +1799,7 @@ typedef $$ProjectsTableProcessedTableManager =
     >;
 typedef $$WorkersTableCreateCompanionBuilder =
     WorkersCompanion Function({
-      Value<String?> id,
+      Value<int?> id,
       required String name,
       Value<String?> profileUrl,
       Value<String?> position,
@@ -1809,7 +1809,7 @@ typedef $$WorkersTableCreateCompanionBuilder =
     });
 typedef $$WorkersTableUpdateCompanionBuilder =
     WorkersCompanion Function({
-      Value<String?> id,
+      Value<int?> id,
       Value<String> name,
       Value<String?> profileUrl,
       Value<String?> position,
@@ -1872,7 +1872,7 @@ class $$WorkersTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get id => $composableBuilder(
+  ColumnFilters<int> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnFilters(column),
   );
@@ -1955,7 +1955,7 @@ class $$WorkersTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get id => $composableBuilder(
+  ColumnOrderings<int> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
   );
@@ -2013,7 +2013,7 @@ class $$WorkersTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<String> get id =>
+  GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
   GeneratedColumn<String> get name =>
@@ -2107,7 +2107,7 @@ class $$WorkersTableTableManager
               $$WorkersTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<String?> id = const Value.absent(),
+                Value<int?> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String?> profileUrl = const Value.absent(),
                 Value<String?> position = const Value.absent(),
@@ -2125,7 +2125,7 @@ class $$WorkersTableTableManager
               ),
           createCompanionCallback:
               ({
-                Value<String?> id = const Value.absent(),
+                Value<int?> id = const Value.absent(),
                 required String name,
                 Value<String?> profileUrl = const Value.absent(),
                 Value<String?> position = const Value.absent(),

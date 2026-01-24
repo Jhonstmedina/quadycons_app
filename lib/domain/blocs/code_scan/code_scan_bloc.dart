@@ -36,10 +36,10 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
     if(idCodeInfo != null) {
       idCodeInfo = idCodeInfo.copyWith(
         worker: idCodeInfo.worker!.copyWith(
-          projectId: event.project
+          project: event.project
         )
       );
-      final idInfo = await repository.getInfoByIdBase(idCodeInfo, event.project);
+      final idInfo = await repository.getInfoByIdBase(idCodeInfo, event.allProjects);
       var initState = state as Registrating;
       initState = initState.copyWith(
         idDocInfo: idInfo

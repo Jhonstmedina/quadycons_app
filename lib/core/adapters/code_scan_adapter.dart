@@ -39,7 +39,7 @@ class CodeScanAdapter {
       );
     }
 
-    final idDocument = parts[0];
+    final idDocument = parts[1];
     final possibleName = parts[4];
     String? nameEnd;
     if(_isNameToken(possibleName)) {

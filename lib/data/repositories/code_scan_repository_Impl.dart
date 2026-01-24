@@ -21,7 +21,7 @@ class CodeScanRepositoryImpl implements CodeScanRepository {
   });
 
   @override
-  Future<IdCodeInfo> getInfoByIdBase(IdCodeInfo info, Project project) async {
+  Future<IdCodeInfo> getInfoByIdBase(IdCodeInfo info, List<Project> projects) async {
     final localWorker = await dao.getByDocNumber(info.docNumber);
     if(localWorker == null) {
       if( await connectivityService.thereIsConnectivity()) {
@@ -36,6 +36,6 @@ class CodeScanRepositoryImpl implements CodeScanRepository {
       await dao.insertWorker(data);
       return info;
     }
-    return WorkerMapper.fromDb(localWorker, [project]);
+    return WorkerMapper.fromDb(localWorker, projects);
   }
 }

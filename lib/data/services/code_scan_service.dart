@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:quadycons/domain/entities/id_code_info.dart';
 import 'package:quadycons/data/services/service.dart';
+import 'package:quadycons/domain/entities/project.dart';
 
 abstract class CodeScanService {
   Future<Worker> getInfoByIdentification(String idDocument, String accessToken);
@@ -20,10 +20,15 @@ class CodeScanServiceImpl extends Service implements CodeScanService {
     final result = response.data;
     return Worker(
       id: result['id'],
-      name: '${result['nombre']} ${result['apellido']}',
-      profileUrl: result['foto_cedula'],
-      position: result['cargo'],
-      project: result['proyecto_actual']['id']
+      name: result['nombre_completo'],
+      profileUrl: result['foto_cedula'] ?? result['foto_url'],
+      position: result['puesto_laboral'] ?? result['cargo'],
+      project: Project(
+        id: result['proyecto_asignado_info']['id'],
+        name: result['proyecto_asignado_info']['nombre'],
+        geoLocation: null,
+        geoFence: null
+      )
     );
   }
 }

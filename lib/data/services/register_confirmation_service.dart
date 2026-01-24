@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:quadycons/domain/entities/attendance.dart';
 import 'package:quadycons/domain/entities/check.dart';
 import 'package:quadycons/domain/entities/registration.dart';
@@ -20,7 +19,7 @@ class RegisterConfirmationServiceImpl extends Service implements RegisterConfirm
         options: super.getBaseOptions(accessToken),
         data: {
           'trabajador_cedula': registration.idCodeInfo.docNumber,
-          'proyecto_id': registration.idCodeInfo.worker!.project,
+          'proyecto_id': registration.idCodeInfo.worker!.project!.id,
           'latitud': registration.check.location.lat,
           'longitud': registration.check.location.lon
         }

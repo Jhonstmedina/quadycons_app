@@ -6,9 +6,11 @@ sealed class CodeScanEvent {}
 
 final class InsertScanInfo extends CodeScanEvent {
   final IdCodeInfo? idCodeInfo;
+  final List<Project> allProjects;
   final Project project;
   InsertScanInfo(
     this.idCodeInfo,
+    this.allProjects,
     this.project
   );
 }

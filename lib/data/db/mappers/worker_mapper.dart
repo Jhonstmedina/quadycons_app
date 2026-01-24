@@ -21,6 +21,7 @@ class WorkerMapper {
 
   static db.WorkersCompanion toDb(IdCodeInfo idCodeInfo) {
     return db.WorkersCompanion(
+      id: Value(idCodeInfo.worker!.id),
       name: Value(idCodeInfo.worker!.name),
       profileUrl: Value(idCodeInfo.worker!.profileUrl),
       position: Value(idCodeInfo.worker!.position),

@@ -35,25 +35,38 @@ class IdCodeScanScreen extends StatelessWidget {
                     SnackBar(
                       content: Text(state.errorMessage!),
                       backgroundColor: Colors.red,
-                    ),
+                    )
                   );
                 }
-                if (state.registerType != null &&
+                if(state.idDocInfo != null) {
+                  final workerProject = state.idDocInfo!.worker?.project;
+                  if( workerProject != null &&
+                     workerProject.id != (context.read<ProjectsBloc>().state as ProjectsLoaded)
+                      .chosenProject?.id
+                  ) {
+                    context.read<ProjectsBloc>().add(ChooseProject(
+                      project: workerProject
+                    ));
+                  }
+                  if (state.registerType != null &&
                     state.idDocInfo != null &&
-                    (state.isInFence ?? false)) {
-                  context.read<CodeScanBloc>().add(ResetBloc());
-                  context.push(
-                    '/register-confirmation',
-                    extra: Registration(
-                      check: Check(
-                        time: DateTime.now(),
-                        location: state.currentLocation!,
+                    (state.isInFence ?? false)
+                  ) {
+                    context.read<CodeScanBloc>().add(ResetBloc());
+                    context.push(
+                      '/register-confirmation',
+                      extra: Registration(
+                        check: Check(
+                          time: DateTime.now(),
+                          location: state.currentLocation!,
+                        ),
+                        idCodeInfo: state.idDocInfo!,
+                        type: state.registerType!,
                       ),
-                      idCodeInfo: state.idDocInfo!,
-                      type: state.registerType!,
-                    ),
-                  );
+                    );
+                  }
                 }
+                
               },
               builder: (context, state) {
                 state = state as Registrating;
@@ -195,6 +208,6 @@ class IdCodeScanScreen extends StatelessWidget {
         (project) => project.id == idCodeInfo!.worker!.project!.id
       );
     }
-    codeScanBloc.add(InsertScanInfo(idCodeInfo, chosenProject!));
+    codeScanBloc.add(InsertScanInfo(idCodeInfo, projects, chosenProject!));
   }
 }

@@ -36,7 +36,7 @@ class AttendanceMapper {
       idCodeInfo: IdCodeInfo(
         docNumber: w.docNumber,
         worker: Worker(
-          id: w.id?.toString(),
+          id: w.id,
           name: w.name,
           profileUrl: w.profileUrl,
           position: w.position,
@@ -110,7 +110,7 @@ class AttendanceMapper {
           idCodeInfo: IdCodeInfo(
             docNumber: row.worker.docNumber,
             worker: Worker(
-              id: row.worker.id?.toString(),
+              id: row.worker.id,
               name: row.worker.name,
               profileUrl: row.worker.profileUrl,
               position: row.worker.position,
@@ -140,7 +140,7 @@ class AttendanceMapper {
             idCodeInfo: IdCodeInfo(
               docNumber: row.worker.docNumber,
               worker: Worker(
-                id: row.worker.id?.toString(),
+                id: row.worker.id,
                 name: row.worker.name,
                 profileUrl: row.worker.profileUrl,
                 position: row.worker.position,

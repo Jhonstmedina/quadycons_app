@@ -2,7 +2,7 @@ import 'package:drift/drift.dart';
 import 'projects_table.dart';
 
 class Workers extends Table {
-  TextColumn get id => text().nullable()(); // remote id
+  IntColumn get id => integer().nullable()();
   TextColumn get name => text()();
   TextColumn get profileUrl => text().nullable()();
   TextColumn get position => text().nullable()();

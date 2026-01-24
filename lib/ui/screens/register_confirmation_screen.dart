@@ -115,6 +115,13 @@ class RegisterConfirmationScreen extends StatelessWidget {
                               width: MediaQuery.of(context).size.width * 0.15,
                               height: MediaQuery.of(context).size.width * 0.15,
                               fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Icon(
+                                  Icons.person,
+                                  size: MediaQuery.of(context).size.width * 0.1,
+                                  color: Colors.white
+                                );
+                              },
                             )
                           ): Icon(
                             Icons.person,
