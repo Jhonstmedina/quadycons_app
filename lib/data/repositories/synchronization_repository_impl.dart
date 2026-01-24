@@ -75,4 +75,13 @@ class SynchronizationRepositoryImpl implements SynchronizationRepository {
       }
     }
   }
+  
+  @override
+  Future<void> removeRegistrations(List<int> attendancesIds) async {
+    for(final id in attendancesIds) {
+      await attendanceDao.deleteAttendanceById(
+        id
+      );
+    }
+  }
 }

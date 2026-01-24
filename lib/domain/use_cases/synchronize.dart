@@ -29,6 +29,7 @@ class SynchronizeImpl implements Synchronize {
         succesfullySynchronized.add(registration);
       }
     }
+    
     await repository.markAsSynchronized(succesfullySynchronized);
     return await repository.getPendingRegistrations(projects);
   }

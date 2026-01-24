@@ -131,4 +131,10 @@ class AttendanceDao extends DatabaseAccessor<AppDatabase>
     );
   }
 
+  Future<int> deleteAttendanceById(int id) {
+    return (delete(attendances)
+          ..where((a) => a.id.equals(id)))
+        .go();
+  }
+
 }

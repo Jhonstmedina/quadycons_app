@@ -54,10 +54,10 @@ class SynchronizationBloc extends Bloc<SynchronizationEvent, SynchronizationStat
   Future<void> _cleanLastRegistrations(CleanLastRegistrationsEvent event, Emitter<SynchronizationState> emit) async {
     final initState = state;
     if(initState is! LastRegistrationsLoaded) return;
-    final cleanedRegistrations = await cleanLastRegistrations(initState.lastRegistrations);
+    final remainingRegistrations = await cleanLastRegistrations(initState.lastRegistrations, event.projects);
     emit(initState.copyWith(
-      lastRegistrations: cleanedRegistrations,
-      canSynchronize: cleanedRegistrations.any(
+      lastRegistrations: remainingRegistrations,
+      canSynchronize: remainingRegistrations.any(
         (r) => r.status == .pending
       )
     ));

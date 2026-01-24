@@ -16,4 +16,7 @@ final class SynchronizeRegistrationsEvent extends SynchronizationEvent {
   });
 }
 
-final class CleanLastRegistrationsEvent extends SynchronizationEvent {}
+final class CleanLastRegistrationsEvent extends SynchronizationEvent {
+  final List<Project> projects;
+  CleanLastRegistrationsEvent(this.projects);
+}

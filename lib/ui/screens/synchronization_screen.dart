@@ -78,7 +78,9 @@ class SynchronizationScreen extends StatelessWidget {
                         // Clear button
                         ElevatedButton(
                           onPressed: () {
-                            // TODO: Implement clear functionality
+                            context.read<SynchronizationBloc>().add(CleanLastRegistrationsEvent(
+                              (context.read<ProjectsBloc>().state as ProjectsLoaded).projects
+                            ));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFFF5F3FF),
