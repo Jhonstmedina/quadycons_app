@@ -4,6 +4,7 @@ import 'package:quadycons/domain/entities/attendance.dart';
 import 'package:quadycons/domain/entities/project.dart';
 import 'package:quadycons/domain/entities/register_type.dart';
 import 'package:quadycons/domain/entities/registration.dart';
+import 'package:quadycons/domain/exceptions.dart';
 import 'package:quadycons/domain/repositories/attendance_repository.dart';
 
 part 'register_confirmation_event.dart';
@@ -94,7 +95,7 @@ class RegisterConfirmationBloc extends Bloc<RegisterConfirmationEvent, RegisterC
       emit(initState.copyWith(
         isLoading: false,
         error: RegisterConfirmError(
-          message: e.toString(),
+          message: e is GeneralException? e.message : e.toString(),
           type: RegisterConfirmErrorType.general
         )
       ));

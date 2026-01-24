@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quadycons/domain/entities/project.dart';
 import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
 
 class ProjectsSelect extends StatelessWidget {
@@ -30,7 +29,7 @@ class ProjectsSelect extends StatelessWidget {
           );
         }
         return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: .spaceBetween,
           children: [
             Text(
               'Proyecto Delegado',
@@ -47,9 +46,9 @@ class ProjectsSelect extends StatelessWidget {
                 color: Color(0xFFF5F3FF),
                 borderRadius: BorderRadius.circular(20)
               ),
-              child: DropdownButton<Project>(
+              child: DropdownButton<int>(
                 padding: EdgeInsets.zero,
-                value: state.chosenProject,
+                value: state.chosenProject?.id,
                 hint: Text(
                   'Seleccionar proyecto',
                   style: TextStyle(fontSize: 13)
@@ -64,15 +63,17 @@ class ProjectsSelect extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 menuMaxHeight: 300,
                 items: state.projects.map((project) {
-                  return DropdownMenuItem<Project>(
-                    value: project,
+                  return DropdownMenuItem<int>(
+                    value: project.id,
                     child: Text(project.name),
                   );
                 }).toList(),
-                onChanged: (Project? selectedProject) {
-                  if (selectedProject != null) {
+                onChanged: (int? selectedProjectId) {
+                  if (selectedProjectId != null) {
                     context.read<ProjectsBloc>().add(
-                      ChooseProject(project: selectedProject)
+                      ChooseProject(project: state.projects.firstWhere(
+                        (project) => project.id == selectedProjectId
+                      ))
                     );
                   }
                 }

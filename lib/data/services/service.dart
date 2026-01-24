@@ -19,11 +19,19 @@ abstract class Service {
         print(response.data);
         throw GeneralException(message: response.data['error']['message'] ?? 'Ha ocurrido un error inesperado' );
       }
-    }on GeneralException catch(_){
+    } on GeneralException catch(_){
       rethrow;
-    }catch(exception, stackTrace){
+    } on DioException catch(exception, stackTrace){
       print(stackTrace);
-      throw const GeneralException(message: 'Ha ocurrido un error inesperado');
+      throw GeneralException(
+        message:
+          exception.response?.data['error'] ??
+          'Ha ocurrido un error inesperado'
+      );
+    } catch (_) {
+      throw GeneralException(
+        message: 'Ha ocurrido un error inesperado'
+      );
     }
   }
 

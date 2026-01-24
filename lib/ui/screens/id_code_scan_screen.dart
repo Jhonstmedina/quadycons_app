@@ -208,6 +208,6 @@ class IdCodeScanScreen extends StatelessWidget {
         (project) => project.id == idCodeInfo!.worker!.project!.id
       );
     }
-    codeScanBloc.add(InsertScanInfo(idCodeInfo, projects, chosenProject!));
+    codeScanBloc.add(InsertScanInfo(idCodeInfo, chosenProject!, projects));
   }
 }

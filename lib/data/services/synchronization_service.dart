@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:quadycons/data/services/dto/registration_result_dto.dart';
 import 'package:quadycons/data/services/service.dart';
 import 'package:quadycons/domain/entities/pending_registration.dart';
@@ -23,17 +22,17 @@ class SynchronizationServiceImpl extends Service implements SynchronizationServi
               'asistencia_temp_id': r.localAttendanceId,
               'trabajador_cedula': r.registration.idCodeInfo.docNumber,
               'proyecto_id': r.registration.idCodeInfo.worker!.project!.id,
-              'fecha': r.registration.check.time.toIso8601String(),
-              'hora_entrada': TimeOfDay.fromDateTime( r.registration.check.time).toString(),
+              'fecha': _dateToString(r.registration.check.time),
+              'hora_entrada': _dateToStringTime(r.registration.check.time),
               'latitud_entrada': r.registration.check.location.lat,
               'longitud_entrada': r.registration.check.location.lon,
-              'tipo': r.registration.type
+              'tipo': 'entrada'
             } : {
               'asistencia_temp_id': r.localAttendanceId,
-              'hora_salida': TimeOfDay.fromDateTime(r.registration.check.time).toString(),
+              'hora_salida': _dateToStringTime(r.registration.check.time),
               'latitud_salida': r.registration.check.location.lat,
               'longitud_salida': r.registration.check.location.lon,
-              'tipo': r.registration.type
+              'tipo': 'salida'
 
             }
           ).toList()
@@ -50,5 +49,24 @@ class SynchronizationServiceImpl extends Service implements SynchronizationServi
           mensaje: r['mensaje']
         )
       ).toList();
+  }
+
+  /*
+   * Formato: YYYY-MM-DD
+  */
+  String _dateToString(DateTime date) {
+    final year = date.year.toString().padLeft(4, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    final day = date.day.toString().padLeft(2, '0');
+    return '$year-$month-$day';
+  }
+
+  /*
+  * Formato: HH:MM
+  */
+  String _dateToStringTime(DateTime date) {
+    final hour = date.hour.toString().padLeft(2, '0');
+    final minute = date.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
   }
 }

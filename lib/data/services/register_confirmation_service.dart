@@ -25,7 +25,10 @@ class RegisterConfirmationServiceImpl extends Service implements RegisterConfirm
         }
       )
     );
-    final data = result.data;
+    var data = result.data;
+    if(data['asistencia'] != null) {
+      data = data['asistencia'];
+    }
     final dateParts = data['fecha'].split('-');
     final timeParts = data['hora_entrada'].split(':');
     final checkInTime = DateTime(
@@ -59,7 +62,10 @@ class RegisterConfirmationServiceImpl extends Service implements RegisterConfirm
         }
       )
     );
-    final data = result.data;
+    var data = result.data;
+    if(data['asistencia'] != null) {
+      data = data['asistencia'];
+    }
     final dateParts = data['fecha'].split('-');
     final timeParts = data['hora_salida'].split(':');
     final checkOutTime = DateTime(
@@ -70,6 +76,7 @@ class RegisterConfirmationServiceImpl extends Service implements RegisterConfirm
       int.parse(timeParts[1])
     );
     return Attendance(
+      id: attendance.id,
       remoteId: data['id'],
       checkin: attendance.checkin,
       checkout: Check(
