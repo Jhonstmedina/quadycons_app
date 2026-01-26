@@ -84,4 +84,32 @@ class SynchronizationRepositoryImpl implements SynchronizationRepository {
       );
     }
   }
+  
+  @override
+  Future<void> updateRegistrations(List<PendingRegistration> registrations) async {
+    for(final r in registrations) {
+      final daoAttendance = await attendanceDao.getById(
+        r.localAttendanceId
+      );
+      var attendance = AttendanceMapper.fromDb(
+        daoAttendance
+      );
+      if(r.registration.type == .checkIn) {
+        attendance = attendance.copyWith(
+          checkin: r.registration.check
+        );
+      } else if(r.registration.type == .checkOut) {
+        attendance = attendance.copyWith(
+          checkout: r.registration.check
+        );
+      }
+      final attendanceCompanion = AttendanceMapper.toDb(
+        attendance
+      );
+      await attendanceDao.updateAttendance(
+        r.localAttendanceId,
+        attendanceCompanion
+      );
+    }
+  }
 }

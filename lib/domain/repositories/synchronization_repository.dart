@@ -6,5 +6,6 @@ abstract class SynchronizationRepository {
   Future<List<PendingRegistration>> getPendingRegistrations(List<Project> projects);
   Future<List<RegistrationResult>> synchronize(List<PendingRegistration> registrations);
   Future<void> markAsSynchronized(List<PendingRegistration> registrations);
+  Future<void> updateRegistrations(List<PendingRegistration> registrations);
   Future<void> removeRegistrations(List<int> attendancesIds);
 }
