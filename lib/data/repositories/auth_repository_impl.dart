@@ -22,6 +22,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> login(Authentication auth) async {
+    if(!(await connectivityService.thereIsConnectivity())) {
+      throw GeneralException(message: 'No hay conectividad');
+    }
     final token = await authService.login(auth);
     await localDataSource.cacheAuthToken(token);
   }
@@ -54,8 +57,13 @@ class AuthRepositoryImpl implements AuthRepository {
     } catch (_) {
       return null;
     }
-    final user = await authService.getUser(accessToken);
-    await localDataSource.saveUser(user);
+    late User? user;
+    if(await connectivityService.thereIsConnectivity()) {
+      final user = await authService.getUser(accessToken);
+      await localDataSource.saveUser(user);
+    } else {
+      user = await localDataSource.getUser();
+    }
     return user;
   }
 }

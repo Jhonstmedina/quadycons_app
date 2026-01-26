@@ -37,7 +37,7 @@ class AuthLocalDataSource implements AccessTokenGetter{
     final Map<String, dynamic> userMap = jsonDecode(userJson);
     return User(
       name: userMap['name'],
-      role: userMap['role'],
+      role: userMap['rol'],
       image: userMap['image']
     );
   }
