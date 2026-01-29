@@ -3,6 +3,7 @@ import 'package:quadycons/domain/entities/register_type.dart';
 enum RegistrationResultStatus {
   success,
   failure,
+  repeated
 }
 
 class RegistrationResult {

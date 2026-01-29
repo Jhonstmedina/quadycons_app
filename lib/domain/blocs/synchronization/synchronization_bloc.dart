@@ -26,7 +26,7 @@ class SynchronizationBloc extends Bloc<SynchronizationEvent, SynchronizationStat
   }
 
   Future<void> _getPendingRegistrations(GetLastRegistrationsEvent event, Emitter<SynchronizationState> emit) async {  
-    final lastRegistrations = await repository.getPendingRegistrations(event.projects);
+    final lastRegistrations = await repository.getLastRegistrations(event.projects);
     emit(LastRegistrationsLoaded(
       lastRegistrations: lastRegistrations,
       canSynchronize: lastRegistrations.any(

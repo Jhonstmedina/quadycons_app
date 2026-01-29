@@ -32,7 +32,7 @@ class CleanLastRegistrationsImpl implements CleanLastRegistrations {
     }
     final cleanedAttendances = cleanedRegistrations.map((e) => e.localAttendanceId).toSet().toList();
     await repository.removeRegistrations(cleanedAttendances);
-    return await repository.getPendingRegistrations(projects);
+    return await repository.getLastRegistrations(projects);
   }
   
 }

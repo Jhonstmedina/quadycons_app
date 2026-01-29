@@ -33,11 +33,11 @@ import 'package:quadycons/domain/repositories/synchronization_repository.dart'
 class MockSynchronizationRepository extends _i1.Mock
     implements _i2.SynchronizationRepository {
   @override
-  _i3.Future<List<_i4.PendingRegistration>> getPendingRegistrations(
+  _i3.Future<List<_i4.PendingRegistration>> getLastRegistrations(
     List<_i5.Project>? projects,
   ) =>
       (super.noSuchMethod(
-            Invocation.method(#getPendingRegistrations, [projects]),
+            Invocation.method(#getLastRegistrations, [projects]),
             returnValue: _i3.Future<List<_i4.PendingRegistration>>.value(
               <_i4.PendingRegistration>[],
             ),
@@ -70,6 +70,17 @@ class MockSynchronizationRepository extends _i1.Mock
   ) =>
       (super.noSuchMethod(
             Invocation.method(#markAsSynchronized, [registrations]),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
+
+  @override
+  _i3.Future<void> updateRegistrations(
+    List<_i4.PendingRegistration>? registrations,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateRegistrations, [registrations]),
             returnValue: _i3.Future<void>.value(),
             returnValueForMissingStub: _i3.Future<void>.value(),
           )

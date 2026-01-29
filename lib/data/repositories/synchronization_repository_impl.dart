@@ -25,7 +25,7 @@ class SynchronizationRepositoryImpl implements SynchronizationRepository {
   });
 
   @override
-  Future<List<PendingRegistration>> getPendingRegistrations(List<Project> projects) async {
+  Future<List<PendingRegistration>> getLastRegistrations(List<Project> projects) async {
     final pendingAttendances = await attendanceDao.getTodayWithWorker();
     return AttendanceMapper.getRegistrationsFromDb(pendingAttendances, projects);
   }

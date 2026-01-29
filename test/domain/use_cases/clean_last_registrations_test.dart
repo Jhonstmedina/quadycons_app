@@ -65,7 +65,7 @@ void main() {
       ];
 
       // Previous
-      when(mockRepository.getPendingRegistrations(any))
+      when(mockRepository.getLastRegistrations(any))
           .thenAnswer((_) async => []);
 
       // Act
@@ -73,7 +73,7 @@ void main() {
 
       // Verify
       verify(mockRepository.removeRegistrations([1])).called(1);
-      verify(mockRepository.getPendingRegistrations(projects)).called(1);
+      verify(mockRepository.getLastRegistrations(projects)).called(1);
 
       // Assert
       expect(result.length, 0);
@@ -148,7 +148,7 @@ void main() {
       ];
 
       // Previous
-      when(mockRepository.getPendingRegistrations(any))
+      when(mockRepository.getLastRegistrations(any))
           .thenAnswer((_) async => [registrations[2], registrations[3]]);
 
       // Act
@@ -156,7 +156,7 @@ void main() {
 
       // Verify
       verify(mockRepository.removeRegistrations([1])).called(1);
-      verify(mockRepository.getPendingRegistrations(projects)).called(1);
+      verify(mockRepository.getLastRegistrations(projects)).called(1);
 
       // Assert
       expect(result.length, 2);
@@ -250,7 +250,7 @@ void main() {
       ];
 
       // Previous
-      when(mockRepository.getPendingRegistrations(any))
+      when(mockRepository.getLastRegistrations(any))
           .thenAnswer((_) async => [registrations[2], registrations[3], registrations[4]]);
 
       // Act
@@ -258,7 +258,7 @@ void main() {
 
       // Verify
       verify(mockRepository.removeRegistrations([1])).called(1);
-      verify(mockRepository.getPendingRegistrations(projects)).called(1);
+      verify(mockRepository.getLastRegistrations(projects)).called(1);
 
       // Assert
       expect(result.length, 3);
@@ -354,7 +354,7 @@ void main() {
       ];
 
       // Previous
-      when(mockRepository.getPendingRegistrations(any))
+      when(mockRepository.getLastRegistrations(any))
           .thenAnswer((_) async => [registrations[2], registrations[3], registrations[4]]);
 
       // Act
@@ -362,7 +362,7 @@ void main() {
 
       // Verify
       verify(mockRepository.removeRegistrations([1])).called(1);
-      verify(mockRepository.getPendingRegistrations(projects)).called(1);
+      verify(mockRepository.getLastRegistrations(projects)).called(1);
 
       // Assert
       expect(result.length, 3);
@@ -488,7 +488,7 @@ void main() {
       ];
 
       // Previous
-      when(mockRepository.getPendingRegistrations(any))
+      when(mockRepository.getLastRegistrations(any))
           .thenAnswer((_) async => [registrations[2], registrations[3], registrations[4]]);
 
       // Act
@@ -496,7 +496,7 @@ void main() {
 
       // Verify
       verify(mockRepository.removeRegistrations([1, 5])).called(1);
-      verify(mockRepository.getPendingRegistrations(projects)).called(1);
+      verify(mockRepository.getLastRegistrations(projects)).called(1);
 
       // Assert
       expect(result.length, 3);
