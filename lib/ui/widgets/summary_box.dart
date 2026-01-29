@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quadycons/core/app_colors.dart';
 
 class SummaryBox extends StatelessWidget {
   final String label;
@@ -16,7 +17,7 @@ class SummaryBox extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Color(0xFFF5F3FF),
+        color: AppColors.containerBackground(context),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(

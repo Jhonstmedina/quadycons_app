@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quadycons/core/app_colors.dart';
 import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
 import 'package:quadycons/domain/connectivity/connectivity_service.dart';
 import 'package:quadycons/domain/entities/check.dart';
@@ -106,7 +107,7 @@ class IdCodeScanScreen extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Color(0xFFF5F3FF),
+                        color: AppColors.containerBackground(context),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Column(
@@ -116,7 +117,10 @@ class IdCodeScanScreen extends StatelessWidget {
                           SizedBox(height: 16),
                           Text(
                             'apunta al código de barras de la cédula o al QR',
-                            style: TextStyle(color: Colors.grey, fontSize: 14),
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14
+                            ),
                             textAlign: TextAlign.center,
                           ),
                           SizedBox(height: 16),
