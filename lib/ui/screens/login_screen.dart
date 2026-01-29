@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quadycons/domain/blocs/auth/auth_bloc.dart';
 import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
+import 'package:quadycons/ui/utils/snack_manager.dart';
 import 'package:quadycons/ui/widgets/auth_input.dart';
 import 'package:quadycons/ui/widgets/box.dart';
 
@@ -41,11 +42,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 context.read<ProjectsBloc>().add(LoadProjects());
                 context.go('/permissions');
               } else if (state is OnLogin && state.errorMessage != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.errorMessage!),
-                    backgroundColor: Colors.red
-                  )
+                SnackManager.showSnackBar(
+                  context,
+                  state.errorMessage!,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                  icon: Icons.error_outline
                 );
               }
             },

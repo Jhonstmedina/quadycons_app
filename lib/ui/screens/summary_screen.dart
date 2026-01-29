@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quadycons/core/app_dimens.dart';
 import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
 import 'package:quadycons/domain/blocs/summaries/summaries_bloc.dart';
 import 'package:quadycons/ui/widgets/box.dart';
@@ -15,7 +16,7 @@ class SummaryScreen extends StatelessWidget {
     final horizontalPadding = MediaQuery.of(context).size.width * 0.05;
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'Resumen de hoy'),
+      appBar: CustomAppBar(title: ''),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
@@ -40,6 +41,14 @@ class SummaryScreen extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Resumen de hoy',
+                              style: AppDimens.titleLargeStyle(context)
+                            )
+                          ),
+                          SizedBox(height: 15),
                           Row(
                             children: [
                               Expanded(

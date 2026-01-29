@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
 import 'package:quadycons/domain/blocs/register_confirmation/register_confirmation_bloc.dart';
+import 'package:quadycons/ui/utils/snack_manager.dart';
 import 'package:quadycons/ui/widgets/box.dart';
 import 'package:quadycons/ui/widgets/projects_select.dart';
 import 'package:quadycons/ui/widgets/register_time.dart';
@@ -24,35 +25,12 @@ class RegisterConfirmationScreen extends StatelessWidget {
           child: BlocConsumer<RegisterConfirmationBloc, RegisterConfirmationState>(
             listener: (blocContext, state) {
               if (state is OnRegistration && state.error != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Row(
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          color: Colors.black,
-                          size: 24,
-                        ),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            state.error!.message,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
-                            )
-                          )
-                        )
-                      ]
-                    ),
-                    backgroundColor: Colors.amber[700],
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    margin: EdgeInsets.all(16),
-                    duration: Duration(seconds: 10)
-                  )
+                SnackManager.showSnackBar(
+                  context,
+                  state.error!.message,
+                  backgroundColor: Colors.amber,
+                  textColor: Colors.black,
+                  icon: Icons.error_outline
                 );
               }
             },

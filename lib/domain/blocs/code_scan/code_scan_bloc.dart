@@ -96,7 +96,7 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
       }
       emit(initState.copyWith(
         isInFence: isInFence,
-        errorMessage: isInFence ? null : "Fuera del área de registro",
+        errorMessage: isInFence ? null : "Fuera de ubicación",
         currentLocation: location
       ));
     }

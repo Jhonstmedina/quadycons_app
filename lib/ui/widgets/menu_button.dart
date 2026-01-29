@@ -46,13 +46,13 @@ class MenuButton extends StatelessWidget {
                   Icon(
                     Icons.person_outline,
                     size: 20,
-                    color: Colors.black
+                    color: Colors.black54
                   ),
                   SizedBox(width: 12),
                   Text(
                     userName,
                     style: TextStyle(
-                      color: Colors.black
+                      color: Colors.black54
                     )
                   ),
                 ]

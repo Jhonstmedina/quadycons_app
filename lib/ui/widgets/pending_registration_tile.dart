@@ -36,8 +36,8 @@ class PendingRegistrationTile extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.15),
-            blurRadius: 8,
-            offset: Offset(0, 2),
+            blurRadius: 2,
+            offset: Offset(0, 1),
           )
         ]
       ),
