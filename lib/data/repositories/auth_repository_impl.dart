@@ -59,7 +59,7 @@ class AuthRepositoryImpl implements AuthRepository {
     }
     late User? user;
     if(await connectivityService.thereIsConnectivity()) {
-      final user = await authService.getUser(accessToken);
+      user = await authService.getUser(accessToken);
       await localDataSource.saveUser(user);
     } else {
       user = await localDataSource.getUser();

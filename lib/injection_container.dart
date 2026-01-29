@@ -301,7 +301,7 @@ void _initSynchronizationModule() {
   );
 }
 
-bool useRealData = true;
+bool useRealData = false;
 
  T _implementRealOrFake<T>({
   required T realImpl,

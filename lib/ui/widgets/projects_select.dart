@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quadycons/core/app_colors.dart';
 import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
 
 class ProjectsSelect extends StatelessWidget {
@@ -43,7 +44,7 @@ class ProjectsSelect extends StatelessWidget {
                 horizontal: 18
               ),
               decoration: BoxDecoration(
-                color: Color(0xFFF5F3FF),
+                color: AppColors.containerBackground(context),
                 borderRadius: BorderRadius.circular(20)
               ),
               child: DropdownButton<int>(
@@ -59,7 +60,7 @@ class ProjectsSelect extends StatelessWidget {
                   fontSize: 13
                 ),
                 alignment: AlignmentDirectional.centerStart,
-                dropdownColor: Color(0xFFF5F3FF),
+                dropdownColor: AppColors.containerBackground(context),
                 borderRadius: BorderRadius.circular(20),
                 menuMaxHeight: 300,
                 items: state.projects.map((project) {
