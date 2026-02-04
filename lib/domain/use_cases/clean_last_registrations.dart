@@ -17,6 +17,7 @@ class CleanLastRegistrationsImpl implements CleanLastRegistrations {
     for(int i = 0; i < registrations.length; i++) {
       final current = registrations[i];
       if(current.status == .completed) {
+        //Guarda current en cleanedRegistrations si es un checkIn y existe un checkOut *completo* con el mismo localAttendanceId, o si es un checkOut
         if(current.registration.type == .checkIn &&
           registrations.any(
             (r) => r.localAttendanceId == current.localAttendanceId &&
@@ -27,8 +28,10 @@ class CleanLastRegistrationsImpl implements CleanLastRegistrations {
           cleanedRegistrations.add(current);
         } else if(current.registration.type == .checkOut) {
           cleanedRegistrations.add(current);
+        } 
+      } else if(current.status == .canceled) {
+          cleanedRegistrations.add(current);
         }
-      }
     }
     final cleanedAttendances = cleanedRegistrations.map((e) => e.localAttendanceId).toSet().toList();
     await repository.removeRegistrations(cleanedAttendances);

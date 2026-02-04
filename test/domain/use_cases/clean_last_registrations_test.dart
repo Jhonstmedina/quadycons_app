@@ -507,5 +507,107 @@ void main() {
       expect(result[2].localAttendanceId, registrations[4].localAttendanceId);
       expect(result[2].registration.idCodeInfo.docNumber, registrations[4].registration.idCodeInfo.docNumber);
     });
+
+    test('Debe eliminar los attendances de todos los registros con error (cancelados)', () async {
+      // Arrange
+      final registrations = [
+        PendingRegistration(
+          registration: Registration(
+            check: Check(
+              time: DateTime(2026, 1, 21, 8, 0),
+              location: LatLng(lat: 12.1234, lon: -86.5678),
+            ),
+            idCodeInfo: IdCodeInfo(
+              docNumber: '001-123456-0001',
+              worker: null
+            ),
+            type: .checkIn
+          ),
+          localAttendanceId: 1,
+          status: .pending
+        ),
+        // Primer par: checkOut con attendanceLocalId = 1
+        PendingRegistration(
+          registration: Registration(
+            check: Check(
+              time: DateTime(2026, 1, 21, 17, 0),
+              location: LatLng(lat: 12.1234, lon: -86.5678),
+            ),
+            idCodeInfo: IdCodeInfo(
+              docNumber: '001-123456-0001',
+              worker: null,
+            ),
+            type: .checkOut,
+          ),
+          localAttendanceId: 1,
+          status: .pending,
+        ),
+        PendingRegistration(
+          registration: Registration(
+            check: Check(
+              time: DateTime(2026, 1, 21, 9, 0),
+              location: LatLng(lat: 12.4567, lon: -86.9012),
+            ),
+            idCodeInfo: IdCodeInfo(
+              docNumber: '001-234567-0002',
+              worker: null,
+            ),
+            type: .checkIn,
+          ),
+          localAttendanceId: 2,
+          status: .pending,
+        ),
+        PendingRegistration(
+          registration: Registration(
+            check: Check(
+              time: DateTime(2026, 1, 21, 8, 0),
+              location: LatLng(lat: 12.1234, lon: -86.5678),
+            ),
+            idCodeInfo: IdCodeInfo(
+              docNumber: '001-123456-0001',
+              worker: null
+            ),
+            type: .checkIn
+          ),
+          localAttendanceId: 5,
+          status: .canceled
+        ),
+        PendingRegistration(
+          registration: Registration(
+            check: Check(
+              time: DateTime(2026, 1, 21, 17, 0),
+              location: LatLng(lat: 12.1234, lon: -86.5678),
+            ),
+            idCodeInfo: IdCodeInfo(
+              docNumber: '001-123456-0001',
+              worker: null,
+            ),
+            type: .checkOut,
+          ),
+          localAttendanceId: 5,
+          status: .canceled,
+        ),
+      ];
+
+      // Previous
+      when(mockRepository.getLastRegistrations(any))
+          .thenAnswer((_) async => [registrations[0], registrations[1], registrations[2]]);
+
+      // Act
+      final result = await cleanLastRegistrations(registrations, projects);
+
+      // Verify
+      verify(mockRepository.removeRegistrations([5])).called(1);
+      verify(mockRepository.getLastRegistrations(projects)).called(1);
+
+      // Assert
+      expect(result.length, 3);
+      expect(result[0].localAttendanceId, registrations[0].localAttendanceId);
+      expect(result[0].registration.idCodeInfo.docNumber, registrations[0].registration.idCodeInfo.docNumber);
+      expect(result[1].localAttendanceId, registrations[1].localAttendanceId);
+      expect(result[1].registration.idCodeInfo.docNumber, registrations[1].registration.idCodeInfo.docNumber);
+      expect(result[2].localAttendanceId, registrations[2].localAttendanceId);
+      expect(result[2].registration.idCodeInfo.docNumber, registrations[2].registration.idCodeInfo.docNumber);
+    });
   });
 }
