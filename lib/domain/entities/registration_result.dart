@@ -10,7 +10,7 @@ class RegistrationResult {
   final int? localAttendanceId;
   final int remoteAttendanceId;
   final RegistrationResultStatus status;
-  final RegisterType type;
+  final RegisterType? type;
   RegistrationResult({
     required this.localAttendanceId,
     required this.remoteAttendanceId,

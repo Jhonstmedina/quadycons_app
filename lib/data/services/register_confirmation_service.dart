@@ -1,7 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:quadycons/domain/entities/attendance.dart';
 import 'package:quadycons/domain/entities/check.dart';
 import 'package:quadycons/domain/entities/registration.dart';
 import 'package:quadycons/data/services/service.dart';
+import 'package:quadycons/domain/exceptions.dart';
 
 abstract class RegisterConfirmationService {
   Future<Attendance> confirmCheckIn(Registration registration, String accessToken);
@@ -13,18 +15,29 @@ class RegisterConfirmationServiceImpl extends Service implements RegisterConfirm
   
   @override
   Future<Attendance> confirmCheckIn(Registration registration, String accessToken) async {
-    final result = await super.executeDioService(
-      () async => await dio.post(
-        'asistencias/check-in/',
-        options: super.getBaseOptions(accessToken),
-        data: {
-          'trabajador_cedula': registration.idCodeInfo.docNumber,
-          'proyecto_id': registration.idCodeInfo.worker!.project!.id,
-          'latitud': registration.check.location.lat,
-          'longitud': registration.check.location.lon
-        }
-      )
-    );
+    late Response<dynamic> result;
+    try{
+      result = await super.executeDioService(
+        () async => await dio.post(
+          'asistencias/check-in/',
+          options: super.getBaseOptions(accessToken),
+          data: {
+            'trabajador_cedula': registration.idCodeInfo.docNumber,
+            'proyecto_id': registration.idCodeInfo.worker!.project!.id,
+            'latitud': registration.check.location.lat,
+            'longitud': registration.check.location.lon
+          }
+        )
+      );
+    } on ServerException catch (e) {
+      if(e.statusCode == 403) {
+        throw GeneralException(message: 'Fuera de geocerca en check-in');
+      } else {
+        rethrow;
+      }
+    } on Object {
+      rethrow;
+    }
     var data = result.data;
     if(data['asistencia'] != null) {
       data = data['asistencia'];
@@ -51,17 +64,28 @@ class RegisterConfirmationServiceImpl extends Service implements RegisterConfirm
   
   @override
   Future<Attendance> confirmCheckOut(Attendance attendance, String accessToken) async {
-    final result = await super.executeDioService(
-      () async => await dio.post(
-        'asistencias/check-out/',
-        options: super.getBaseOptions(accessToken),
-        data: {
-          'asistencia_id': attendance.remoteId,
-          'latitud': attendance.checkout!.location.lat,
-          'longitud': attendance.checkout!.location.lon
-        }
-      )
-    );
+    late Response<dynamic> result;
+    try{
+      result = await super.executeDioService(
+        () async => await dio.post(
+          'asistencias/check-out/',
+          options: super.getBaseOptions(accessToken),
+          data: {
+            'asistencia_id': attendance.remoteId,
+            'latitud': attendance.checkout!.location.lat,
+            'longitud': attendance.checkout!.location.lon
+          }
+        )
+      );
+    } on ServerException catch (e) {
+      if(e.statusCode == 403) {
+        throw GeneralException(message: 'Fuera de geocerca en check-out');
+      } else {
+        rethrow;
+      }
+    } on Object {
+      rethrow;
+    }
     var data = result.data;
     if(data['asistencia'] != null) {
       data = data['asistencia'];

@@ -841,184 +841,390 @@ void main() {
       expect(result[1].status, RegistrationStatus.canceled);
     });
 
-    test('Debe eliminar los pending registrations con status repeated y debe retornar el estado actualizado de estos', () async {
-      final todayRegistrations = [
-        // Primer par: checkIn con attendanceLocalId = 1
-        PendingRegistration(
-          registration: Registration(
-            check: Check(
-              time: DateTime(2026, 1, 21, 8, 0),
-              location: LatLng(lat: 12.1234, lon: -86.5678),
-            ),
-            idCodeInfo: IdCodeInfo(
-              docNumber: '001-123456-0001',
-              worker: null,
-            ),
-            type: .checkIn,
+  test('Debe eliminar los pending registrations con status repeated y debe retornar el estado actualizado de estos', () async {
+    final todayRegistrations = [
+      // Primer par: checkIn con attendanceLocalId = 1
+      PendingRegistration(
+        registration: Registration(
+          check: Check(
+            time: DateTime(2026, 1, 21, 8, 0),
+            location: LatLng(lat: 12.1234, lon: -86.5678),
           ),
-          localAttendanceId: 1,
-          status: .pending
+          idCodeInfo: IdCodeInfo(
+            docNumber: '001-123456-0001',
+            worker: null,
+          ),
+          type: .checkIn,
         ),
-        // Primer par: checkOut con attendanceLocalId = 1
-        PendingRegistration(
-          registration: Registration(
-            check: Check(
-              time: DateTime(2026, 1, 21, 17, 0),
-              location: LatLng(lat: 12.1234, lon: -86.5678),
-            ),
-            idCodeInfo: IdCodeInfo(
-              docNumber: '001-123456-0001',
-              worker: null,
-            ),
-            type: .checkOut,
+        localAttendanceId: 1,
+        status: .pending
+      ),
+      // Primer par: checkOut con attendanceLocalId = 1
+      PendingRegistration(
+        registration: Registration(
+          check: Check(
+            time: DateTime(2026, 1, 21, 17, 0),
+            location: LatLng(lat: 12.1234, lon: -86.5678),
           ),
-          localAttendanceId: 1,
-          remoteAttendanceId: 1,
-          status: .pending
+          idCodeInfo: IdCodeInfo(
+            docNumber: '001-123456-0001',
+            worker: null,
+          ),
+          type: .checkOut,
         ),
-        PendingRegistration(
-          registration: Registration(
-            check: Check(
-              time: DateTime(2026, 1, 21, 8, 0),
-              location: LatLng(lat: 12.1234, lon: -86.5678),
-            ),
-            idCodeInfo: IdCodeInfo(
-              docNumber: '001-123456-0101',
-              worker: null,
-            ),
-            type: .checkIn,
+        localAttendanceId: 1,
+        remoteAttendanceId: 1,
+        status: .pending
+      ),
+      PendingRegistration(
+        registration: Registration(
+          check: Check(
+            time: DateTime(2026, 1, 21, 8, 0),
+            location: LatLng(lat: 12.1234, lon: -86.5678),
           ),
-          localAttendanceId: 2,
-          status: .pending
+          idCodeInfo: IdCodeInfo(
+            docNumber: '001-123456-0101',
+            worker: null,
+          ),
+          type: .checkIn,
         ),
-        PendingRegistration(
-          registration: Registration(
-            check: Check(
-              time: DateTime(2026, 1, 21, 8, 0),
-              location: LatLng(lat: 12.1234, lon: -86.5678),
-            ),
-            idCodeInfo: IdCodeInfo(
-              docNumber: '001-123456-0101',
-              worker: null,
-            ),
-            type: .checkOut,
+        localAttendanceId: 2,
+        status: .pending
+      ),
+      PendingRegistration(
+        registration: Registration(
+          check: Check(
+            time: DateTime(2026, 1, 21, 8, 0),
+            location: LatLng(lat: 12.1234, lon: -86.5678),
           ),
-          localAttendanceId: 2,
-          status: .pending
-        )
-      ];
+          idCodeInfo: IdCodeInfo(
+            docNumber: '001-123456-0101',
+            worker: null,
+          ),
+          type: .checkOut,
+        ),
+        localAttendanceId: 2,
+        status: .pending
+      )
+    ];
 
-      // arrange
-      final mockSynchronizeResponse = [
-        RegistrationResult(
-          localAttendanceId: 1,
-          remoteAttendanceId: 1,
-          status: .success,
-          type: .checkIn
-        ),
-        RegistrationResult(
-          localAttendanceId: 1,
-          remoteAttendanceId: 1,
-          status: .success,
-          type: .checkOut
-        ),
-        RegistrationResult(
-          localAttendanceId: 2,
-          remoteAttendanceId: 2,
-          status: .repeated,
-          type: .checkIn
-        ),
-        RegistrationResult(
-          localAttendanceId: 2,
-          remoteAttendanceId: 2,
-          status: .repeated,
-          type: .checkOut
-        )
-      ];
-      
-      when(mockRepository.synchronize(any))
-          .thenAnswer((_) async => mockSynchronizeResponse);
-      when(mockRepository.markAsSynchronized(any))
-          .thenAnswer((_) async => {});
-      when(mockRepository.getLastRegistrations(any))
-          .thenAnswer((_) async => [
-            todayRegistrations[0].copyWith(
-              status: .completed,
-              remoteAttendanceId: mockSynchronizeResponse[0].remoteAttendanceId
-            ),
-            todayRegistrations[1].copyWith(
-              status: .completed,
-              remoteAttendanceId: mockSynchronizeResponse[1].remoteAttendanceId
-            ),
-            todayRegistrations[2],
-            todayRegistrations[3]
-          ]);
-      
-      // act
-      final result = await synchronizeImpl.call(todayRegistrations, projects);
-      
-      // assert
-      verify(mockRepository.synchronize([
-        todayRegistrations[0],
-        todayRegistrations[1],
-        todayRegistrations[2],
-        todayRegistrations[3]
-      ])).called(1);
-            // Se verifica que se haya llamado a markAsSynchronized con las registrations actualizadas
-      verify(mockRepository.markAsSynchronized(
-        argThat(
-          predicate<List<PendingRegistration>>(
-            (list){
-              if(
-                list[0].localAttendanceId != todayRegistrations[0].localAttendanceId ||
-                list[0].registration.type != todayRegistrations[0].registration.type ||
-                list[0].remoteAttendanceId != mockSynchronizeResponse[0].remoteAttendanceId ||
-                list[0].status != RegistrationStatus.completed
-              ) {
-                return false;
-              }
-              if(
-                list[1].localAttendanceId != todayRegistrations[1].localAttendanceId ||
-                list[1].registration.type != todayRegistrations[1].registration.type ||
-                list[1].remoteAttendanceId != mockSynchronizeResponse[1].remoteAttendanceId ||
-                list[1].status != RegistrationStatus.completed
-              ) {
-                return false;
-              }
-              return true;
+    // arrange
+    final mockSynchronizeResponse = [
+      RegistrationResult(
+        localAttendanceId: 1,
+        remoteAttendanceId: 1,
+        status: .success,
+        type: .checkIn
+      ),
+      RegistrationResult(
+        localAttendanceId: 1,
+        remoteAttendanceId: 1,
+        status: .success,
+        type: .checkOut
+      ),
+      RegistrationResult(
+        localAttendanceId: 2,
+        remoteAttendanceId: 2,
+        status: .repeated,
+        type: .checkIn
+      ),
+      RegistrationResult(
+        localAttendanceId: 2,
+        remoteAttendanceId: 2,
+        status: .repeated,
+        type: .checkOut
+      )
+    ];
+    
+    when(mockRepository.synchronize(any))
+        .thenAnswer((_) async => mockSynchronizeResponse);
+    when(mockRepository.markAsSynchronized(any))
+        .thenAnswer((_) async => {});
+    when(mockRepository.getLastRegistrations(any))
+        .thenAnswer((_) async => [
+          todayRegistrations[0].copyWith(
+            status: .completed,
+            remoteAttendanceId: mockSynchronizeResponse[0].remoteAttendanceId
+          ),
+          todayRegistrations[1].copyWith(
+            status: .completed,
+            remoteAttendanceId: mockSynchronizeResponse[1].remoteAttendanceId
+          ),
+          todayRegistrations[2],
+          todayRegistrations[3]
+        ]);
+    
+    // act
+    final result = await synchronizeImpl.call(todayRegistrations, projects);
+    
+    // assert
+    verify(mockRepository.synchronize([
+      todayRegistrations[0],
+      todayRegistrations[1],
+      todayRegistrations[2],
+      todayRegistrations[3]
+    ])).called(1);
+          // Se verifica que se haya llamado a markAsSynchronized con las registrations actualizadas
+    verify(mockRepository.markAsSynchronized(
+      argThat(
+        predicate<List<PendingRegistration>>(
+          (list){
+            if(
+              list[0].localAttendanceId != todayRegistrations[0].localAttendanceId ||
+              list[0].registration.type != todayRegistrations[0].registration.type ||
+              list[0].remoteAttendanceId != mockSynchronizeResponse[0].remoteAttendanceId ||
+              list[0].status != RegistrationStatus.completed
+            ) {
+              return false;
             }
-              
-          )
-        )
-      )).called(1);
-
-      verify(mockRepository.removeRegistrations(
-        argThat(
-          predicate<List<int>>(
-            (list){
-              if(list.length != 1) {
-                return false;
-              }
-              if(
-                list[0] != todayRegistrations[2].localAttendanceId
-              ) {
-                return false;
-              }
-              return true;
+            if(
+              list[1].localAttendanceId != todayRegistrations[1].localAttendanceId ||
+              list[1].registration.type != todayRegistrations[1].registration.type ||
+              list[1].remoteAttendanceId != mockSynchronizeResponse[1].remoteAttendanceId ||
+              list[1].status != RegistrationStatus.completed
+            ) {
+              return false;
             }
-              
-          )
+            return true;
+          }
+            
         )
-      ));
+      )
+    )).called(1);
 
-      expect(result.length, 4);
-      expect(result[0].localAttendanceId, todayRegistrations[0].localAttendanceId);
-      expect(result[0].status, RegistrationStatus.completed);
-      expect(result[1].localAttendanceId, todayRegistrations[1].localAttendanceId);
-      expect(result[1].status, RegistrationStatus.completed);
-      expect(result[2].localAttendanceId, todayRegistrations[2].localAttendanceId);
-      expect(result[2].status, RegistrationStatus.repeated);
-      expect(result[3].localAttendanceId, todayRegistrations[3].localAttendanceId);
-      expect(result[3].status, RegistrationStatus.repeated);
-    });
+    verify(mockRepository.removeRegistrations(
+      argThat(
+        predicate<List<int>>(
+          (list){
+            if(list.length != 1) {
+              return false;
+            }
+            if(
+              list[0] != todayRegistrations[2].localAttendanceId
+            ) {
+              return false;
+            }
+            return true;
+          }
+            
+        )
+      )
+    ));
+
+    expect(result.length, 4);
+    expect(result[0].localAttendanceId, todayRegistrations[0].localAttendanceId);
+    expect(result[0].status, RegistrationStatus.completed);
+    expect(result[1].localAttendanceId, todayRegistrations[1].localAttendanceId);
+    expect(result[1].status, RegistrationStatus.completed);
+    expect(result[2].localAttendanceId, todayRegistrations[2].localAttendanceId);
+    expect(result[2].status, RegistrationStatus.repeated);
+    expect(result[3].localAttendanceId, todayRegistrations[3].localAttendanceId);
+    expect(result[3].status, RegistrationStatus.repeated);
+  });
+
+  test('Debe sincronizar los status de los registrationsResults con los de los lastRegistrations obtenidos del local', () async {
+    final todayRegistrations = [
+      // Primer par: checkIn con attendanceLocalId = 1
+      PendingRegistration(
+        registration: Registration(
+          check: Check(
+            time: DateTime(2026, 1, 21, 8, 0),
+            location: LatLng(lat: 12.1234, lon: -86.5678),
+          ),
+          idCodeInfo: IdCodeInfo(
+            docNumber: '001-123456-0001',
+            worker: null,
+          ),
+          type: .checkIn,
+        ),
+        localAttendanceId: 1,
+        status: .pending
+      ),
+      // Primer par: checkOut con attendanceLocalId = 1
+      PendingRegistration(
+        registration: Registration(
+          check: Check(
+            time: DateTime(2026, 1, 21, 17, 0),
+            location: LatLng(lat: 12.1234, lon: -86.5678),
+          ),
+          idCodeInfo: IdCodeInfo(
+            docNumber: '001-123456-0001',
+            worker: null,
+          ),
+          type: .checkOut,
+        ),
+        localAttendanceId: 1,
+        remoteAttendanceId: 1,
+        status: .pending
+      ),
+      PendingRegistration(
+        registration: Registration(
+          check: Check(
+            time: DateTime(2026, 1, 21, 8, 0),
+            location: LatLng(lat: 12.1234, lon: -86.5678),
+          ),
+          idCodeInfo: IdCodeInfo(
+            docNumber: '001-123456-0101',
+            worker: null,
+          ),
+          type: .checkIn,
+        ),
+        localAttendanceId: 2,
+        status: .pending
+      ),
+      PendingRegistration(
+        registration: Registration(
+          check: Check(
+            time: DateTime(2026, 1, 21, 8, 0),
+            location: LatLng(lat: 12.1234, lon: -86.5678),
+          ),
+          idCodeInfo: IdCodeInfo(
+            docNumber: '001-123456-0101',
+            worker: null,
+          ),
+          type: .checkOut,
+        ),
+        localAttendanceId: 2,
+        status: .pending
+      ),
+      PendingRegistration(
+        registration: Registration(
+          check: Check(
+            time: DateTime(2026, 1, 21, 8, 0),
+            location: LatLng(lat: 12.1234, lon: -86.5678),
+          ),
+          idCodeInfo: IdCodeInfo(
+            docNumber: '001-123456-0101',
+            worker: null,
+          ),
+          type: .checkIn,
+        ),
+        localAttendanceId: 3,
+        status: .pending
+      )
+    ];
+
+    // arrange
+    final mockSynchronizeResponse = [
+      RegistrationResult(
+        localAttendanceId: 1,
+        remoteAttendanceId: 1,
+        status: .success,
+        type: .checkIn
+      ),
+      RegistrationResult(
+        localAttendanceId: 1,
+        remoteAttendanceId: 1,
+        status: .success,
+        type: .checkOut
+      ),
+      RegistrationResult(
+        localAttendanceId: 2,
+        remoteAttendanceId: 2,
+        status: .repeated,
+        type: null
+      ),
+      RegistrationResult(
+        localAttendanceId: 2,
+        remoteAttendanceId: 2,
+        status: .repeated,
+        type: null
+      ),
+      RegistrationResult(
+        localAttendanceId: 3,
+        remoteAttendanceId: 3,
+        status: .failure,
+        type: null
+      )
+    ];
+    
+    when(mockRepository.synchronize(any))
+        .thenAnswer((_) async => mockSynchronizeResponse);
+    when(mockRepository.markAsSynchronized(any))
+        .thenAnswer((_) async => {});
+    when(mockRepository.getLastRegistrations(any))
+        .thenAnswer((_) async => [
+          todayRegistrations[0].copyWith(
+            status: .completed,
+            remoteAttendanceId: mockSynchronizeResponse[0].remoteAttendanceId
+          ),
+          todayRegistrations[1].copyWith(
+            status: .completed,
+            remoteAttendanceId: mockSynchronizeResponse[1].remoteAttendanceId
+          ),
+          todayRegistrations[2],
+          todayRegistrations[3],
+          todayRegistrations[4]
+        ]);
+    
+    // act
+    final result = await synchronizeImpl.call(todayRegistrations, projects);
+    
+    // assert
+    verify(mockRepository.synchronize([
+      todayRegistrations[0],
+      todayRegistrations[1],
+      todayRegistrations[2],
+      todayRegistrations[3],
+      todayRegistrations[4]
+    ])).called(1);
+          // Se verifica que se haya llamado a markAsSynchronized con las registrations actualizadas
+    verify(mockRepository.markAsSynchronized(
+      argThat(
+        predicate<List<PendingRegistration>>(
+          (list){
+            if(
+              list[0].localAttendanceId != todayRegistrations[0].localAttendanceId ||
+              list[0].registration.type != todayRegistrations[0].registration.type ||
+              list[0].remoteAttendanceId != mockSynchronizeResponse[0].remoteAttendanceId ||
+              list[0].status != RegistrationStatus.completed
+            ) {
+              return false;
+            }
+            if(
+              list[1].localAttendanceId != todayRegistrations[1].localAttendanceId ||
+              list[1].registration.type != todayRegistrations[1].registration.type ||
+              list[1].remoteAttendanceId != mockSynchronizeResponse[1].remoteAttendanceId ||
+              list[1].status != RegistrationStatus.completed
+            ) {
+              return false;
+            }
+            return true;
+          }
+            
+        )
+      )
+    )).called(1);
+
+    verify(mockRepository.removeRegistrations(
+      argThat(
+        predicate<List<int>>(
+          (list){
+            if(list.length != 1) {
+              return false;
+            }
+            if(
+              list[0] != todayRegistrations[2].localAttendanceId
+            ) {
+              return false;
+            }
+            return true;
+          }
+            
+        )
+      )
+    ));
+
+    expect(result.length, 5);
+    expect(result[0].localAttendanceId, todayRegistrations[0].localAttendanceId);
+    expect(result[0].status, RegistrationStatus.completed);
+    expect(result[1].localAttendanceId, todayRegistrations[1].localAttendanceId);
+    expect(result[1].status, RegistrationStatus.completed);
+    expect(result[2].localAttendanceId, todayRegistrations[2].localAttendanceId);
+    expect(result[2].status, RegistrationStatus.repeated);
+    expect(result[3].localAttendanceId, todayRegistrations[3].localAttendanceId);
+    expect(result[3].status, RegistrationStatus.repeated);
+    expect(result[4].localAttendanceId, todayRegistrations[4].localAttendanceId);
+    expect(result[4].status, RegistrationStatus.canceled);
+  });
 }

@@ -43,7 +43,7 @@ class SynchronizeImpl implements Synchronize {
       (r) {
         final synchronizedIndex = synchronized.indexWhere(
           (s) => s.localAttendanceId == r.localAttendanceId &&
-          s.type == r.registration.type
+          (s.type == null || s.type == r.registration.type)
         );
         if(synchronizedIndex != -1) {
           final s = synchronized[synchronizedIndex];

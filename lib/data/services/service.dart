@@ -23,10 +23,11 @@ abstract class Service {
       rethrow;
     } on DioException catch(exception, stackTrace){
       print(stackTrace);
-      throw GeneralException(
+      throw ServerException(
         message:
           exception.response?.data['error'] ??
-          'Ha ocurrido un error inesperado'
+          'Ha ocurrido un error inesperado',
+        statusCode: exception.response?.statusCode ?? 500
       );
     } catch (_) {
       throw GeneralException(

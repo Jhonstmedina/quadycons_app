@@ -19,12 +19,12 @@ class CodeScanAdapter {
   IdCodeInfo? getInfoByCode(String? code) {
     //TODO: Quitar cuando se deje de probar
     return IdCodeInfo(
-      docNumber: '14321Q',
+      docNumber: '112132421Q',
       worker: Worker(
         id: null,
-        name: 'José José',
+        name: 'Jean Clau Vandame',
         profileUrl: null,
-        position: 'Vendedor',
+        position: 'Portero',
         project: null
       )
     );

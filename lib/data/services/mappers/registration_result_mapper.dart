@@ -13,6 +13,8 @@ class RegistrationResultMapper {
         RegistrationResultStatus.failure,
     type: (result.mensaje).contains('Entrada')?
       RegisterType.checkIn :
-      RegisterType.checkOut
+      (result.mensaje).contains('Salida')?
+        RegisterType.checkOut :
+        null
   );
 }
