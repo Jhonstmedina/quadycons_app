@@ -66,17 +66,17 @@ class SynchronizationScreen extends StatelessWidget {
                                 shrinkWrap: true,
                                 itemCount: state.lastRegistrations.length,
                                 separatorBuilder: (_, _) => SizedBox(height: 12),
-                              itemBuilder: (context, index) {
-                                final registration = state.lastRegistrations[index];
-                                return PendingRegistrationTile(
-                                  name: registration.registration.idCodeInfo.worker!.name,
-                                  registrationType: registration.registration.type,
-                                  check: registration.registration.check,
-                                  project: registration.registration.idCodeInfo.worker!.project!,
-                                  status: registration.status
-                                );
-                              },
-                            ),
+                                itemBuilder: (context, index) {
+                                  final registration = state.lastRegistrations[index];
+                                  return PendingRegistrationTile(
+                                    name: registration.registration.idCodeInfo.worker!.name,
+                                    registrationType: registration.registration.type,
+                                    check: registration.registration.check,
+                                    project: registration.registration.idCodeInfo.worker!.project!,
+                                    status: registration.status
+                                  );
+                                },
+                              ),
                             ),
                             const SizedBox(height: 20),
                             // Buttons row

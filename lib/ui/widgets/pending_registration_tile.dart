@@ -24,9 +24,15 @@ class PendingRegistrationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final registrationTypeText = registrationType == RegisterType.checkIn ? 'Entrada' : 'Salida';
     final checkTime = '${check.time.hour.toString().padLeft(2, '0')}:${check.time.minute.toString().padLeft(2, '0')}';
-    final statusText = status == RegistrationStatus.completed ? 'Asegurado' : 'No';
-    final badgeColor = status == RegistrationStatus.completed ? Colors.green : Colors.amber;
-    final badgeText = status == RegistrationStatus.completed ? 'Ok' : 'Pend.';
+    final statusText = status == RegistrationStatus.completed ? 'Asegurado' :'No';
+    final badgeColor = status == RegistrationStatus.completed ?
+    Colors.green : status == RegistrationStatus.pending ?
+      Colors.amber :
+      Colors.red;
+    final badgeText = status == RegistrationStatus.completed ?
+      'Ok' : status == RegistrationStatus.pending ?
+      'Pend.': status == RegistrationStatus.repeated ?
+      'Repetido' : 'Error';
     final badgeTextColor = status == RegistrationStatus.completed ? Colors.white : Colors.black;
 
     return Container(

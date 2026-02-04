@@ -80,23 +80,9 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
       if(event is RetryScanEnd) {
         project = event.project;
       }
-      final projectGeoLocation = project!.geoLocation;
-      late bool isInFence;
-      if(projectGeoLocation == null) {
-        isInFence = true;
-      } else {
-        isInFence = locationsComparer.isInsideFence(
-          location,
-          LatLng(
-            lat: projectGeoLocation.lat,
-            lon: projectGeoLocation.lon
-          ),
-          project.geoFence!
-        );
-      }
       emit(initState.copyWith(
-        isInFence: isInFence,
-        errorMessage: isInFence ? null : "Fuera de ubicación",
+        isInFence: true,
+        errorMessage: null,
         currentLocation: location
       ));
     }

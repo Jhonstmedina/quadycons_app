@@ -6,9 +6,11 @@ class RegistrationResultMapper {
   static RegistrationResult toDomain(RegistrationResultDTO result) => RegistrationResult(
     localAttendanceId: result.tempId,
     remoteAttendanceId: result.asistenciaId,
-    status: result.estado == 'exitoso'?
+    status: result.estado == 'exitoso' || result.estado == 'creado'?
       RegistrationResultStatus.success :
-      RegistrationResultStatus.failure,
+      result.estado == 'ya_sincronizado'?
+        RegistrationResultStatus.repeated :
+        RegistrationResultStatus.failure,
     type: (result.mensaje).contains('Entrada')?
       RegisterType.checkIn :
       RegisterType.checkOut
