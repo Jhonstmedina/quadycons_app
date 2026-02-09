@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quadycons/core/app_dimens.dart';
 import 'package:quadycons/domain/blocs/permissions/permissions_bloc.dart';
 import 'package:quadycons/injection_container.dart';
 import 'package:quadycons/ui/widgets/box.dart';
@@ -45,11 +46,7 @@ class PermissionsScreen extends StatelessWidget {
                         children: [
                           Text(
                             'Permisos Requeridos',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              fontSize: 24
-                            )
+                            style: AppDimens.titleLargeStyle(context)
                           ),
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),

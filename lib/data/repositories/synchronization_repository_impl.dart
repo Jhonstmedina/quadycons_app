@@ -1,3 +1,4 @@
+import 'package:quadycons/core/repository_error_handler.dart';
 import 'package:quadycons/data/db/daos/attendance_dao.dart';
 import 'package:quadycons/data/db/mappers/attendance_mapper.dart';
 import 'package:quadycons/data/local_data_source/access_token_getter.dart';
@@ -16,12 +17,14 @@ class SynchronizationRepositoryImpl implements SynchronizationRepository {
   final AccessTokenGetter accessTokenGetter;
   final SynchronizationService service;
   final ConnectivityService connectivity;
+  final RepositoryErrorHandler errorHandler;
 
   SynchronizationRepositoryImpl({
     required this.attendanceDao,
     required this.accessTokenGetter,
     required this.service,
-    required this.connectivity
+    required this.connectivity,
+    required this.errorHandler
   });
 
   @override
@@ -31,7 +34,7 @@ class SynchronizationRepositoryImpl implements SynchronizationRepository {
   }
 
   @override
-  Future<List<RegistrationResult>> synchronize(List<PendingRegistration> registrations) async {
+  Future<List<RegistrationResult>> synchronize(List<PendingRegistration> registrations) async => await errorHandler.executeFunction(() async {
     if(!(await connectivity.thereIsConnectivity())) {
       throw GeneralException(message: 'No hay conexión a internet');
     }
@@ -40,7 +43,7 @@ class SynchronizationRepositoryImpl implements SynchronizationRepository {
     return results.map(
       (r) => RegistrationResultMapper.toDomain(r)
     ).toList();
-  }
+  });
   
   @override
   Future<void> markAsSynchronized(List<PendingRegistration> registrations) async {

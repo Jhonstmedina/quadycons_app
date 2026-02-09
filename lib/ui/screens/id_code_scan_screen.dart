@@ -210,7 +210,18 @@ class IdCodeScanScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Expanded(child: Container()),
+                    Spacer(
+                      flex: 1
+                    ),
+                    if(state.isLoading)
+                      ...[
+                        Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        Spacer(
+                          flex: 1
+                        )
+                      ],
                     ProjectsSelect(),
                     SizedBox(height: 16)
                   ],

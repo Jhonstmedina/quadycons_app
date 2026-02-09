@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quadycons/core/app_colors.dart';
+import 'package:quadycons/core/app_dimens.dart';
 import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
 
 class ProjectsSelect extends StatelessWidget {
@@ -18,7 +19,7 @@ class ProjectsSelect extends StatelessWidget {
                 'Cargando Proyectos...',
                 style: TextStyle(
                   color: Colors.grey,
-                  fontSize: 14
+                  fontSize: AppDimens.bodyMediumStyle(context)?.fontSize
                 )
               ),
               SizedBox(
@@ -36,12 +37,12 @@ class ProjectsSelect extends StatelessWidget {
               'Proyecto Delegado',
               style: TextStyle(
                 color: Colors.grey,
-                fontSize: 14
+                fontSize: Theme.of( context).textTheme.bodyMedium?.fontSize
               )
             ),
             Container(
               padding: EdgeInsets.symmetric(
-                horizontal: 18
+                horizontal: AppDimens.getWidthPercentage(context, 0.03)
               ),
               decoration: BoxDecoration(
                 color: AppColors.containerBackground(context),
@@ -52,15 +53,17 @@ class ProjectsSelect extends StatelessWidget {
                 value: state.chosenProject?.id,
                 hint: Text(
                   'Seleccionar proyecto',
-                  style: TextStyle(fontSize: 13)
+                  style: TextStyle(
+                    fontSize: AppDimens.bodyMediumStyle(context)?.fontSize
+                  )
                 ),
                 underline: SizedBox(),
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 13
+                  fontSize: AppDimens.bodyMediumStyle(context)?.fontSize
                 ),
                 alignment: AlignmentDirectional.centerStart,
-                dropdownColor: AppColors.containerBackground(context),
+                //dropdownColor: AppColors.containerBackground(context),
                 borderRadius: BorderRadius.circular(20),
                 menuMaxHeight: 300,
                 items: state.projects.map((project) {

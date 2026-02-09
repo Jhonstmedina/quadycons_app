@@ -1,3 +1,4 @@
+import 'package:quadycons/core/repository_error_handler.dart';
 import 'package:quadycons/data/db/daos/worker_dao.dart';
 import 'package:quadycons/data/db/mappers/worker_mapper.dart';
 import 'package:quadycons/domain/connectivity/connectivity_service.dart';
@@ -12,16 +13,18 @@ class CodeScanRepositoryImpl implements CodeScanRepository {
   final AccessTokenGetter accessTokenGetter;
   final WorkersDao dao;
   final ConnectivityService connectivityService;
+  final RepositoryErrorHandler errorHandler;
 
   CodeScanRepositoryImpl({
     required this.service,
     required this.accessTokenGetter,
     required this.dao,
-    required this.connectivityService
+    required this.connectivityService,
+    required this.errorHandler
   });
 
   @override
-  Future<IdCodeInfo> getInfoByIdBase(IdCodeInfo info, List<Project> projects) async {
+  Future<IdCodeInfo> getInfoByIdBase(IdCodeInfo info, List<Project> projects) async => await errorHandler.executeFunction(() async {
     final localWorker = await dao.getByDocNumber(info.docNumber);
     if(localWorker == null) {
       if( await connectivityService.thereIsConnectivity()) {
@@ -37,5 +40,5 @@ class CodeScanRepositoryImpl implements CodeScanRepository {
       return info;
     }
     return WorkerMapper.fromDb(localWorker, projects);
-  }
+  });
 }

@@ -103,9 +103,15 @@ class SynchronizationScreen extends StatelessWidget {
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(Icons.delete_outline),
+                                      Icon(
+                                        Icons.delete_outline,
+                                        size: AppDimens.titleMediumStyle( context)?.fontSize,
+                                      ),
                                       SizedBox(width: 8),
-                                      Text('Limpiar')
+                                      Text(
+                                        'Limpiar',
+                                        style: AppDimens.bodyLargeStyle(context)
+                                      )
                                     ],
                                   ),
                                 ),
@@ -139,9 +145,15 @@ class SynchronizationScreen extends StatelessWidget {
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Icon(Icons.send),
+                                          Icon(
+                                            Icons.send,
+                                            size: AppDimens.titleMediumStyle( context)?.fontSize
+                                          ),
                                           SizedBox(width: 8),
-                                          Text('Sincronizar ahora'),
+                                          Text(
+                                            'Sincronizar ahora',
+                                            style: AppDimens.bodyLargeStyle(context),
+                                          ),
                                         ]
                                       )
                                     );

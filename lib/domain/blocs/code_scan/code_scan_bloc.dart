@@ -7,6 +7,7 @@ import 'package:quadycons/domain/entities/project.dart';
 import 'package:quadycons/domain/entities/register_type.dart';
 import 'package:quadycons/domain/entities/id_code_info.dart';
 import 'package:quadycons/data/services/geo_location.dart';
+import 'package:quadycons/domain/exceptions.dart';
 import 'package:quadycons/domain/logic/locations_comparer.dart';
 import 'package:quadycons/domain/repositories/code_scan_repository.dart';
 
@@ -39,10 +40,23 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
           project: event.project
         )
       );
-      final idInfo = await repository.getInfoByIdBase(idCodeInfo, event.allProjects);
+      late IdCodeInfo idInfo;
+      try {
+        idInfo = await repository.getInfoByIdBase(idCodeInfo, event.allProjects);
+      } catch (e) {
+        final message = e is GeneralException?
+          e.message :
+          'Ha ocurrido un error inesperado';
+        emit((state as Registrating).copyWith(
+          errorMessage: message,
+          isLoading: false
+        ));
+        return;
+      }
       var initState = state as Registrating;
       initState = initState.copyWith(
-        idDocInfo: idInfo
+        idDocInfo: idInfo,
+        isLoading: false
       );
       emit(initState);
       if(initState.registerType != null) {
@@ -74,6 +88,11 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
   }
 
   Future<void> _endScan(event, Emitter<CodeScanState> emit, {Registrating? initState, Project? project}) async {
+    if(initState != null) {
+      emit(initState.copyWith(
+        isLoading: true
+      ));
+    }
     initState ??= state as Registrating;
     final location = await geolocation.getCurrentPosition();
     if(location != null) {
@@ -83,7 +102,8 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
       emit(initState.copyWith(
         isInFence: true,
         errorMessage: null,
-        currentLocation: location
+        currentLocation: location,
+        isLoading: false
       ));
     }
   }

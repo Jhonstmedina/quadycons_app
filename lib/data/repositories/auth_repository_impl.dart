@@ -1,7 +1,6 @@
 import 'package:quadycons/data/db/app_database.dart';
 import 'package:quadycons/domain/connectivity/connectivity_service.dart';
 import 'package:quadycons/domain/entities/authentication.dart';
-import 'package:quadycons/domain/entities/user.dart';
 import 'package:quadycons/data/local_data_source/auth_local_data_source.dart';
 import 'package:quadycons/data/services/auth_service.dart';
 import 'package:quadycons/domain/exceptions.dart';
@@ -26,6 +25,7 @@ class AuthRepositoryImpl implements AuthRepository {
       throw GeneralException(message: 'No hay conectividad');
     }
     final token = await authService.login(auth);
+    await localDataSource.saveAuth(auth);
     await localDataSource.cacheAuthToken(token);
   }
   
@@ -38,6 +38,7 @@ class AuthRepositoryImpl implements AuthRepository {
         throw GeneralException(message: 'No hay conectividad');
       }
       await localDataSource.removeAuthToken();
+      await localDataSource.removeAuth();
       await dbCleaner.clearDatabase();
     } on GeneralException {
       rethrow;
@@ -45,25 +46,15 @@ class AuthRepositoryImpl implements AuthRepository {
       throw GeneralException(message: e.toString());
     }
   }
-
+  
   @override
-  Future<User?> getUser() async {
-    String accessToken;
+  Future<void> reLogin() async {
     try {
-      accessToken = await localDataSource.getAccessToken();
-      if(accessToken.isEmpty) {
-        return null;
-      }
-    } catch (_) {
-      return null;
+      final auth = await localDataSource.getAuth();
+      final accessToken = await authService.login(auth);
+      await localDataSource.cacheAuthToken(accessToken);
+    } catch (e) {
+      throw GeneralException(message: 'Error al re-autenticar: ${e.toString()}');
     }
-    late User? user;
-    if(await connectivityService.thereIsConnectivity()) {
-      user = await authService.getUser(accessToken);
-      await localDataSource.saveUser(user);
-    } else {
-      user = await localDataSource.getUser();
-    }
-    return user;
   }
 }

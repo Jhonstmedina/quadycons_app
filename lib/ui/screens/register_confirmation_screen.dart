@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quadycons/core/app_dimens.dart';
 import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
 import 'package:quadycons/domain/blocs/register_confirmation/register_confirmation_bloc.dart';
 import 'package:quadycons/ui/utils/snack_manager.dart';
@@ -72,7 +73,7 @@ class RegisterConfirmationScreen extends StatelessWidget {
                                     )
                                   ),
                                   Text(
-                                    'Proyecto: Torre Norte ${_dateTimeToString(registration.checkin?.time)}${registration.checkout != null ? ' - ${_dateTimeToString(registration.checkout?.time)}' : ''}',
+                                    'Proyecto: ${registration.idCodeInfo.worker?.project?.name ?? ''} ${_dateTimeToString(registration.checkin?.time)}${registration.checkout != null ? ' - ${_dateTimeToString(registration.checkout?.time)}' : ''}',
                                     style: TextStyle(
                                       color: Colors.grey,
                                       fontSize: 14
@@ -168,7 +169,7 @@ class RegisterConfirmationScreen extends StatelessWidget {
                                     Text(
                                       'Registro: ${registration.checkin != null? "Entrada": "Salida"}',
                                       style: TextStyle(
-                                        fontSize: 14,
+                                        fontSize: AppDimens.bodyMediumStyle(context)?.fontSize,
                                         color: Theme.of(context).iconTheme.color
                                       )
                                     )
@@ -186,7 +187,7 @@ class RegisterConfirmationScreen extends StatelessWidget {
                                   'Dentro de ubicación',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 14
+                                    fontSize: AppDimens.bodyMediumStyle(context)?.fontSize
                                   )
                                 )
                               )

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quadycons/core/app_dimens.dart';
 
 class PermissionTile extends StatelessWidget {
   final IconData icon;
@@ -29,7 +30,7 @@ class PermissionTile extends StatelessWidget {
               text,
               style: TextStyle(
                 color: Colors.black,
-                fontSize: 16
+                fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize
               )
             )
           ]
@@ -44,7 +45,7 @@ class PermissionTile extends StatelessWidget {
             isGranted ? 'Otorgado' : 'Solicitar',
             style: TextStyle(
               color: isGranted ? Colors.white : Colors.black,
-              fontSize: 12
+              fontSize: AppDimens.bodySmallStyle(context)?.fontSize
             )
           )
         )

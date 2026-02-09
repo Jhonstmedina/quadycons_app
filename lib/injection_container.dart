@@ -4,6 +4,7 @@ import 'package:dio/io.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:quadycons/core/connectivity/connectivity_service.dart';
+import 'package:quadycons/core/repository_error_handler.dart';
 import 'package:quadycons/data/db/app_database.dart';
 import 'package:quadycons/data/db/daos/attendance_dao.dart';
 import 'package:quadycons/data/db/daos/project_dao.dart';
@@ -18,6 +19,7 @@ import 'package:quadycons/data/repositories/projects_repository_impl.dart';
 import 'package:quadycons/data/repositories/register_confirmation_repository_impl.dart';
 import 'package:quadycons/data/repositories/summary_repository_impl.dart';
 import 'package:quadycons/data/repositories/synchronization_repository_impl.dart';
+import 'package:quadycons/data/repositories/user_repository_impl.dart';
 import 'package:quadycons/data/services/auth_service.dart';
 import 'package:quadycons/data/services/code_scan_service.dart';
 import 'package:quadycons/data/services/fake/projects_service_fake.dart';
@@ -44,6 +46,7 @@ import 'package:quadycons/domain/repositories/projects_repository.dart';
 import 'package:quadycons/domain/repositories/attendance_repository.dart';
 import 'package:quadycons/domain/repositories/summary_repository.dart';
 import 'package:quadycons/domain/repositories/synchronization_repository.dart';
+import 'package:quadycons/domain/repositories/user_repository.dart';
 import 'package:quadycons/domain/use_cases/clean_last_registrations.dart';
 import 'package:quadycons/domain/use_cases/synchronize.dart';
 import 'package:quadycons/core/adapters/code_scan_adapter.dart';
@@ -64,6 +67,11 @@ void init() {
   );
   sl.registerLazySingleton<ConnectivityService>(
     () => ConnectivityServiceImpl()
+  );
+  sl.registerLazySingleton<RepositoryErrorHandler>(
+    () => RepositoryErrorHandlerImpl(
+      authFixer: sl<AuthRepository>()
+    )
   );
 
   // ******************************************
@@ -147,8 +155,19 @@ void _initAuthenticationModule() {
       connectivityService: sl<ConnectivityService>()
     )
   );
+  sl.registerLazySingleton<UserRepository>(
+    () => UserRepositoryImpl(
+      authLocalDataSource: sl<AuthLocalDataSource>(),
+      connectivityService: sl<ConnectivityService>(),
+      errorHandler: sl<RepositoryErrorHandler>(),
+      authService: sl<AuthService>()
+    )
+  );
   sl.registerSingleton<AuthBloc>(
-    AuthBloc(repository: sl<AuthRepository>())
+    AuthBloc(
+      repository: sl<AuthRepository>(),
+      userRepository: sl<UserRepository>()
+    )
   );
 }
 
@@ -171,7 +190,8 @@ void _initProjectsModule() {
       projectsService: sl<ProjectsService>(),
       localDataSource: sl<AuthLocalDataSource>(),
       dao: sl<ProjectsDao>(),
-      connectivityService: sl<ConnectivityService>()
+      connectivityService: sl<ConnectivityService>(),
+      errorHandler: sl<RepositoryErrorHandler>()
     )
   );
   sl.registerSingleton<ProjectsBloc>(
@@ -209,7 +229,8 @@ void _initCodeScanModule() {
       service: sl<CodeScanService>(),
       accessTokenGetter: sl<AuthLocalDataSource>(),
       dao: sl<WorkersDao>(),
-      connectivityService: sl<ConnectivityService>()
+      connectivityService: sl<ConnectivityService>(),
+      errorHandler: sl<RepositoryErrorHandler>()
     )
   );
   sl.registerFactory<CodeScanBloc>(
@@ -239,7 +260,8 @@ void _initRegisterConfirmationModule() {
       registerConfirmationService: sl<RegisterConfirmationService>(),
       accessTokenGetter: sl<AuthLocalDataSource>(),
       dao: sl<AttendanceDao>(),
-      connectivityService: sl<ConnectivityService>()
+      connectivityService: sl<ConnectivityService>(),
+      errorHandler: sl<RepositoryErrorHandler>()
     )
   );
   sl.registerFactory<RegisterConfirmationBloc>(
@@ -279,7 +301,8 @@ void _initSynchronizationModule() {
       attendanceDao: sl<AttendanceDao>(),
       accessTokenGetter: sl<AuthLocalDataSource>(),
       service: sl<SynchronizationService>(),
-      connectivity: sl<ConnectivityService>()
+      connectivity: sl<ConnectivityService>(),
+      errorHandler: sl<RepositoryErrorHandler>()
     )
   );
   sl.registerLazySingleton<Synchronize>(

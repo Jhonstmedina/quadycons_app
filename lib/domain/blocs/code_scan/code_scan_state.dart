@@ -9,13 +9,15 @@ final class Registrating extends CodeScanState {
   final bool? isInFence;
   final String? errorMessage;
   final LatLng? currentLocation;
+  final bool isLoading;
 
   Registrating({
     this.idDocInfo,
     this.registerType,
     this.isInFence,
     this.errorMessage,
-    this.currentLocation
+    this.currentLocation,
+    this.isLoading = false
   });
 
   Registrating copyWith({
@@ -23,13 +25,15 @@ final class Registrating extends CodeScanState {
     RegisterType? registerType,
     bool? isInFence,
     String? errorMessage,
-    LatLng? currentLocation
+    LatLng? currentLocation,
+    bool? isLoading
   }) => Registrating(
     idDocInfo: idDocInfo ?? this.idDocInfo,
     registerType: registerType ?? this.registerType,
     isInFence: isInFence ?? this.isInFence,
     currentLocation: currentLocation ?? this.currentLocation,
-    errorMessage: errorMessage
+    errorMessage: errorMessage,
+    isLoading: isLoading ?? this.isLoading
   );
 }
 

@@ -18,16 +18,6 @@ class CodeScanAdapter {
 
   IdCodeInfo? getInfoByCode(String? code) {
     //TODO: Quitar cuando se deje de probar
-    return IdCodeInfo(
-      docNumber: '1124321421Q',
-      worker: Worker(
-        id: null,
-        name: 'Belatrix Lestrange',
-        profileUrl: null,
-        position: 'Portero',
-        project: null
-      )
-    );
     print('************************* \n $code');
     if(code == null){
       return null;

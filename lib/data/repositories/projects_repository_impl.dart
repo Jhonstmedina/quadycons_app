@@ -1,3 +1,4 @@
+import 'package:quadycons/core/repository_error_handler.dart';
 import 'package:quadycons/data/db/daos/project_dao.dart';
 import 'package:quadycons/data/db/mappers/project_mapper.dart';
 import 'package:quadycons/data/local_data_source/access_token_getter.dart';
@@ -12,16 +13,18 @@ class ProjectsRepositoryImpl implements ProjectsRepository {
   final ProjectsDao dao;
   final AccessTokenGetter localDataSource;
   final ConnectivityService connectivityService;
+  final RepositoryErrorHandler errorHandler;
 
   ProjectsRepositoryImpl({
     required this.projectsService,
     required this.localDataSource,
     required this.dao,
-    required this.connectivityService
+    required this.connectivityService,
+    required this.errorHandler
   });
 
   @override
-  Future<List<Project>> getProjects() async {
+  Future<List<Project>> getProjects() async => await errorHandler.executeFunction(() async {
     late List<Project> projects;
     if( await connectivityService.thereIsConnectivity() ) {
       final accessToken = await localDataSource.getAccessToken();
@@ -36,5 +39,5 @@ class ProjectsRepositoryImpl implements ProjectsRepository {
       }
     }
     return projects;
-  }
+  });
 }

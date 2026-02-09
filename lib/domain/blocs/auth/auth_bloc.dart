@@ -3,6 +3,7 @@ import 'package:quadycons/domain/entities/authentication.dart';
 import 'package:quadycons/domain/entities/user.dart';
 import 'package:quadycons/domain/repositories/auth_repository.dart';
 import 'package:quadycons/domain/exceptions.dart';
+import 'package:quadycons/domain/repositories/user_repository.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -14,9 +15,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
   static const invalidCredentialsErrorMessage = 'Credenciales Inválidas';
 
   final AuthRepository repository;
+  final UserRepository userRepository;
   
   AuthBloc({
-    required this.repository
+    required this.repository,
+    required this.userRepository
   }) : super(LoginInit()){
     on<InitLoginEvent>(_initLogin);
     on<LoginEvent>(_login);
@@ -24,7 +27,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
   }
 
   Future<void> _initLogin(_, Emitter<AuthState> emit) async {
-    final user = await repository.getUser();
+    final user = await userRepository.getUser();
     if(user == null) {
       emit(OnLogin());
     } else {
@@ -50,7 +53,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
         ));
       }else{
         await repository.login(auth);
-        final user = await repository.getUser();
+        final user = await userRepository.getUser();
         emit(OnAuthenticated(user: user));
       }
     } on GeneralException catch(exception){

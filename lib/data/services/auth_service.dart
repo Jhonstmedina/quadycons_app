@@ -8,6 +8,7 @@ abstract class AuthService {
   Future<String> login(Authentication auth);
   Future<void> logout(String accessToken);
   Future<User> getUser(String accessToken);
+  Future<void> reLogin(String accessToken);
 }
 
 class AuthServiceImpl extends Service implements AuthService {
@@ -71,5 +72,11 @@ class AuthServiceImpl extends Service implements AuthService {
       role: result['rol'],
       image: result['foto']
     );
+  }
+  
+  @override
+  Future<void> reLogin(String accessToken) async {
+    // TODO: implement reLogin
+    throw UnimplementedError();
   }
 }

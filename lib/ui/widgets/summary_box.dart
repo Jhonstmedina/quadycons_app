@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quadycons/core/app_colors.dart';
+import 'package:quadycons/core/app_dimens.dart';
 
 class SummaryBox extends StatelessWidget {
   final String label;
@@ -43,7 +44,7 @@ class SummaryBox extends StatelessWidget {
             maxLines: 1,
             style: TextStyle(
               color: Colors.black,
-              fontSize: 18,
+              fontSize: AppDimens.titleMediumStyle(context)?.fontSize,
               fontWeight: FontWeight.bold,
               overflow: TextOverflow.ellipsis
             )

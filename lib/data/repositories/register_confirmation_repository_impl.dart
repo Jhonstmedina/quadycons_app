@@ -1,3 +1,4 @@
+import 'package:quadycons/core/repository_error_handler.dart';
 import 'package:quadycons/data/db/daos/attendance_dao.dart';
 import 'package:quadycons/data/db/mappers/attendance_mapper.dart';
 import 'package:quadycons/domain/connectivity/connectivity_service.dart';
@@ -13,16 +14,18 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
   final AccessTokenGetter accessTokenGetter;
   final AttendanceDao dao;
   final ConnectivityService connectivityService;
+  final RepositoryErrorHandler errorHandler;
 
   AttendanceRepositoryImpl({
     required this.registerConfirmationService,
     required this.accessTokenGetter,
     required this.dao,
-    required this.connectivityService
+    required this.connectivityService,
+    required this.errorHandler
   });
 
   @override
-  Future<Attendance> confirmCheckIn(Registration registration) async {
+  Future<Attendance> confirmCheckIn(Registration registration) async => await errorHandler.executeFunction(() async {
     late Attendance attendance;
     late int attendanceId;
     if( await connectivityService.thereIsConnectivity() ) {
@@ -43,7 +46,7 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
     }
     attendance = attendance.copyWith(id: attendanceId);
     return attendance;
-  }
+  });
 
   Future<int> _insertAttendanceLocally(Attendance attendance) async {
     final data = AttendanceMapper.toDb(attendance);
@@ -51,7 +54,7 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
   }
 
   @override
-  Future<Attendance> confirmCheckOut(Attendance attendance) async {
+  Future<Attendance> confirmCheckOut(Attendance attendance) async => await errorHandler.executeFunction(() async {
     if( await connectivityService.thereIsConnectivity() ) {
       final accessToken = await accessTokenGetter.getAccessToken();
       attendance = await registerConfirmationService.confirmCheckOut(
@@ -64,7 +67,7 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
       await _updateAttendanceLocally(attendance);
     }
     return attendance;
-  }
+  });
 
   Future<void> _updateAttendanceLocally(Attendance attendance) async {
     final data = AttendanceMapper.toDb(attendance);

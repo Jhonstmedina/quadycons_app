@@ -3,7 +3,12 @@ class GeneralException {
   const GeneralException({required this.message});
 }
 
+
+
+
 class ServerException extends GeneralException {
+
+  static const unauthorizedStatus = 401;
   
   final int statusCode;
 
