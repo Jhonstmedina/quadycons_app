@@ -33,7 +33,7 @@ class ScanButton extends StatelessWidget {
           SizedBox(width: 4),
           Text(
             text,
-            style: AppDimens.bodySmallStyle(context)?.copyWith(
+            style: AppDimens.styleByScreen(context)?.copyWith(
               fontWeight: FontWeight.bold,
               color: Colors.black
             )

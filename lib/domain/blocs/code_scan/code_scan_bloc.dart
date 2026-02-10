@@ -94,18 +94,28 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
       ));
     }
     initState ??= state as Registrating;
-    final location = await geolocation.getCurrentPosition();
-    if(location != null) {
-      if(event is RetryScanEnd) {
-        project = event.project;
+    try {
+      final location = await geolocation.getCurrentPosition();
+      if(location != null) {
+        if(event is RetryScanEnd) {
+          project = event.project;
+        }
+        emit(initState.copyWith(
+          isInFence: true,
+          errorMessage: null,
+          currentLocation: location,
+          isLoading: false
+        ));
       }
+    } on GeneralException catch (e) {
       emit(initState.copyWith(
-        isInFence: true,
-        errorMessage: null,
-        currentLocation: location,
+        isInFence: false,
+        errorMessage: e.message,
+        currentLocation: null,
         isLoading: false
       ));
     }
+    
   }
 
   void _resetBloc(ResetBloc event, Emitter<CodeScanState> emit) {
