@@ -152,7 +152,11 @@ class SynchronizationScreen extends StatelessWidget {
                                           SizedBox(width: 8),
                                           Text(
                                             'Sincronizar ahora',
-                                            style: AppDimens.bodyLargeStyle(context),
+                                            style: AppDimens.bodyLargeStyle(context)?.copyWith(
+                                              color: isConnected && state.canSynchronize?
+                                                Colors.white:
+                                                AppDimens.bodyLargeStyle(context)?.color
+                                            ),
                                           ),
                                         ]
                                       )

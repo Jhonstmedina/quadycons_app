@@ -17,13 +17,12 @@ class NativeLocationProvider(context: Context) {
         onSuccess: (Double, Double) -> Unit,
         onError: () -> Unit
     ) {
-        val request = LocationRequest.Builder(
-            Priority.PRIORITY_BALANCED_POWER_ACCURACY, // 🔥 rápido, no GPS puro
-            0
-        )
-            .setMaxUpdates(1)
-            .setWaitForAccurateLocation(false)
-            .build()
+        val request = LocationRequest.create().apply {
+            priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+            numUpdates = 1
+            interval = 0
+            fastestInterval = 0
+        }
 
         callback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
@@ -39,7 +38,7 @@ class NativeLocationProvider(context: Context) {
 
         fusedClient.requestLocationUpdates(
             request,
-            callback as LocationCallback,
+            callback!!,
             Looper.getMainLooper()
         )
     }

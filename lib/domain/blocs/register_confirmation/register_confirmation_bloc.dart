@@ -60,6 +60,15 @@ class RegisterConfirmationBloc extends Bloc<RegisterConfirmationEvent, RegisterC
             type: RegisterConfirmErrorType.inconsistentAttendance
           )
       ));
+    } else if(attendance.checkout != null) {
+      emit(OnRegistration(
+        attendance: attendance,
+        registerType: registerType,
+        error: RegisterConfirmError(
+          message: 'Registro duplicado (Ya existe salida)',
+          type: RegisterConfirmErrorType.inconsistentAttendance
+        )
+      ));
     } else {
       emit(OnRegistration(
         attendance: attendance.copyWith(

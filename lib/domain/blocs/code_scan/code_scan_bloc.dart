@@ -25,14 +25,21 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
     required this.geolocation,
     required this.locationsComparer
   }) : super(Registrating()) {
+    _reviewGPS();
     on<InsertScanInfo>(_insertScanInfo);
     on<SetRegisterType>(_setRegisterType);
     on<RetryScanEnd>(_endScan);
     on<ResetBloc>(_resetBloc);
   }
 
+  void _reviewGPS() {
+    if(!geolocation.hasWarmFix()) {
+      geolocation.startWarm();
+    }
+  }
 
   Future<void> _insertScanInfo(InsertScanInfo event, Emitter<CodeScanState> emit) async {
+    _reviewGPS();
     IdCodeInfo? idCodeInfo = event.idCodeInfo;
     if(idCodeInfo != null) {
       idCodeInfo = idCodeInfo.copyWith(
@@ -72,6 +79,7 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
   }
 
   Future<void> _setRegisterType(SetRegisterType event, Emitter<CodeScanState> emit) async {
+    _reviewGPS();
     var initState = state as Registrating;
     initState = initState.copyWith(
       registerType: event.registerType
@@ -94,31 +102,45 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
       ));
     }
     initState ??= state as Registrating;
-    try {
-      final location = await geolocation.getCurrentPosition();
-      if(location != null) {
-        if(event is RetryScanEnd) {
-          project = event.project;
+    if( geolocation.hasWarmFix() ) {
+      try {
+        final location = await geolocation.getCurrentPosition();
+        //final location = await NativeLocation.getCurrentLocation();
+        if(location != null) {
+          if(event is RetryScanEnd) {
+            project = event.project;
+          }
+          emit(initState.copyWith(
+            isInFence: true,
+            errorMessage: null,
+            currentLocation: location,
+            isLoading: false
+          ));
         }
+      } on GeneralException catch (e) {
+        geolocation.startWarm();
         emit(initState.copyWith(
-          isInFence: true,
-          errorMessage: null,
-          currentLocation: location,
+          isInFence: false,
+          errorMessage: e.message,
+          currentLocation: null,
           isLoading: false
         ));
       }
-    } on GeneralException catch (e) {
+    } else {
       emit(initState.copyWith(
-        isInFence: false,
-        errorMessage: e.message,
-        currentLocation: null,
-        isLoading: false
+        errorMessage: 'Hubo un problema con el GPS. Vuélve a intentarlo en unos momentos.'
       ));
     }
-    
   }
 
   void _resetBloc(ResetBloc event, Emitter<CodeScanState> emit) {
     emit(Registrating());
+  }
+
+  @mustCallSuper
+  @override
+  Future<void> close() async {
+    geolocation.stopWarm();
+    super.close();
   }
 }

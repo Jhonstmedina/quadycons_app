@@ -5,10 +5,45 @@ import 'package:quadycons/domain/entities/lat_lng.dart';
 import 'package:quadycons/domain/exceptions.dart';
 
 abstract class Geolocation {
+  Future<void> startWarm();
+  Future<void> stopWarm();
+  bool hasWarmFix({Duration maxAge = const Duration(seconds: 15)});
   Future<LatLng?> getCurrentPosition();
 }
 
 class GeoLocationImpl implements Geolocation {
+
+  StreamSubscription<Position>? _subscription;
+  Position? _lastPosition;
+
+  Position? get warmPosition => _lastPosition;
+
+  bool get isWarming => _subscription != null;
+
+  Future<void> startWarm() async {
+    if (_subscription != null) return;
+
+    _subscription = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high, // fuerza GPS real
+        distanceFilter: 0,
+      ),
+    ).listen((position) {
+      _lastPosition = position;
+    });
+  }
+
+  Future<void> stopWarm() async {
+    await _subscription?.cancel();
+    _subscription = null;
+  }
+
+  bool hasWarmFix({Duration maxAge = const Duration(seconds: 15)}) {
+    if (_lastPosition == null) return false;
+    final timestamp = _lastPosition!.timestamp;
+    return DateTime.now().difference(timestamp) <= maxAge;
+  }
+
   @override
   Future<LatLng?> getCurrentPosition() async {
     try {

@@ -26,11 +26,17 @@ class ProjectsRepositoryImpl implements ProjectsRepository {
   @override
   Future<List<Project>> getProjects() async => await errorHandler.executeFunction(() async {
     late List<Project> projects;
+    final localProjects = await dao.getAll();
     if( await connectivityService.thereIsConnectivity() ) {
       final accessToken = await localDataSource.getAccessToken();
       projects = await projectsService.getProjects(accessToken);
       final data = projects.map(ProjectMapper.toDb).toList();
-      await dao.insertProjects(data);
+      final remainigData = data.where(
+        (d) => !localProjects.any(
+          (p) => p.id == d.id.value
+        )
+      ).toList();
+      await dao.insertProjects(remainigData);
     } else {
       final data = await dao.getAll();
       projects = data.map(ProjectMapper.fromDb).toList();

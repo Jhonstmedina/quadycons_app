@@ -8,7 +8,7 @@ part 'project_dao.g.dart';
 class ProjectsDao extends DatabaseAccessor<AppDatabase>
     with _$ProjectsDaoMixin {
   ProjectsDao(super.db);
-
+  
   Future<void> insertProjects(List<ProjectsCompanion> list) {
     return batch((b) {
       b.insertAll(

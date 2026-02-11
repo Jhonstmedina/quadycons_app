@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quadycons/data/services/geo_location.dart';
 import 'package:quadycons/domain/blocs/summaries/summaries_bloc.dart';
 import 'package:quadycons/domain/entities/registration.dart';
 import 'package:quadycons/domain/blocs/auth/auth_bloc.dart';
@@ -40,6 +41,11 @@ final GoRouter router = GoRouter(
   redirect: (context, state) {
     final authBloc = sl<AuthBloc>();
     final authState = authBloc.state;
+    if(state.matchedLocation == '/id-code-scan') {
+      sl<Geolocation>().startWarm();
+    } else if(state.matchedLocation != '/scanner') {
+      sl<Geolocation>().stopWarm();
+    }
     if(state.matchedLocation == '/splash' && authState is OnAuthenticated) {
       sl<ProjectsBloc>().add(LoadProjects());
       return '/permissions';

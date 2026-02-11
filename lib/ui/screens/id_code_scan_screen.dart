@@ -218,6 +218,17 @@ class IdCodeScanScreen extends StatelessWidget {
                         Center(
                           child: CircularProgressIndicator(),
                         ),
+                        const SizedBox(
+                          height: 10
+                        ),
+                        Center(
+                          child: Text(
+                            'Obteniendo geolocalización',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: Colors.black54
+                            )
+                          ),
+                        ),
                         Spacer(
                           flex: 1
                         )
