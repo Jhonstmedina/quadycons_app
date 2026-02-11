@@ -202,7 +202,9 @@ class IdCodeScanScreen extends StatelessWidget {
                                 icon: Icons.refresh,
                                 text: 'Reintentar',
                                 onPressed: () {
-                                  _scan(context);
+                                  context.read<CodeScanBloc>().add(RetryScanEnd(
+                                    project: (context.read<ProjectsBloc>().state as ProjectsLoaded).chosenProject!
+                                  ));
                                 }
                               )
                             ]

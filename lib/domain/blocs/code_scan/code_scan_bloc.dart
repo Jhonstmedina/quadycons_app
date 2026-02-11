@@ -97,6 +97,12 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
 
   Future<void> _endScan(event, Emitter<CodeScanState> emit, {Registrating? initState, Project? project}) async {
     if(initState != null) {
+      if(
+        initState.idDocInfo == null
+        || initState.registerType == null
+      ) {
+        return;
+      }
       emit(initState.copyWith(
         isLoading: true
       ));
