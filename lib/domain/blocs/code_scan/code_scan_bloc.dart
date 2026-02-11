@@ -134,7 +134,7 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
       }
     } else {
       emit(initState.copyWith(
-        errorMessage: 'Hubo un problema con el GPS. Vuélve a intentarlo en unos momentos.'
+        errorMessage: 'Hubo un problema con el GPS. Vuélve a intentarlo en unos segundos.'
       ));
     }
   }
