@@ -78,9 +78,9 @@ class CodeScanAdapter {
         )
       : null;
     return IdCodeInfo(
-      docNumber: json['cedula'],
+      docNumber: json['cedula'] ?? '',
       worker: Worker(
-        id: null,
+        id: json['id'],
         name: json['nombre'],
         position: json['cargo'],
         profileUrl: null,

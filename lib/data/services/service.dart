@@ -22,16 +22,15 @@ abstract class Service {
     } on GeneralException catch(_){
       rethrow;
     } on DioException catch(exception, stackTrace){
-      print(stackTrace);
       throw ServerException(
         message:
           exception.response?.data['error'] ??
-          'Ha ocurrido un error inesperado',
+          'DioException: ${exception.message} | status: ${exception.response?.statusCode}',
         statusCode: exception.response?.statusCode ?? 500
       );
-    } catch (_) {
+    } catch (e) {
       throw GeneralException(
-        message: 'Ha ocurrido un error inesperado'
+        message: '[${e.runtimeType}] $e'
       );
     }
   }

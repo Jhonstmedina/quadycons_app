@@ -96,18 +96,14 @@ final GoRouter router = GoRouter(
         child: RegisterConfirmationScreen()
       )
     ),
-    GoRoute(
+  	GoRoute(
       path: '/summary',
       name: 'summary',
-      builder: (context, state) => BlocProvider(
-        create: (_) {
-          final bloc = sl<SummariesBloc>();
-          final projectsState = context.read<ProjectsBloc>().state;
-          if (projectsState is ProjectsLoaded && projectsState.chosenProject != null) {
-            bloc.add(LoadSummary(project: projectsState.chosenProject!));
-          }
-          return bloc;
-        },
+      builder: (context, state) => BlocProvider.value(
+        value: sl<SummariesBloc>()
+          ..add(LoadSummary(
+            project: (context.read<ProjectsBloc>().state as ProjectsLoaded).chosenProject!
+          )),
         child: SummaryScreen()
       )
     ),

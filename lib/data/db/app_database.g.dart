@@ -1467,12 +1467,455 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
   }
 }
 
+class $SummaryCacheTable extends SummaryCache
+    with TableInfo<$SummaryCacheTable, SummaryCacheData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SummaryCacheTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _projectIdMeta = const VerificationMeta(
+    'projectId',
+  );
+  @override
+  late final GeneratedColumn<int> projectId = GeneratedColumn<int>(
+    'project_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _inputsMeta = const VerificationMeta('inputs');
+  @override
+  late final GeneratedColumn<int> inputs = GeneratedColumn<int>(
+    'inputs',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _outputsMeta = const VerificationMeta(
+    'outputs',
+  );
+  @override
+  late final GeneratedColumn<int> outputs = GeneratedColumn<int>(
+    'outputs',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pendingMeta = const VerificationMeta(
+    'pending',
+  );
+  @override
+  late final GeneratedColumn<int> pending = GeneratedColumn<int>(
+    'pending',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _absentMeta = const VerificationMeta('absent');
+  @override
+  late final GeneratedColumn<int> absent = GeneratedColumn<int>(
+    'absent',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    projectId,
+    inputs,
+    outputs,
+    pending,
+    absent,
+    date,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'summary_cache';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SummaryCacheData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('project_id')) {
+      context.handle(
+        _projectIdMeta,
+        projectId.isAcceptableOrUnknown(data['project_id']!, _projectIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_projectIdMeta);
+    }
+    if (data.containsKey('inputs')) {
+      context.handle(
+        _inputsMeta,
+        inputs.isAcceptableOrUnknown(data['inputs']!, _inputsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_inputsMeta);
+    }
+    if (data.containsKey('outputs')) {
+      context.handle(
+        _outputsMeta,
+        outputs.isAcceptableOrUnknown(data['outputs']!, _outputsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_outputsMeta);
+    }
+    if (data.containsKey('pending')) {
+      context.handle(
+        _pendingMeta,
+        pending.isAcceptableOrUnknown(data['pending']!, _pendingMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pendingMeta);
+    }
+    if (data.containsKey('absent')) {
+      context.handle(
+        _absentMeta,
+        absent.isAcceptableOrUnknown(data['absent']!, _absentMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_absentMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SummaryCacheData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SummaryCacheData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      projectId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}project_id'],
+      )!,
+      inputs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}inputs'],
+      )!,
+      outputs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}outputs'],
+      )!,
+      pending: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}pending'],
+      )!,
+      absent: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}absent'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+    );
+  }
+
+  @override
+  $SummaryCacheTable createAlias(String alias) {
+    return $SummaryCacheTable(attachedDatabase, alias);
+  }
+}
+
+class SummaryCacheData extends DataClass
+    implements Insertable<SummaryCacheData> {
+  final int id;
+  final int projectId;
+  final int inputs;
+  final int outputs;
+  final int pending;
+  final int absent;
+  final DateTime date;
+  const SummaryCacheData({
+    required this.id,
+    required this.projectId,
+    required this.inputs,
+    required this.outputs,
+    required this.pending,
+    required this.absent,
+    required this.date,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['project_id'] = Variable<int>(projectId);
+    map['inputs'] = Variable<int>(inputs);
+    map['outputs'] = Variable<int>(outputs);
+    map['pending'] = Variable<int>(pending);
+    map['absent'] = Variable<int>(absent);
+    map['date'] = Variable<DateTime>(date);
+    return map;
+  }
+
+  SummaryCacheCompanion toCompanion(bool nullToAbsent) {
+    return SummaryCacheCompanion(
+      id: Value(id),
+      projectId: Value(projectId),
+      inputs: Value(inputs),
+      outputs: Value(outputs),
+      pending: Value(pending),
+      absent: Value(absent),
+      date: Value(date),
+    );
+  }
+
+  factory SummaryCacheData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SummaryCacheData(
+      id: serializer.fromJson<int>(json['id']),
+      projectId: serializer.fromJson<int>(json['projectId']),
+      inputs: serializer.fromJson<int>(json['inputs']),
+      outputs: serializer.fromJson<int>(json['outputs']),
+      pending: serializer.fromJson<int>(json['pending']),
+      absent: serializer.fromJson<int>(json['absent']),
+      date: serializer.fromJson<DateTime>(json['date']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'projectId': serializer.toJson<int>(projectId),
+      'inputs': serializer.toJson<int>(inputs),
+      'outputs': serializer.toJson<int>(outputs),
+      'pending': serializer.toJson<int>(pending),
+      'absent': serializer.toJson<int>(absent),
+      'date': serializer.toJson<DateTime>(date),
+    };
+  }
+
+  SummaryCacheData copyWith({
+    int? id,
+    int? projectId,
+    int? inputs,
+    int? outputs,
+    int? pending,
+    int? absent,
+    DateTime? date,
+  }) => SummaryCacheData(
+    id: id ?? this.id,
+    projectId: projectId ?? this.projectId,
+    inputs: inputs ?? this.inputs,
+    outputs: outputs ?? this.outputs,
+    pending: pending ?? this.pending,
+    absent: absent ?? this.absent,
+    date: date ?? this.date,
+  );
+  SummaryCacheData copyWithCompanion(SummaryCacheCompanion data) {
+    return SummaryCacheData(
+      id: data.id.present ? data.id.value : this.id,
+      projectId: data.projectId.present ? data.projectId.value : this.projectId,
+      inputs: data.inputs.present ? data.inputs.value : this.inputs,
+      outputs: data.outputs.present ? data.outputs.value : this.outputs,
+      pending: data.pending.present ? data.pending.value : this.pending,
+      absent: data.absent.present ? data.absent.value : this.absent,
+      date: data.date.present ? data.date.value : this.date,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SummaryCacheData(')
+          ..write('id: $id, ')
+          ..write('projectId: $projectId, ')
+          ..write('inputs: $inputs, ')
+          ..write('outputs: $outputs, ')
+          ..write('pending: $pending, ')
+          ..write('absent: $absent, ')
+          ..write('date: $date')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, projectId, inputs, outputs, pending, absent, date);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SummaryCacheData &&
+          other.id == this.id &&
+          other.projectId == this.projectId &&
+          other.inputs == this.inputs &&
+          other.outputs == this.outputs &&
+          other.pending == this.pending &&
+          other.absent == this.absent &&
+          other.date == this.date);
+}
+
+class SummaryCacheCompanion extends UpdateCompanion<SummaryCacheData> {
+  final Value<int> id;
+  final Value<int> projectId;
+  final Value<int> inputs;
+  final Value<int> outputs;
+  final Value<int> pending;
+  final Value<int> absent;
+  final Value<DateTime> date;
+  const SummaryCacheCompanion({
+    this.id = const Value.absent(),
+    this.projectId = const Value.absent(),
+    this.inputs = const Value.absent(),
+    this.outputs = const Value.absent(),
+    this.pending = const Value.absent(),
+    this.absent = const Value.absent(),
+    this.date = const Value.absent(),
+  });
+  SummaryCacheCompanion.insert({
+    this.id = const Value.absent(),
+    required int projectId,
+    required int inputs,
+    required int outputs,
+    required int pending,
+    required int absent,
+    required DateTime date,
+  }) : projectId = Value(projectId),
+       inputs = Value(inputs),
+       outputs = Value(outputs),
+       pending = Value(pending),
+       absent = Value(absent),
+       date = Value(date);
+  static Insertable<SummaryCacheData> custom({
+    Expression<int>? id,
+    Expression<int>? projectId,
+    Expression<int>? inputs,
+    Expression<int>? outputs,
+    Expression<int>? pending,
+    Expression<int>? absent,
+    Expression<DateTime>? date,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (projectId != null) 'project_id': projectId,
+      if (inputs != null) 'inputs': inputs,
+      if (outputs != null) 'outputs': outputs,
+      if (pending != null) 'pending': pending,
+      if (absent != null) 'absent': absent,
+      if (date != null) 'date': date,
+    });
+  }
+
+  SummaryCacheCompanion copyWith({
+    Value<int>? id,
+    Value<int>? projectId,
+    Value<int>? inputs,
+    Value<int>? outputs,
+    Value<int>? pending,
+    Value<int>? absent,
+    Value<DateTime>? date,
+  }) {
+    return SummaryCacheCompanion(
+      id: id ?? this.id,
+      projectId: projectId ?? this.projectId,
+      inputs: inputs ?? this.inputs,
+      outputs: outputs ?? this.outputs,
+      pending: pending ?? this.pending,
+      absent: absent ?? this.absent,
+      date: date ?? this.date,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (projectId.present) {
+      map['project_id'] = Variable<int>(projectId.value);
+    }
+    if (inputs.present) {
+      map['inputs'] = Variable<int>(inputs.value);
+    }
+    if (outputs.present) {
+      map['outputs'] = Variable<int>(outputs.value);
+    }
+    if (pending.present) {
+      map['pending'] = Variable<int>(pending.value);
+    }
+    if (absent.present) {
+      map['absent'] = Variable<int>(absent.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SummaryCacheCompanion(')
+          ..write('id: $id, ')
+          ..write('projectId: $projectId, ')
+          ..write('inputs: $inputs, ')
+          ..write('outputs: $outputs, ')
+          ..write('pending: $pending, ')
+          ..write('absent: $absent, ')
+          ..write('date: $date')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $ProjectsTable projects = $ProjectsTable(this);
   late final $WorkersTable workers = $WorkersTable(this);
   late final $AttendancesTable attendances = $AttendancesTable(this);
+  late final $SummaryCacheTable summaryCache = $SummaryCacheTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1481,6 +1924,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     projects,
     workers,
     attendances,
+    summaryCache,
   ];
 }
 
@@ -2656,6 +3100,238 @@ typedef $$AttendancesTableProcessedTableManager =
       Attendance,
       PrefetchHooks Function({bool idCodeDocNumber})
     >;
+typedef $$SummaryCacheTableCreateCompanionBuilder =
+    SummaryCacheCompanion Function({
+      Value<int> id,
+      required int projectId,
+      required int inputs,
+      required int outputs,
+      required int pending,
+      required int absent,
+      required DateTime date,
+    });
+typedef $$SummaryCacheTableUpdateCompanionBuilder =
+    SummaryCacheCompanion Function({
+      Value<int> id,
+      Value<int> projectId,
+      Value<int> inputs,
+      Value<int> outputs,
+      Value<int> pending,
+      Value<int> absent,
+      Value<DateTime> date,
+    });
+
+class $$SummaryCacheTableFilterComposer
+    extends Composer<_$AppDatabase, $SummaryCacheTable> {
+  $$SummaryCacheTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get projectId => $composableBuilder(
+    column: $table.projectId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get inputs => $composableBuilder(
+    column: $table.inputs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get outputs => $composableBuilder(
+    column: $table.outputs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get pending => $composableBuilder(
+    column: $table.pending,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get absent => $composableBuilder(
+    column: $table.absent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SummaryCacheTableOrderingComposer
+    extends Composer<_$AppDatabase, $SummaryCacheTable> {
+  $$SummaryCacheTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get projectId => $composableBuilder(
+    column: $table.projectId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get inputs => $composableBuilder(
+    column: $table.inputs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get outputs => $composableBuilder(
+    column: $table.outputs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get pending => $composableBuilder(
+    column: $table.pending,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get absent => $composableBuilder(
+    column: $table.absent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SummaryCacheTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SummaryCacheTable> {
+  $$SummaryCacheTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get projectId =>
+      $composableBuilder(column: $table.projectId, builder: (column) => column);
+
+  GeneratedColumn<int> get inputs =>
+      $composableBuilder(column: $table.inputs, builder: (column) => column);
+
+  GeneratedColumn<int> get outputs =>
+      $composableBuilder(column: $table.outputs, builder: (column) => column);
+
+  GeneratedColumn<int> get pending =>
+      $composableBuilder(column: $table.pending, builder: (column) => column);
+
+  GeneratedColumn<int> get absent =>
+      $composableBuilder(column: $table.absent, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+}
+
+class $$SummaryCacheTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SummaryCacheTable,
+          SummaryCacheData,
+          $$SummaryCacheTableFilterComposer,
+          $$SummaryCacheTableOrderingComposer,
+          $$SummaryCacheTableAnnotationComposer,
+          $$SummaryCacheTableCreateCompanionBuilder,
+          $$SummaryCacheTableUpdateCompanionBuilder,
+          (
+            SummaryCacheData,
+            BaseReferences<_$AppDatabase, $SummaryCacheTable, SummaryCacheData>,
+          ),
+          SummaryCacheData,
+          PrefetchHooks Function()
+        > {
+  $$SummaryCacheTableTableManager(_$AppDatabase db, $SummaryCacheTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SummaryCacheTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SummaryCacheTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SummaryCacheTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> projectId = const Value.absent(),
+                Value<int> inputs = const Value.absent(),
+                Value<int> outputs = const Value.absent(),
+                Value<int> pending = const Value.absent(),
+                Value<int> absent = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+              }) => SummaryCacheCompanion(
+                id: id,
+                projectId: projectId,
+                inputs: inputs,
+                outputs: outputs,
+                pending: pending,
+                absent: absent,
+                date: date,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int projectId,
+                required int inputs,
+                required int outputs,
+                required int pending,
+                required int absent,
+                required DateTime date,
+              }) => SummaryCacheCompanion.insert(
+                id: id,
+                projectId: projectId,
+                inputs: inputs,
+                outputs: outputs,
+                pending: pending,
+                absent: absent,
+                date: date,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SummaryCacheTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SummaryCacheTable,
+      SummaryCacheData,
+      $$SummaryCacheTableFilterComposer,
+      $$SummaryCacheTableOrderingComposer,
+      $$SummaryCacheTableAnnotationComposer,
+      $$SummaryCacheTableCreateCompanionBuilder,
+      $$SummaryCacheTableUpdateCompanionBuilder,
+      (
+        SummaryCacheData,
+        BaseReferences<_$AppDatabase, $SummaryCacheTable, SummaryCacheData>,
+      ),
+      SummaryCacheData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2666,4 +3342,6 @@ class $AppDatabaseManager {
       $$WorkersTableTableManager(_db, _db.workers);
   $$AttendancesTableTableManager get attendances =>
       $$AttendancesTableTableManager(_db, _db.attendances);
+  $$SummaryCacheTableTableManager get summaryCache =>
+      $$SummaryCacheTableTableManager(_db, _db.summaryCache);
 }

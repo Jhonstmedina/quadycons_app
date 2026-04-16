@@ -20,7 +20,10 @@ class SynchronizationServiceImpl extends Service implements SynchronizationServi
           'asistencias': registrations.map(
             (r) => r.registration.type == RegisterType.checkIn ? {
               'asistencia_temp_id': r.localAttendanceId,
-              'trabajador_cedula': r.registration.idCodeInfo.docNumber,
+              if (r.registration.idCodeInfo.docNumber.isNotEmpty)
+                'trabajador_cedula': r.registration.idCodeInfo.docNumber,
+              if (r.registration.idCodeInfo.worker?.id != null)
+                'trabajador_id': r.registration.idCodeInfo.worker!.id,
               'proyecto_id': r.registration.idCodeInfo.worker!.project!.id,
               'fecha': _dateToString(r.registration.check.time),
               'hora_entrada': _dateToStringTime(r.registration.check.time),

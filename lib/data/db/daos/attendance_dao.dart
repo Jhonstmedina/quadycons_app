@@ -83,6 +83,10 @@ class AttendanceDao extends DatabaseAccessor<AppDatabase>
   }
 
   Future<SummaryDTO> getSummaryByProject(int projectId) async {
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+    final todayEnd = todayStart.add(Duration(days: 1));
+
     final result = await customSelect(
       '''
       SELECT
@@ -118,10 +122,14 @@ class AttendanceDao extends DatabaseAccessor<AppDatabase>
       FROM workers w
       WHERE w.doc_number = a.id_code_doc_number
         AND w.project_id = ?
-    );
+    )
+    AND a.check_in_date >= ?
+    AND a.check_in_date < ?;
     ''',
       variables: [
         Variable.withInt(projectId),
+        Variable.withDateTime(todayStart),
+        Variable.withDateTime(todayEnd),
       ],
     ).getSingle();
     return SummaryDTO(
@@ -137,4 +145,38 @@ class AttendanceDao extends DatabaseAccessor<AppDatabase>
         .go();
   }
 
+  Future<bool> hasPendingSyncToday() async {
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+    final todayEnd = todayStart.add(Duration(days: 1));
+
+    final result = await customSelect(
+      '''
+      SELECT COUNT(*) as count
+      FROM attendances
+      WHERE synced = 0
+        AND check_in_date >= ?
+        AND check_in_date < ?
+      ''',
+      variables: [
+        Variable.withDateTime(todayStart),
+        Variable.withDateTime(todayEnd),
+      ],
+    ).getSingle();
+
+    return result.read<int>('count') > 0;
+  }
+
+  Future<Attendance?> getUnsyncedByDocNumberToday(String docNumber) async {
+    if (docNumber.isEmpty) return null;
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+    final todayEnd = todayStart.add(Duration(days: 1));
+    return await (select(attendances)
+          ..where((a) => a.idCodeDocNumber.equals(docNumber))
+          ..where((a) => a.synced.equals(false))
+          ..where((a) => a.checkInDate.isBiggerOrEqualValue(todayStart))
+          ..where((a) => a.checkInDate.isSmallerThanValue(todayEnd)))
+        .getSingleOrNull();
+  }
 }

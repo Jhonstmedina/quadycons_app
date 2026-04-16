@@ -25,6 +25,10 @@ class CodeScanRepositoryImpl implements CodeScanRepository {
 
   @override
   Future<IdCodeInfo> getInfoByIdBase(IdCodeInfo info, List<Project> projects) async => await errorHandler.executeFunction(() async {
+    // Si no tiene cédula pero tiene ID y nombre (viene del QR completo), usar directo
+    if (info.docNumber.isEmpty && info.worker?.id != null) {
+      return info;
+    }
     final localWorker = await dao.getByDocNumber(info.docNumber);
     if(localWorker == null) {
       if( await connectivityService.thereIsConnectivity()) {

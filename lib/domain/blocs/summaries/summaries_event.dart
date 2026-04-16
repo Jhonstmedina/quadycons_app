@@ -7,3 +7,8 @@ final class LoadSummary extends SummariesEvent {
   final Project project;
   LoadSummary({required this.project});
 }
+
+final class RefreshSummary extends SummariesEvent {
+  final Project project;
+  RefreshSummary({required this.project});
+}

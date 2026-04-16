@@ -22,7 +22,10 @@ class RegisterConfirmationServiceImpl extends Service implements RegisterConfirm
           'asistencias/check-in/',
           options: super.getBaseOptions(accessToken),
           data: {
-            'trabajador_cedula': registration.idCodeInfo.docNumber,
+            if (registration.idCodeInfo.docNumber.isNotEmpty)
+              'trabajador_cedula': registration.idCodeInfo.docNumber,
+            if (registration.idCodeInfo.worker?.id != null)
+              'trabajador_id': registration.idCodeInfo.worker!.id,
             'proyecto_id': registration.idCodeInfo.worker!.project!.id,
             'latitud': registration.check.location.lat,
             'longitud': registration.check.location.lon
@@ -71,7 +74,12 @@ class RegisterConfirmationServiceImpl extends Service implements RegisterConfirm
           'asistencias/check-out/',
           options: super.getBaseOptions(accessToken),
           data: {
-            'asistencia_id': attendance.remoteId,
+            if (attendance.remoteId != null)
+              'asistencia_id': attendance.remoteId,
+            if (attendance.remoteId == null && attendance.idCodeInfo.worker?.id != null)
+              'trabajador_id': attendance.idCodeInfo.worker!.id,
+            if (attendance.remoteId == null && attendance.idCodeInfo.worker?.id == null && attendance.idCodeInfo.docNumber.isNotEmpty)
+              'trabajador_cedula': attendance.idCodeInfo.docNumber,
             'latitud': attendance.checkout!.location.lat,
             'longitud': attendance.checkout!.location.lon
           }

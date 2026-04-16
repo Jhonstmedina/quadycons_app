@@ -6,6 +6,7 @@ import 'package:quadycons/domain/entities/register_type.dart';
 import 'package:quadycons/domain/entities/registration.dart';
 import 'package:quadycons/domain/exceptions.dart';
 import 'package:quadycons/domain/repositories/attendance_repository.dart';
+import 'package:quadycons/domain/connectivity/connectivity_service.dart';
 
 part 'register_confirmation_event.dart';
 part 'register_confirmation_state.dart';
@@ -13,9 +14,11 @@ part 'register_confirmation_state.dart';
 class RegisterConfirmationBloc extends Bloc<RegisterConfirmationEvent, RegisterConfirmationState> {
   
   final AttendanceRepository repository;
+  final ConnectivityService connectivityService;
     
   RegisterConfirmationBloc({
-    required this.repository
+    required this.repository,
+    required this.connectivityService
   }) : super(RegisterConfirmationInitial()) {
     on<InitRegistrationConfirmation>(_onInitRegistrationConfirmation);
     on<ConfirmRegistration>(_onConfirmRegistration);
@@ -25,19 +28,12 @@ class RegisterConfirmationBloc extends Bloc<RegisterConfirmationEvent, RegisterC
     InitRegistrationConfirmation event,
     Emitter<RegisterConfirmationState> emit
   ) async {
-    final attendance = await repository.getAttendanceByUserDoc(event.registration.idCodeInfo.docNumber, event.projects);
     final registerType = event.registration.type;
-    if(registerType == RegisterType.checkIn) {
-      if(attendance != null) {
-        emit(OnRegistration(
-          attendance: attendance,
-          registerType: registerType,
-          error: RegisterConfirmError(
-            message: 'Registro duplicado (Ya existe entrada)',
-            type: RegisterConfirmErrorType.inconsistentAttendance
-          )
-        ));
-      } else {
+    final isOnline = await connectivityService.thereIsConnectivity();
+
+    if (isOnline) {
+      // ONLINE: no validar localmente, dejar que el servidor decida
+      if (registerType == RegisterType.checkIn) {
         emit(OnRegistration(
           attendance: Attendance(
             checkin: event.registration.check,
@@ -46,36 +42,90 @@ class RegisterConfirmationBloc extends Bloc<RegisterConfirmationEvent, RegisterC
           ),
           registerType: registerType
         ));
+      } else {
+        // Para check-out necesitamos el attendance local para obtener el remoteId
+        final attendance = await repository.getAttendanceByUserDoc(
+          event.registration.idCodeInfo.docNumber, event.projects
+        );
+        if (attendance == null) {
+          emit(OnRegistration(
+            attendance: Attendance(
+              checkin: null,
+              checkout: event.registration.check,
+              idCodeInfo: event.registration.idCodeInfo
+            ),
+            registerType: registerType,
+            error: RegisterConfirmError(
+              message: 'No existe registro de entrada previo',
+              type: RegisterConfirmErrorType.inconsistentAttendance
+            )
+          ));
+        } else {
+          emit(OnRegistration(
+            attendance: attendance.copyWith(
+              checkout: event.registration.check
+            ),
+            registerType: registerType
+          ));
+        }
       }
-    } else if(attendance == null) {
-      emit(OnRegistration(
-        attendance: Attendance(
-          checkin: null,
-          checkout: event.registration.check,
-          idCodeInfo: event.registration.idCodeInfo
-        ),
-        registerType: registerType,
-        error: RegisterConfirmError(
+    } else {
+      // OFFLINE: validar contra base local
+      final attendance = await repository.getAttendanceByUserDoc(
+        event.registration.idCodeInfo.docNumber, event.projects
+      );
+      if (registerType == RegisterType.checkIn) {
+        if (attendance != null && attendance.checkin != null) {
+          final hora = '${attendance.checkin!.time.hour.toString().padLeft(2, '0')}:${attendance.checkin!.time.minute.toString().padLeft(2, '0')}';
+          emit(OnRegistration(
+            attendance: attendance,
+            registerType: registerType,
+            error: RegisterConfirmError(
+              message: 'Este trabajador ya tiene un check-in ($hora) registrado. Conéctate a internet y sincroniza para alinearte con el servidor.',
+              type: RegisterConfirmErrorType.inconsistentAttendance
+            )
+          ));
+        } else {
+          emit(OnRegistration(
+            attendance: Attendance(
+              checkin: event.registration.check,
+              checkout: null,
+              idCodeInfo: event.registration.idCodeInfo
+            ),
+            registerType: registerType
+          ));
+        }
+      } else if (attendance == null) {
+        emit(OnRegistration(
+          attendance: Attendance(
+            checkin: null,
+            checkout: event.registration.check,
+            idCodeInfo: event.registration.idCodeInfo
+          ),
+          registerType: registerType,
+          error: RegisterConfirmError(
             message: 'No existe registro de entrada previo',
             type: RegisterConfirmErrorType.inconsistentAttendance
           )
-      ));
-    } else if(attendance.checkout != null) {
-      emit(OnRegistration(
-        attendance: attendance,
-        registerType: registerType,
-        error: RegisterConfirmError(
-          message: 'Registro duplicado (Ya existe salida)',
-          type: RegisterConfirmErrorType.inconsistentAttendance
-        )
-      ));
-    } else {
-      emit(OnRegistration(
-        attendance: attendance.copyWith(
-          checkout: event.registration.check
-        ),
-        registerType: registerType
-      ));
+        ));
+      } else if (attendance.checkout != null) {
+        final hora = '${attendance.checkout!.time.hour.toString().padLeft(2, '0')}:${attendance.checkout!.time.minute.toString().padLeft(2, '0')}';
+        emit(OnRegistration(
+          attendance: attendance,
+          registerType: registerType,
+          error: RegisterConfirmError(
+            message: 'Este trabajador ya tiene un check-out ($hora) registrado. Conéctate a internet y sincroniza para alinearte con el servidor.',
+            type: RegisterConfirmErrorType.inconsistentAttendance
+          )
+        ));
+      } else {
+        emit(OnRegistration(
+          attendance: attendance.copyWith(
+            checkout: event.registration.check
+          ),
+          registerType: registerType
+        ));
+      }
     }
   }
 

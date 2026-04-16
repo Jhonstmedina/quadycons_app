@@ -177,20 +177,20 @@ class RegisterConfirmationScreen extends StatelessWidget {
                                 )
                               ),
                               // Badge de ubicación
-                              Container(
-                                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.green,
-                                  borderRadius: BorderRadius.circular(20)
-                                ),
-                                child: Text(
-                                  'Dentro de ubicación',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: AppDimens.bodyMediumStyle(context)?.fontSize
-                                  )
-                                )
-                              )
+                              // Container(
+                              //   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                              //   decoration: BoxDecoration(
+                              //     color: Colors.green,
+                              //     borderRadius: BorderRadius.circular(20)
+                              //   ),
+                              //   child: Text(
+                              //     'Dentro de ubicación',
+                              //     style: TextStyle(
+                              //       color: Colors.white,
+                              //       fontSize: AppDimens.bodyMediumStyle(context)?.fontSize
+                              //     )
+                              //   )
+                              // )
                             ]
                           ),
                           const SizedBox(height: 24)

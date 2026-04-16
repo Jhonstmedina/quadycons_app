@@ -45,9 +45,26 @@ class IdCodeScanScreen extends StatelessWidget {
                 }
                 if(state.idDocInfo != null) {
                   final workerProject = state.idDocInfo!.worker?.project;
+                  final projectsState = context.read<ProjectsBloc>().state as ProjectsLoaded;
+                  final projects = projectsState.projects;
+
+                  // Validar que el trabajador pertenece a un proyecto del supervisor
+                  if(workerProject != null &&
+                    !projects.any((p) => p.id == workerProject.id)
+                  ) {
+                    SnackManager.showSnackBar(
+                      context,
+                      'Este trabajador no pertenece a ninguno de tus proyectos asignados',
+                      backgroundColor: Colors.amber,
+                      textColor: Colors.black,
+                      icon: Icons.person_off_outlined
+                    );
+                    context.read<CodeScanBloc>().add(ResetBloc());
+                    return;
+                  }
+
                   if( workerProject != null &&
-                     workerProject.id != (context.read<ProjectsBloc>().state as ProjectsLoaded)
-                      .chosenProject?.id
+                    workerProject.id != projectsState.chosenProject?.id
                   ) {
                     context.read<ProjectsBloc>().add(ChooseProject(
                       project: workerProject
@@ -253,9 +270,21 @@ class IdCodeScanScreen extends StatelessWidget {
     final codeScanBloc = context.read<CodeScanBloc>();
     final idCodeInfo = await context.push<IdCodeInfo?>('/scanner');
     if(idCodeInfo?.worker?.project != null) {
-      chosenProject = projects.firstWhere(
-        (project) => project.id == idCodeInfo!.worker!.project!.id
+      final workerProjectId = idCodeInfo!.worker!.project!.id;
+      final matchingProject = projects.where(
+        (project) => project.id == workerProjectId
       );
+      if(matchingProject.isEmpty) {
+        SnackManager.showSnackBar(
+          context,
+          'Este trabajador no pertenece a ninguno de tus proyectos asignados',
+          backgroundColor: Colors.amber,
+          textColor: Colors.black,
+          icon: Icons.person_off_outlined
+        );
+        return;
+      }
+      chosenProject = matchingProject.first;
     }
     codeScanBloc.add(InsertScanInfo(idCodeInfo, chosenProject!, projects));
   }

@@ -50,6 +50,8 @@ import 'package:quadycons/domain/repositories/user_repository.dart';
 import 'package:quadycons/domain/use_cases/clean_last_registrations.dart';
 import 'package:quadycons/domain/use_cases/synchronize.dart';
 import 'package:quadycons/core/adapters/code_scan_adapter.dart';
+import 'package:quadycons/data/services/summary_service.dart';
+import 'package:quadycons/data/db/daos/summary_cache_dao.dart';
 
 final sl = GetIt.instance;
 
@@ -261,12 +263,14 @@ void _initRegisterConfirmationModule() {
       accessTokenGetter: sl<AuthLocalDataSource>(),
       dao: sl<AttendanceDao>(),
       connectivityService: sl<ConnectivityService>(),
-      errorHandler: sl<RepositoryErrorHandler>()
+      errorHandler: sl<RepositoryErrorHandler>(),
+      summaryCacheDao: sl<SummaryCacheDao>()
     )
   );
   sl.registerFactory<RegisterConfirmationBloc>(
     () => RegisterConfirmationBloc(
-      repository: sl<AttendanceRepository>()
+      repository: sl<AttendanceRepository>(),
+      connectivityService: sl<ConnectivityService>()
     )
   );
 }
@@ -275,14 +279,27 @@ void _initSummaryModule() {
   sl.registerLazySingleton<SummaryLocalDataSource>(
     () => SummaryLocalDataSourceImpl()
   );
+  sl.registerLazySingleton<SummaryService>(
+    () => SummaryServiceImpl(dio: sl<Dio>())
+  );
+  sl.registerLazySingleton<SummaryCacheDao>(
+    () => SummaryCacheDao(sl<AppDatabase>())
+  );
   sl.registerLazySingleton<SummaryRepository>(
     () => SummaryRepositoryImpl(
-      attendanceDao: sl<AttendanceDao>()
+      attendanceDao: sl<AttendanceDao>(),
+      summaryCacheDao: sl<SummaryCacheDao>(),
+      summaryService: sl<SummaryService>(),
+      accessTokenGetter: sl<AuthLocalDataSource>(),
+      connectivityService: sl<ConnectivityService>(),
+      errorHandler: sl<RepositoryErrorHandler>(),
     )
   );
-  sl.registerFactory<SummariesBloc>(
-    () => SummariesBloc(
-      sl<SummaryRepository>()
+  sl.registerSingleton<SummariesBloc>(
+    SummariesBloc(
+      sl<SummaryRepository>(),
+      sl<ConnectivityService>(),
+      sl<AttendanceDao>(),
     )
   );
 }
