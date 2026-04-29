@@ -133,8 +133,26 @@ class CodeScanBloc extends Bloc<CodeScanEvent, CodeScanState> {
         ));
       }
     } else {
+      // Si no hay warm fix, intentar obtener ubicación directamente
+      try {
+        final location = await geolocation.getCurrentPosition();
+        if (location != null) {
+          if (event is RetryScanEnd) {
+            project = event.project;
+          }
+          emit(initState.copyWith(
+            isInFence: true,
+            errorMessage: null,
+            currentLocation: location,
+            isLoading: false
+          ));
+          return;
+        }
+      } catch (_) {}
+      geolocation.startWarm();
       emit(initState.copyWith(
-        errorMessage: 'Hubo un problema con el GPS. Vuélve a intentarlo en unos segundos.'
+        errorMessage: 'No se pudo obtener la ubicación. Asegúrate de tener el GPS activado e intenta de nuevo.',
+        isLoading: false
       ));
     }
   }

@@ -1,3 +1,4 @@
+// lib/domain/blocs/register_confirmation/register_confirmation_bloc.dart
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:quadycons/domain/entities/attendance.dart';
@@ -43,22 +44,19 @@ class RegisterConfirmationBloc extends Bloc<RegisterConfirmationEvent, RegisterC
           registerType: registerType
         ));
       } else {
-        // Para check-out necesitamos el attendance local para obtener el remoteId
+        // Para check-out intentamos buscar el attendance local
         final attendance = await repository.getAttendanceByUserDoc(
           event.registration.idCodeInfo.docNumber, event.projects
         );
         if (attendance == null) {
+          // Ya no bloqueamos con error si estamos ONLINE
           emit(OnRegistration(
             attendance: Attendance(
               checkin: null,
               checkout: event.registration.check,
               idCodeInfo: event.registration.idCodeInfo
             ),
-            registerType: registerType,
-            error: RegisterConfirmError(
-              message: 'No existe registro de entrada previo',
-              type: RegisterConfirmErrorType.inconsistentAttendance
-            )
+            registerType: registerType
           ));
         } else {
           emit(OnRegistration(
@@ -70,7 +68,7 @@ class RegisterConfirmationBloc extends Bloc<RegisterConfirmationEvent, RegisterC
         }
       }
     } else {
-      // OFFLINE: validar contra base local
+      // OFFLINE: validar contra base local obligatoriamente
       final attendance = await repository.getAttendanceByUserDoc(
         event.registration.idCodeInfo.docNumber, event.projects
       );

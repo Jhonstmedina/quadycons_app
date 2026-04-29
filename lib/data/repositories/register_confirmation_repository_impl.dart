@@ -82,15 +82,26 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
   Future<Attendance> confirmCheckOut(Attendance attendance) async => await errorHandler.executeFunction(() async {
     if( await connectivityService.thereIsConnectivity() ) {
       final accessToken = await accessTokenGetter.getAccessToken();
+      
+      // Enviamos el checkout al servidor (el service ya envía trabajador_id o cédula como respaldo)
       attendance = await registerConfirmationService.confirmCheckOut(
         attendance,
         accessToken
       );
-      await _updateAttendanceLocally(attendance);
-      await dao.changeSynced(localId: attendance.id!, synced: true);
+      
+      // Si existía localmente lo actualizamos, sino lo insertamos
+      if (attendance.id != null) {
+        await _updateAttendanceLocally(attendance);
+        await dao.changeSynced(localId: attendance.id!, synced: true);
+      } else {
+        final newId = await _insertAttendanceLocally(attendance);
+        attendance = attendance.copyWith(id: newId);
+        await dao.changeSynced(localId: newId, synced: true);
+      }
     } else {
       await _updateAttendanceLocally(attendance);
     }
+    
     final projectId = attendance.idCodeInfo.worker?.project?.id;
     if (projectId != null) {
       final cached = await summaryCacheDao.getCachedSummary(projectId);

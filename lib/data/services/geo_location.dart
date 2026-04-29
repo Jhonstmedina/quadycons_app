@@ -38,7 +38,7 @@ class GeoLocationImpl implements Geolocation {
     _subscription = null;
   }
 
-  bool hasWarmFix({Duration maxAge = const Duration(seconds: 15)}) {
+  bool hasWarmFix({Duration maxAge = const Duration(seconds: 60)}) {
     if (_lastPosition == null) return false;
     final timestamp = _lastPosition!.timestamp;
     return DateTime.now().difference(timestamp) <= maxAge;
@@ -54,10 +54,10 @@ class GeoLocationImpl implements Geolocation {
 
       final position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.low,
+          accuracy: LocationAccuracy.high,
         ),
       ).timeout(
-        const Duration(seconds: 8),
+        const Duration(seconds: 15),
         onTimeout: () => throw TimeoutException('GPS timeout'),
       );
 
