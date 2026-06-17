@@ -1,30 +1,38 @@
 import 'package:bloc/bloc.dart';
-import 'package:quadycons/data/entities/authentication.dart';
+import 'package:quadycons/domain/entities/authentication.dart';
+import 'package:quadycons/domain/entities/user.dart';
 import 'package:quadycons/domain/repositories/auth_repository.dart';
 import 'package:quadycons/domain/exceptions.dart';
+import 'package:quadycons/domain/repositories/user_repository.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState>{
-  static const defaultErrorMessage = 'Ha ocurrido un error inesperado';
   static const emptyUserNameErrorMessage = 'El campo de usuario no puede estar vacío';
   static const emptyPasswordErrorMessage = 'El campo de contraseña no puede estar vacío';
   static const emptyCodeErrorMessage = 'El campo de código está vacío';
   static const invalidCredentialsErrorMessage = 'Credenciales Inválidas';
 
   final AuthRepository repository;
+  final UserRepository userRepository;
   
   AuthBloc({
-    required this.repository
-  }) : super(OnLogin()){
+    required this.repository,
+    required this.userRepository
+  }) : super(LoginInit()){
     on<InitLoginEvent>(_initLogin);
     on<LoginEvent>(_login);
     on<LogoutEvent>(_logout);
   }
 
-  void _initLogin(_, Emitter<AuthState> emit){
-    emit(OnLogin());
+  Future<void> _initLogin(_, Emitter<AuthState> emit) async {
+    final user = await userRepository.getUser();
+    if(user == null) {
+      emit(OnLogin());
+    } else {
+      emit(OnAuthenticated(user: user));
+    }
   }  
 
   Future<void> _login(LoginEvent event, Emitter<AuthState> emit)async{
@@ -45,11 +53,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
         ));
       }else{
         await repository.login(auth);
-        emit(OnAuthenticated());
+        final user = await userRepository.getUser();
+        emit(OnAuthenticated(user: user));
       }
     } on GeneralException catch(exception){
       emit(OnLogin(
         errorMessage: exception.message,
+        emailMessage: null,
+        passwordMessage: null
+      ));
+    } catch( exception ) {
+      emit(OnLogin(
+        errorMessage: exception.toString(),
         emailMessage: null,
         passwordMessage: null
       ));
@@ -61,7 +76,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
     emit(initState.copyWith(loading: true));
     try{
       await repository.logout();
-      emit(OnUnAuthenticated());
+      emit(OnLogin());
     }on GeneralException catch(exception){
       emit(OnAuthenticated(
         errorMessage: exception.message

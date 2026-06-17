@@ -1,0 +1,91 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quadycons/core/app_colors.dart';
+import 'package:quadycons/core/app_dimens.dart';
+import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
+
+class ProjectsSelect extends StatelessWidget {
+  const ProjectsSelect({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ProjectsBloc, ProjectsState>(
+      builder: (context, state) {
+        if(state is! ProjectsLoaded) {
+          return Row(
+            mainAxisAlignment: .spaceBetween,
+            children: [
+              Text(
+                'Cargando Proyectos...',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: AppDimens.bodyMediumStyle(context)?.fontSize
+                )
+              ),
+              SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            ],
+          );
+        }
+        return Row(
+          mainAxisAlignment: .spaceBetween,
+          children: [
+            Text(
+              'Proyecto Delegado',
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: Theme.of( context).textTheme.bodyMedium?.fontSize
+              )
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: AppDimens.getWidthPercentage(context, 0.03)
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.containerBackground(context),
+                borderRadius: BorderRadius.circular(20)
+              ),
+              child: DropdownButton<int>(
+                padding: EdgeInsets.zero,
+                value: state.chosenProject?.id,
+                hint: Text(
+                  'Seleccionar proyecto',
+                  style: TextStyle(
+                    fontSize: AppDimens.bodyMediumStyle(context)?.fontSize
+                  )
+                ),
+                underline: SizedBox(),
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: AppDimens.bodyMediumStyle(context)?.fontSize
+                ),
+                alignment: AlignmentDirectional.centerStart,
+                //dropdownColor: AppColors.containerBackground(context),
+                borderRadius: BorderRadius.circular(20),
+                menuMaxHeight: 300,
+                items: state.projects.map((project) {
+                  return DropdownMenuItem<int>(
+                    value: project.id,
+                    child: Text(project.name),
+                  );
+                }).toList(),
+                onChanged: (int? selectedProjectId) {
+                  if (selectedProjectId != null) {
+                    context.read<ProjectsBloc>().add(
+                      ChooseProject(project: state.projects.firstWhere(
+                        (project) => project.id == selectedProjectId
+                      ))
+                    );
+                  }
+                }
+              )
+            )
+          ]
+        );
+      }
+    );
+  }
+}

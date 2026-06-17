@@ -10,6 +10,10 @@ abstract class AuthState{
 
 }
 
+class LoginInit extends AuthState {
+  
+}
+
 class OnLogin extends AuthState{
   final bool loading;
   final String? errorMessage;
@@ -39,16 +43,20 @@ class OnLogin extends AuthState{
 class OnAuthenticated extends AuthState{
   final bool loading;
   final String? errorMessage;
+  final User? user;
   OnAuthenticated({
     this.loading = false,
-    this.errorMessage
+    this.errorMessage,
+    this.user
   });
   OnAuthenticated copyWith({
     bool? loading,
-    String? errorMessage
+    String? errorMessage,
+    User? user
   }) => OnAuthenticated(
     loading: loading ?? this.loading,
-    errorMessage: errorMessage
+    errorMessage: errorMessage,
+    user: user ?? this.user
   );
 }
 

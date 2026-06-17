@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:quadycons/injection_container.dart';
-import 'package:quadycons/ui/utils/code_scan_adapter.dart';
+import 'package:quadycons/core/adapters/code_scan_adapter.dart';
 
 class ScannerScreen extends StatefulWidget {
   @override
@@ -10,11 +10,14 @@ class ScannerScreen extends StatefulWidget {
 
 class _ScannerScreenState extends State<ScannerScreen> {
   final MobileScannerController controller = MobileScannerController(
+    /*
+    Volver a poner en caso de que se necesite filtrar formatos
     formats: [
       BarcodeFormat.qrCode,
       BarcodeFormat.pdf417,
       BarcodeFormat.code128
     ],
+    */
   );
   String? codeError;
 
@@ -31,15 +34,18 @@ class _ScannerScreenState extends State<ScannerScreen> {
           if (scanned) return;
 
           final barcode = capture.barcodes.first;
-          final rawValue = barcode.rawValue;
-          final idInfo = scanAdapter.getInfoByCode(rawValue);
+          final value = barcode.rawValue ?? barcode.displayValue;
+
+          if (value == null || value.isEmpty) return;
+
+          final idInfo = scanAdapter.getInfoByCode(value);
           
           if (idInfo != null) {
             scanned = true;
             controller.stop();
 
             debugPrint('Código detectado:');
-            debugPrint(rawValue);
+            debugPrint(value);
 
             // Aquí procesas el contenido
             Navigator.pop(context, idInfo);

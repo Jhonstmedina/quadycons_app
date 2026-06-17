@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quadycons/data/entities/id_code_info.dart';
-import 'package:quadycons/data/entities/register_type.dart';
-import 'package:quadycons/data/entities/registration.dart';
+import 'package:go_router/go_router.dart';
+import 'package:quadycons/core/app_colors.dart';
+import 'package:quadycons/core/app_dimens.dart';
+import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
+import 'package:quadycons/domain/connectivity/connectivity_service.dart';
+import 'package:quadycons/domain/entities/check.dart';
+import 'package:quadycons/domain/entities/id_code_info.dart';
+import 'package:quadycons/domain/entities/register_type.dart';
+import 'package:quadycons/domain/entities/registration.dart';
 import 'package:quadycons/domain/blocs/code_scan/code_scan_bloc.dart';
 import 'package:quadycons/injection_container.dart';
-import 'package:quadycons/ui/screens/register_confirmation_screen.dart';
-import 'package:quadycons/ui/screens/scanner_screen.dart';
+import 'package:quadycons/ui/utils/snack_manager.dart';
+import 'package:quadycons/ui/widgets/box.dart';
 import 'package:quadycons/ui/widgets/scan_button.dart';
 import 'package:quadycons/ui/widgets/radio_scan_button.dart';
+import 'package:quadycons/ui/widgets/projects_select.dart';
+import 'package:quadycons/ui/widgets/custom_app_bar.dart';
 
 class IdCodeScanScreen extends StatelessWidget {
   const IdCodeScanScreen({super.key});
@@ -16,171 +24,268 @@ class IdCodeScanScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAppBar(title: ''),
       body: BlocProvider(
         create: (context) => sl<CodeScanBloc>(),
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.05),
+            padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.05
+            ),
             child: BlocConsumer<CodeScanBloc, CodeScanState>(
-              listener: (context, state){
-                if((state as Registrating).errorMessage != null){
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(state.errorMessage!),
-                      backgroundColor: Colors.red
-                    )
-                  );
-                } if (state.registerType != null && state.idDocInfo != null && (state.isInFence??false)) {
-                  Navigator.push(
+              listener: (context, state) {
+                if ((state as Registrating).errorMessage != null) {
+                  SnackManager.showSnackBar(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => RegisterConfirmationScreen(),
-                      settings: RouteSettings(
-                        arguments: Registration(
-                          checkInTime: state.registerType == RegisterType.entry?
-                            TimeOfDay.now(): null,
-                          checkOutTime: state.registerType == RegisterType.exit?
-                            TimeOfDay.now(): null,
-                          idCodeInfo: state.idDocInfo!
-                        )
-                      )
-                    )
+                    state.errorMessage!,
+                    backgroundColor: Colors.amber,
+                    textColor: Colors.black,
+                    icon: Icons.wrong_location_outlined
                   );
                 }
+                if(state.idDocInfo != null) {
+                  final workerProject = state.idDocInfo!.worker?.project;
+                  final projectsState = context.read<ProjectsBloc>().state as ProjectsLoaded;
+                  final projects = projectsState.projects;
+
+                  // Validar que el trabajador pertenece a un proyecto del supervisor
+                  if(workerProject != null &&
+                    !projects.any((p) => p.id == workerProject.id)
+                  ) {
+                    SnackManager.showSnackBar(
+                      context,
+                      'Este trabajador no pertenece a ninguno de tus proyectos asignados',
+                      backgroundColor: Colors.amber,
+                      textColor: Colors.black,
+                      icon: Icons.person_off_outlined
+                    );
+                    context.read<CodeScanBloc>().add(ResetBloc());
+                    return;
+                  }
+
+                  if( workerProject != null &&
+                    workerProject.id != projectsState.chosenProject?.id
+                  ) {
+                    context.read<ProjectsBloc>().add(ChooseProject(
+                      project: workerProject
+                    ));
+                  }
+                  if (state.registerType != null &&
+                    state.idDocInfo != null &&
+                    (state.isInFence ?? false)
+                  ) {
+                    context.read<CodeScanBloc>().add(ResetBloc());
+                    context.push(
+                      '/register-confirmation',
+                      extra: Registration(
+                        check: Check(
+                          time: DateTime.now(),
+                          location: state.currentLocation!
+                        ),
+                        idCodeInfo: state.idDocInfo!,
+                        type: state.registerType!
+                      ),
+                    );
+                  }
+                }
+                
               },
               builder: (context, state) {
                 state = state as Registrating;
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Escaneo de cédula / QR',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                            fontSize: 20
-                          )
-                        ),
-                        Chip(
-                          label: Text(
-                            'offline solo',
-                            style: TextStyle(
-                              fontSize: 12
-                            )
-                          ),
-                          backgroundColor: Colors.green,
-                          labelStyle: TextStyle(color: Colors.white),
-                          labelPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-                          visualDensity: VisualDensity.compact,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30)
-                          )
-                        )
-                      ]
-                    ),
-                    SizedBox(height: 16),
-                    Container(
-                      padding: EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Color(0xFFF5F3FF),
-                        borderRadius: BorderRadius.circular(16)
-                      ),
+                    Box(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            Icons.qr_code_scanner,
-                            size: 80,
-                            weight: 700
-                          ),
-                          SizedBox(height: 16),
-                          Text(
-                            'apunta al código de barras de la cédula o al QR',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Escaneo de cédula / QR',
+                              style: AppDimens.titleLargeStyle(context)
                             ),
-                            textAlign: TextAlign.center
                           ),
-                          SizedBox(height: 16),
-                          if(state.idDocInfo != null)
-                            Text(
-                              state.idDocInfo!.docNumber,
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 14
-                              )
+                          SizedBox(height: 15),
+                          StreamBuilder<bool>(
+                            stream: sl<ConnectivityService>().connectivityStream,
+                            initialData: false,
+                            builder: (context, snapshot) {
+                              final isConnected = snapshot.data ?? false;
+                              if (!isConnected) {
+                                return Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Chip(
+                                    label: Text(
+                                      'offline solo',
+                                      style: TextStyle(fontSize: 12)
+                                    ),
+                                    backgroundColor: Colors.green,
+                                    labelStyle: TextStyle(color: Colors.white),
+                                    labelPadding: EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 0
+                                    ),
+                                    visualDensity: VisualDensity.compact,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30)
+                                    )
+                                  ),
+                                );
+                              }
+                              return Container();
+                            }
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: AppColors.containerBackground(context),
+                              borderRadius: BorderRadius.circular(16)
                             ),
-                          TextButton(
-                            onPressed: () async {
-                              _scan(context);
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Icon(
-                                  Icons.camera_alt_outlined,
-                                  color: Colors.black
-                                ),
-                                SizedBox(width: 8),
+                                Icon(Icons.qr_code_scanner, size: 80, weight: 700),
+                                SizedBox(height: 16),
                                 Text(
-                                  'Abrir cámara',
+                                  'apunta al código de barras de la cédula o al QR',
                                   style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16
-                                  )
+                                    color: Colors.grey,
+                                    fontSize: 14
+                                  ),
+                                  textAlign: TextAlign.center
+                                ),
+                                SizedBox(height: 16),
+                                if (state.idDocInfo != null)
+                                  Text(
+                                    state.idDocInfo!.docNumber,
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 14
+                                    )
+                                  ),
+                                BlocBuilder<ProjectsBloc, ProjectsState>(
+                                  builder: (context, state) {
+                                    return TextButton(
+                                      onPressed: state is! ProjectsLoaded ?
+                                        null :
+                                        () async {
+                                          _scan(context);
+                                        },
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.camera_alt_outlined,
+                                            color: state is ProjectsLoaded ? 
+                                              Colors.black : 
+                                              Colors.grey
+                                          ),
+                                          SizedBox(width: 8),
+                                          Text(
+                                            'Abrir cámara',
+                                            style: TextStyle(
+                                              color: state is ProjectsLoaded ? 
+                                                Colors.black : 
+                                                Colors.grey,
+                                              fontSize: 16
+                                            )
+                                          )
+                                        ]
+                                      )
+                                    );
+                                  }
                                 )
                               ]
                             )
-                          )
-                        ]
-                      )
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ScanRegistrationButton(
+                                icon: Icons.login,
+                                text: 'Entrada',
+                                registerType: RegisterType.checkIn
+                              ),
+                              ScanRegistrationButton(
+                                icon: Icons.logout,
+                                text: 'Salida',
+                                registerType: RegisterType.checkOut
+                              ),
+                              ScanButton(
+                                icon: Icons.refresh,
+                                text: 'Reintentar',
+                                onPressed: () {
+                                  context.read<CodeScanBloc>().add(RetryScanEnd(
+                                    project: (context.read<ProjectsBloc>().state as ProjectsLoaded).chosenProject!
+                                  ));
+                                }
+                              )
+                            ]
+                          ),
+                        ],
+                      ),
                     ),
-                    SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ScanRegistrationButton(
-                          icon: Icons.login,
-                          text: 'Entrada',
-                          registerType: RegisterType.entry
+                    Spacer(
+                      flex: 1
+                    ),
+                    if(state.isLoading)
+                      ...[
+                        Center(
+                          child: CircularProgressIndicator(),
                         ),
-                        ScanRegistrationButton(
-                          icon: Icons.logout,
-                          text: 'Salida',
-                          registerType: RegisterType.exit
+                        const SizedBox(
+                          height: 10
                         ),
-                        ScanButton(
-                          icon: Icons.refresh,
-                          text: 'Reintentar',
-                          onPressed: () {
-                            _scan(context);
-                          }
+                        Center(
+                          child: Text(
+                            'Obteniendo geolocalización',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: Colors.black54
+                            )
+                          ),
+                        ),
+                        Spacer(
+                          flex: 1
                         )
-                      ]
-                    )
-                  ]
+                      ],
+                    ProjectsSelect(),
+                    SizedBox(height: 16)
+                  ],
                 );
-              }
-            )
-          )
-        )
-      )
+              },
+            ),
+          ),
+        ),
+      ),
     );
   }
 
   Future<void> _scan(BuildContext context) async {
-    final idCodeInfo = await Navigator.push<IdCodeInfo?>(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ScannerScreen()
-      )
-    );
-    BlocProvider.of<CodeScanBloc>(context).add(
-      InsertScanInfo(idCodeInfo)
-    );
+    final projects = (context.read<ProjectsBloc>().state as ProjectsLoaded).projects;
+    var chosenProject = (context.read<ProjectsBloc>().state as ProjectsLoaded).chosenProject;
+    final codeScanBloc = context.read<CodeScanBloc>();
+    final idCodeInfo = await context.push<IdCodeInfo?>('/scanner');
+    if(idCodeInfo?.worker?.project != null) {
+      final workerProjectId = idCodeInfo!.worker!.project!.id;
+      final matchingProject = projects.where(
+        (project) => project.id == workerProjectId
+      );
+      if(matchingProject.isEmpty) {
+        SnackManager.showSnackBar(
+          context,
+          'Este trabajador no pertenece a ninguno de tus proyectos asignados',
+          backgroundColor: Colors.amber,
+          textColor: Colors.black,
+          icon: Icons.person_off_outlined
+        );
+        return;
+      }
+      chosenProject = matchingProject.first;
+    }
+    codeScanBloc.add(InsertScanInfo(idCodeInfo, chosenProject!, projects));
   }
 }

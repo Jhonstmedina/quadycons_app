@@ -1,38 +1,78 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:quadycons/core/connectivity/connectivity_service.dart';
+import 'package:quadycons/core/repository_error_handler.dart';
+import 'package:quadycons/data/db/app_database.dart';
+import 'package:quadycons/data/db/daos/attendance_dao.dart';
+import 'package:quadycons/data/db/daos/project_dao.dart';
+import 'package:quadycons/data/db/daos/worker_dao.dart';
 import 'package:quadycons/data/local_data_source/auth_local_data_source.dart';
+import 'package:quadycons/data/local_data_source/summary_local_data_source.dart';
 import 'package:quadycons/data/platform/permissions_controller.dart';
 import 'package:quadycons/data/platform/storage_connector.dart';
 import 'package:quadycons/data/repositories/auth_repository_impl.dart';
 import 'package:quadycons/data/repositories/code_scan_repository_Impl.dart';
+import 'package:quadycons/data/repositories/projects_repository_impl.dart';
 import 'package:quadycons/data/repositories/register_confirmation_repository_impl.dart';
+import 'package:quadycons/data/repositories/summary_repository_impl.dart';
+import 'package:quadycons/data/repositories/synchronization_repository_impl.dart';
+import 'package:quadycons/data/repositories/user_repository_impl.dart';
 import 'package:quadycons/data/services/auth_service.dart';
 import 'package:quadycons/data/services/code_scan_service.dart';
+import 'package:quadycons/data/services/fake/projects_service_fake.dart';
+import 'package:quadycons/data/services/fake/synchronization_service_fake.dart';
+import 'package:quadycons/data/services/projects_service.dart';
 import 'package:quadycons/data/services/register_confirmation_service.dart';
 import 'package:quadycons/data/services/fake/auth_service_fake.dart';
 import 'package:quadycons/data/services/fake/code_scan_service_fake.dart';
 import 'package:quadycons/data/services/fake/register_confirmation_service_fake.dart';
 import 'package:quadycons/data/services/geo_location.dart';
+import 'package:quadycons/data/services/synchronization_service.dart';
 import 'package:quadycons/domain/blocs/auth/auth_bloc.dart';
 import 'package:quadycons/domain/blocs/code_scan/code_scan_bloc.dart';
 import 'package:quadycons/domain/blocs/permissions/permissions_bloc.dart';
+import 'package:quadycons/domain/blocs/projects/projects_bloc.dart';
 import 'package:quadycons/domain/blocs/register_confirmation/register_confirmation_bloc.dart';
+import 'package:quadycons/domain/blocs/summaries/summaries_bloc.dart';
+import 'package:quadycons/domain/blocs/synchronization/synchronization_bloc.dart';
+import 'package:quadycons/domain/connectivity/connectivity_service.dart';
 import 'package:quadycons/domain/logic/locations_comparer.dart';
 import 'package:quadycons/domain/repositories/auth_repository.dart';
 import 'package:quadycons/domain/repositories/code_scan_repository.dart';
-import 'package:quadycons/domain/repositories/register_confirmation_repository.dart';
-import 'package:quadycons/ui/utils/code_scan_adapter.dart';
+import 'package:quadycons/domain/repositories/projects_repository.dart';
+import 'package:quadycons/domain/repositories/attendance_repository.dart';
+import 'package:quadycons/domain/repositories/summary_repository.dart';
+import 'package:quadycons/domain/repositories/synchronization_repository.dart';
+import 'package:quadycons/domain/repositories/user_repository.dart';
+import 'package:quadycons/domain/use_cases/clean_last_registrations.dart';
+import 'package:quadycons/domain/use_cases/synchronize.dart';
+import 'package:quadycons/core/adapters/code_scan_adapter.dart';
+import 'package:quadycons/data/services/summary_service.dart';
+import 'package:quadycons/data/db/daos/summary_cache_dao.dart';
 
 final sl = GetIt.instance;
 
 void init() {
 
-  sl.registerLazySingleton<Dio>(() => Dio());
+  sl.registerLazySingleton<Dio>(() => _createDio());
   sl.registerLazySingleton<Geolocation>(() => GeoLocationImpl());
   sl.registerLazySingleton<StorageConnector>(
     () => StorageConnectorImpl(
       fss: FlutterSecureStorage()
+    )
+  );
+  sl.registerLazySingleton<AppDatabase>(
+    () => AppDatabase()
+  );
+  sl.registerLazySingleton<ConnectivityService>(
+    () => ConnectivityServiceImpl()
+  );
+  sl.registerLazySingleton<RepositoryErrorHandler>(
+    () => RepositoryErrorHandlerImpl(
+      authFixer: sl<AuthRepository>()
     )
   );
 
@@ -40,6 +80,13 @@ void init() {
   // Authentication
   // ******************************************
   _initAuthenticationModule();
+
+  // ******************************************
+  // Projects
+  // ******************************************
+
+  _initProjectsModule();
+
 
   // ******************************************
   // Permissions
@@ -56,6 +103,36 @@ void init() {
   // Register Confirmation
   // ******************************************
   _initRegisterConfirmationModule();
+
+  // ******************************************
+  // Summary
+  // ******************************************
+  _initSummaryModule();
+
+  // ******************************************
+  // Synchronization
+  // ******************************************
+  _initSynchronizationModule();
+}
+
+
+Dio _createDio() {
+  final dio = Dio(
+    BaseOptions(
+      baseUrl: 'https://34.68.203.103/api/',
+      connectTimeout: const Duration(milliseconds: 5000),
+      receiveTimeout: const Duration(milliseconds: 3000),
+    ),
+  );
+
+  (dio.httpClientAdapter as IOHttpClientAdapter)
+      .onHttpClientCreate = (HttpClient client) {
+    client.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    return client;
+  };
+
+  return dio;
 }
 
 void _initAuthenticationModule() {
@@ -75,11 +152,54 @@ void _initAuthenticationModule() {
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
       authService: sl<AuthService>(),
-      localDataSource: sl<AuthLocalDataSource>()
+      localDataSource: sl<AuthLocalDataSource>(),
+      dbCleaner: sl<AppDatabase>(),
+      connectivityService: sl<ConnectivityService>()
     )
   );
-  sl.registerLazySingleton<AuthBloc>(
-    () => AuthBloc(repository: sl<AuthRepository>())
+  sl.registerLazySingleton<UserRepository>(
+    () => UserRepositoryImpl(
+      authLocalDataSource: sl<AuthLocalDataSource>(),
+      connectivityService: sl<ConnectivityService>(),
+      errorHandler: sl<RepositoryErrorHandler>(),
+      authService: sl<AuthService>()
+    )
+  );
+  sl.registerSingleton<AuthBloc>(
+    AuthBloc(
+      repository: sl<AuthRepository>(),
+      userRepository: sl<UserRepository>()
+    )
+  );
+}
+
+void _initProjectsModule() {
+  sl.registerLazySingleton<ProjectsService>(
+    () => _implementRealOrFake(
+      realImpl: ProjectsServiceImpl(
+        dio: sl<Dio>()
+      ),
+      fakeImpl: ProjectsServiceFake(
+        geoLocation: sl<Geolocation>()
+      )
+    )
+  );
+  sl.registerLazySingleton<ProjectsDao>(
+    () => ProjectsDao(sl<AppDatabase>())
+  );
+  sl.registerLazySingleton<ProjectsRepository>(
+    () => ProjectsRepositoryImpl(
+      projectsService: sl<ProjectsService>(),
+      localDataSource: sl<AuthLocalDataSource>(),
+      dao: sl<ProjectsDao>(),
+      connectivityService: sl<ConnectivityService>(),
+      errorHandler: sl<RepositoryErrorHandler>()
+    )
+  );
+  sl.registerSingleton<ProjectsBloc>(
+    ProjectsBloc(
+      repository: sl<ProjectsRepository>()
+    )
   );
 }
 
@@ -103,10 +223,16 @@ void _initCodeScanModule() {
       )
     )
   );
+  sl.registerLazySingleton<WorkersDao>(
+    () => WorkersDao(sl<AppDatabase>())
+  );
   sl.registerLazySingleton<CodeScanRepository>(
     () => CodeScanRepositoryImpl(
       service: sl<CodeScanService>(),
-      accessTokenGetter: sl<AuthLocalDataSource>()
+      accessTokenGetter: sl<AuthLocalDataSource>(),
+      dao: sl<WorkersDao>(),
+      connectivityService: sl<ConnectivityService>(),
+      errorHandler: sl<RepositoryErrorHandler>()
     )
   );
   sl.registerFactory<CodeScanBloc>(
@@ -128,23 +254,97 @@ void _initRegisterConfirmationModule() {
       fakeImpl: RegisterConfirmationServiceFake()
     )
   );
-  sl.registerLazySingleton<RegisterConfirmationRepository>(
-    () => RegisterConfirmationRepositoryImpl(
+  sl.registerLazySingleton<AttendanceDao>(
+    () => AttendanceDao(sl<AppDatabase>())
+  );
+  sl.registerLazySingleton<AttendanceRepository>(
+    () => AttendanceRepositoryImpl(
       registerConfirmationService: sl<RegisterConfirmationService>(),
-      accessTokenGetter: sl<AuthLocalDataSource>()
+      accessTokenGetter: sl<AuthLocalDataSource>(),
+      dao: sl<AttendanceDao>(),
+      connectivityService: sl<ConnectivityService>(),
+      errorHandler: sl<RepositoryErrorHandler>(),
+      summaryCacheDao: sl<SummaryCacheDao>()
     )
   );
   sl.registerFactory<RegisterConfirmationBloc>(
     () => RegisterConfirmationBloc(
-      repository: sl<RegisterConfirmationRepository>()
+      repository: sl<AttendanceRepository>(),
+      connectivityService: sl<ConnectivityService>()
     )
   );
 }
 
-bool useRealData = false;
+void _initSummaryModule() {
+  sl.registerLazySingleton<SummaryLocalDataSource>(
+    () => SummaryLocalDataSourceImpl()
+  );
+  sl.registerLazySingleton<SummaryService>(
+    () => SummaryServiceImpl(dio: sl<Dio>())
+  );
+  sl.registerLazySingleton<SummaryCacheDao>(
+    () => SummaryCacheDao(sl<AppDatabase>())
+  );
+  sl.registerLazySingleton<SummaryRepository>(
+    () => SummaryRepositoryImpl(
+      attendanceDao: sl<AttendanceDao>(),
+      summaryCacheDao: sl<SummaryCacheDao>(),
+      summaryService: sl<SummaryService>(),
+      accessTokenGetter: sl<AuthLocalDataSource>(),
+      connectivityService: sl<ConnectivityService>(),
+      errorHandler: sl<RepositoryErrorHandler>(),
+    )
+  );
+  sl.registerSingleton<SummariesBloc>(
+    SummariesBloc(
+      sl<SummaryRepository>(),
+      sl<ConnectivityService>(),
+      sl<AttendanceDao>(),
+    )
+  );
+}
+
+void _initSynchronizationModule() {
+  sl.registerLazySingleton<SynchronizationService>(
+    () => _implementRealOrFake<SynchronizationService>(
+      realImpl: SynchronizationServiceImpl(
+        dio: sl<Dio>()
+      ),
+      fakeImpl: SynchronizationServiceFake()
+    )
+  );
+  sl.registerLazySingleton<SynchronizationRepository>(
+    () => SynchronizationRepositoryImpl(
+      attendanceDao: sl<AttendanceDao>(),
+      accessTokenGetter: sl<AuthLocalDataSource>(),
+      service: sl<SynchronizationService>(),
+      connectivity: sl<ConnectivityService>(),
+      errorHandler: sl<RepositoryErrorHandler>()
+    )
+  );
+  sl.registerLazySingleton<Synchronize>(
+    () => SynchronizeImpl(
+      repository: sl<SynchronizationRepository>()
+    )
+  );
+  sl.registerLazySingleton<CleanLastRegistrations>(
+    () => CleanLastRegistrationsImpl(
+      repository: sl<SynchronizationRepository>()
+    )
+  );
+  sl.registerFactory<SynchronizationBloc>(
+    () => SynchronizationBloc(
+      repository: sl<SynchronizationRepository>(),
+      synchronize: sl<Synchronize>(),
+      cleanLastRegistrations: sl<CleanLastRegistrations>()
+    )
+  );
+}
+
+bool useRealData = true;
 
  T _implementRealOrFake<T>({
-  required T realImpl, 
+  required T realImpl,
   required T fakeImpl
 }) => useRealData? realImpl
-                 : fakeImpl; 
+                 : fakeImpl;

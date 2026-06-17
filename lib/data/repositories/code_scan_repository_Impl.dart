@@ -1,31 +1,48 @@
-import 'package:quadycons/data/entities/id_code_info.dart';
-import 'package:quadycons/data/entities/lat_lng.dart';
+import 'package:quadycons/core/repository_error_handler.dart';
+import 'package:quadycons/data/db/daos/worker_dao.dart';
+import 'package:quadycons/data/db/mappers/worker_mapper.dart';
+import 'package:quadycons/domain/connectivity/connectivity_service.dart';
+import 'package:quadycons/domain/entities/id_code_info.dart';
 import 'package:quadycons/data/local_data_source/access_token_getter.dart';
 import 'package:quadycons/data/services/code_scan_service.dart';
+import 'package:quadycons/domain/entities/project.dart';
 import 'package:quadycons/domain/repositories/code_scan_repository.dart';
 
 class CodeScanRepositoryImpl implements CodeScanRepository {
   final CodeScanService service;
   final AccessTokenGetter accessTokenGetter;
+  final WorkersDao dao;
+  final ConnectivityService connectivityService;
+  final RepositoryErrorHandler errorHandler;
 
   CodeScanRepositoryImpl({
     required this.service,
-    required this.accessTokenGetter
+    required this.accessTokenGetter,
+    required this.dao,
+    required this.connectivityService,
+    required this.errorHandler
   });
 
   @override
-  Future<IdCodeInfo> getInfoByIdBase(IdCodeInfo baseInfo) async {
-    final accessToken = await accessTokenGetter.getAccessToken();
-    final worker = await service.getInfoByIdentification(baseInfo.docNumber, accessToken);
-    return IdCodeInfo(
-      docNumber: baseInfo.docNumber,
-      worker: worker
-    );
-  }
-
-  @override
-  Future<LatLng> getFence() async {
-    final accessToken = await accessTokenGetter.getAccessToken();
-    return await service.getFence(accessToken);
-  }
+  Future<IdCodeInfo> getInfoByIdBase(IdCodeInfo info, List<Project> projects) async => await errorHandler.executeFunction(() async {
+    // Si no tiene cédula pero tiene ID y nombre (viene del QR completo), usar directo
+    if (info.docNumber.isEmpty && info.worker?.id != null) {
+      return info;
+    }
+    final localWorker = await dao.getByDocNumber(info.docNumber);
+    if(localWorker == null) {
+      if( await connectivityService.thereIsConnectivity()) {
+        final accessToken = await accessTokenGetter.getAccessToken();
+        final worker = await service.getInfoByIdentification(info.docNumber, accessToken);
+        info = IdCodeInfo(
+          docNumber: info.docNumber,
+          worker: worker
+        );
+      }
+      final data = WorkerMapper.toDb(info);
+      await dao.insertWorker(data);
+      return info;
+    }
+    return WorkerMapper.fromDb(localWorker, projects);
+  });
 }

@@ -15,7 +15,7 @@ Authorization: Token {token_aqui}
 
 ---
 
-## 1️⃣ AUTENTICACIÓN Y USUARIOS
+## 1️⃣ AUTENTICACIÓN Y **USUARIOS**
 
 ### 1.1 LOGIN
 **Endpoint:** `POST /api/auth/login/`
@@ -484,6 +484,15 @@ Authorization: Token {token}
   "asistencias": [
     {
       "trabajador_cedula": "001-140589-0012K",
+      "proyecto_id": 1,
+      "fecha": "2025-01-15",
+      "hora_entrada": "07:05:30",
+      "latitud_entrada": 12.1365,
+      "longitud_entrada": -86.2515,
+      "tipo": "entrada"
+    },
+    {
+      "trabajador_cedula": "002-112589-0012K",
       "proyecto_id": 1,
       "fecha": "2025-01-15",
       "hora_entrada": "07:05:30",

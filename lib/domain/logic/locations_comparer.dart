@@ -1,11 +1,10 @@
 import 'dart:math';
-import 'package:quadycons/data/entities/lat_lng.dart';
+import 'package:quadycons/domain/entities/lat_lng.dart';
 
 class LocationsComparer {
-  static double radiusMeters = 50.0;
 
-  bool isInsideFence(LatLng location, LatLng center) =>
-    distanceTo(center, location) < radiusMeters;
+  bool isInsideFence(LatLng location, LatLng center, double geoFence) =>
+    distanceTo(center, location) < geoFence;
 
   /// Calcula la distancia en metros entre dos puntos usando la fórmula de Haversine
   /// Retorna la distancia en metros

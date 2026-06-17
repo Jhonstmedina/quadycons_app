@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quadycons/core/app_dimens.dart';
 
 class ScanButton extends StatelessWidget {
   final IconData icon;
@@ -28,9 +29,15 @@ class ScanButton extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 18),
+          Icon(icon, size: AppDimens.bodySmallStyle(context)?.fontSize),
           SizedBox(width: 4),
-          Text(text)
+          Text(
+            text,
+            style: AppDimens.styleByScreen(context)?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Colors.black
+            )
+          )
         ]
       )
     );

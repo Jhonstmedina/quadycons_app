@@ -1,4 +1,0 @@
-enum RegisterType {
-  entry,
-  exit,
-}

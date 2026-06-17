@@ -31,7 +31,6 @@ class AuthInput extends StatelessWidget {
           obscureText: obscureText,
           decoration: InputDecoration(
             filled: true,
-            fillColor: Color(0xFFF5F3FF),
             contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30)

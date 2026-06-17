@@ -1,0 +1,20 @@
+import 'package:quadycons/data/services/dto/registration_result_dto.dart';
+import 'package:quadycons/domain/entities/register_type.dart';
+import 'package:quadycons/domain/entities/registration_result.dart';
+
+class RegistrationResultMapper {
+  static RegistrationResult toDomain(RegistrationResultDTO result) => RegistrationResult(
+    localAttendanceId: result.tempId,
+    remoteAttendanceId: result.asistenciaId,
+    status: result.estado == 'exitoso' || result.estado == 'creado'?
+      RegistrationResultStatus.success :
+      result.estado == 'ya_sincronizado'?
+        RegistrationResultStatus.repeated :
+        RegistrationResultStatus.failure,
+    type: (result.mensaje).contains('Entrada')?
+      RegisterType.checkIn :
+      (result.mensaje).contains('Salida')?
+        RegisterType.checkOut :
+        null
+  );
+}

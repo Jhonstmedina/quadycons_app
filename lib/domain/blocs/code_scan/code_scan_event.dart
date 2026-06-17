@@ -6,15 +6,29 @@ sealed class CodeScanEvent {}
 
 final class InsertScanInfo extends CodeScanEvent {
   final IdCodeInfo? idCodeInfo;
-
-  InsertScanInfo(this.idCodeInfo);
+  final Project project;
+  final List<Project> allProjects;
+  
+  InsertScanInfo(
+    this.idCodeInfo,
+    this.project,
+    this.allProjects
+  );
 }
 
 final class SetRegisterType extends CodeScanEvent {
   final RegisterType registerType;
-
-  SetRegisterType(this.registerType);
+  final Project project;
+  SetRegisterType(
+    this.registerType,
+    this.project
+  );
 }
 
-final class RetryScanEnd extends CodeScanEvent {}
+final class RetryScanEnd extends CodeScanEvent {
+  final Project project;
+  RetryScanEnd({required this.project});
+}
+
+final class ResetBloc extends CodeScanEvent {}
 

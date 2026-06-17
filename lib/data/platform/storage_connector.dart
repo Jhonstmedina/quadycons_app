@@ -67,9 +67,10 @@ class StorageConnectorImpl implements StorageConnector{
   Future executeStorageFunction(Function function)async{
     try{
       return await function();
-    }on PlatformException catch(e){
+    }on PlatformException {
       throw const GeneralException(message: normalStorageExceptionMessage);
     }catch(e){
+      print('❌ STORAGE ERROR: $e');
       throw const GeneralException(message: 'Ha ocurrido un error inesperado');
     }
   }

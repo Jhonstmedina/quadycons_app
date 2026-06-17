@@ -19,15 +19,27 @@ abstract class Service {
         print(response.data);
         throw GeneralException(message: response.data['error']['message'] ?? 'Ha ocurrido un error inesperado' );
       }
-    }on GeneralException catch(_){
+    } on GeneralException catch(_){
       rethrow;
-    }catch(exception, stackTrace){
-      print(stackTrace);
-      throw const GeneralException(message: 'Ha ocurrido un error inesperado');
+    } on DioException catch(exception, stackTrace){
+      throw ServerException(
+        message:
+          exception.response?.data['error'] ??
+          'DioException: ${exception.message} | status: ${exception.response?.statusCode}',
+        statusCode: exception.response?.statusCode ?? 500
+      );
+    } catch (e) {
+      throw GeneralException(
+        message: '[${e.runtimeType}] $e'
+      );
     }
   }
 
-  Map<String, String> getJsonContentHeaders() => {
-    'Content-Type': 'application/json'
-  };
+  Options getBaseOptions(String accessToken) => Options(
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Token $accessToken',
+    }
+  );
 }
